@@ -8,7 +8,7 @@ tic;
 %% Load the config file to adjust parameters %%
 configuration;
 
-%% Place bits into packets of specified size %%
+% Place bits into packets of specified size %%
 if PACKETIZE
     packets = packetizeBits(input, HEADER_SIZE_BITS, PACKET_SIZE_BITS); 
     input = packets(:)';
