@@ -57,27 +57,17 @@ f = linspace(-F_S/2, F_S/2, nfft);
 
 figure;
 h1 = axes;
-plot3(f, alpha1*ones(1,nfft), abs(cyc1), '-b', ...
-      f, alpha2*ones(1,nfft), abs(cyc2), '-b', ...
-      f, alpha3*ones(1,nfft), abs(cyc3), '-b', ...
-      f, alpha4*ones(1,nfft), abs(cyc4), '-b', ...
-      f, alpha5*ones(1,nfft), abs(cyc5), '-b', ...
-      f, alpha6*ones(1,nfft), abs(cyc6), '-b');
+plot3(f, alpha1*ones(1,nfft), 10*log(abs(cyc1)), '-b', ...
+      f, alpha2*ones(1,nfft), 10*log(abs(cyc2)), '-b', ...
+      f, alpha3*ones(1,nfft), 10*log(abs(cyc3)), '-b', ...
+      f, alpha4*ones(1,nfft), 10*log(abs(cyc4)), '-b', ...
+      f, alpha5*ones(1,nfft), 10*log(abs(cyc5)), '-b', ...
+      f, alpha6*ones(1,nfft), 10*log(abs(cyc6)), '-b');
 set(h1, 'Ydir', 'reverse');
     
-%plot_cyc_spec(tx, 0,     nfft, F_S*UP);
-%plot_cyc_spec(tx, 1000,  nfft, F_S*UP);
-%plot_cyc_spec(tx, F_S/2, nfft, F_S*UP);
-%plot_cyc_spec(tx, F_S/4, nfft, F_S*UP);
-%plot_cyc_spec(tx, F_S/8, nfft, F_S*UP);
-%plot_cyc_spec(tx, 4E6,   nfft, F_S*UP);
-
-%spec_size = 100;
-%cyc_spec = zeros(spec_size, nfft);
-%for idx = 1:spec_size
-%    alpha = (idx-1)/spec_size*(F_S); % scale alpha from 0 to F_S/2
-%    cyc_spec(idx,:) = cyclic_spectrum(tx, alpha, nfft, F_S*UP);
-%end
-%
-%%surf(10*log(abs(cyc_spec)));
-%surf(abs(cyc_spec));
+plot_cyc_spec(tx, F_S/16, nfft, F_S*UP);
+plot_cyc_spec(tx, F_S/8, nfft, F_S*UP);
+plot_cyc_spec(tx, F_S/4, nfft, F_S*UP);
+plot_cyc_spec(tx, F_S/2, nfft, F_S*UP);
+plot_cyc_spec(tx, F_S, nfft, F_S*UP);
+plot_cyc_spec(tx, 2*F_S, nfft, F_S*UP);
