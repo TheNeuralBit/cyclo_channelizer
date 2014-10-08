@@ -16,9 +16,9 @@ noise_variance = 1./(2.*EsNo); % Convert Es_No to variance
 %% Run the Transmitter
 %tx = MyTransmitter(input_bits);
 % Generate channel 1 at baud rate fs/4
-chan1 = simple_tx(input_bits(1:length(input_bits)/4), 'QPSK', 16, F_S);
+chan1 = simple_tx(input_bits(1:length(input_bits)/4), 'QPSK', 16, F_S, .25);
 % Generate channel 2 at baud rate fs/8
-chan2 = simple_tx(input_bits(1:length(input_bits)/2), 'QPSK', 8, F_S);
+chan2 = simple_tx(input_bits(1:length(input_bits)/2), 'QPSK', 8, F_S, .25);
  
 % upsample data
 Hd=design(fdesign.lowpass('Fp,Fst',3/4/UP, 1/UP), 'equiripple');
