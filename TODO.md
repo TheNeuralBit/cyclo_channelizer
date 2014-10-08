@@ -1,0 +1,10 @@
+- [ ] Fix noise power calculation
+- [ ] Create function for generating WB file given a list of freqs/bauds/modulations
+- [ ] Move parameters to a configuration file
+    - List of freqs/bauds/modulations for WB
+    - List of bauds for cyclo detect
+    - Sample rate/upsample
+    - RC rolloff
+- [ ] Figure out simple channelizer
+- [ ] Try to do cyclo detect with only one FFT (by aligning baud and fft spacing)
+- [ ] Try to use cyclo detect FFT for channelizer
