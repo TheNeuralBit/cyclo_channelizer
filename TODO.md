@@ -6,5 +6,5 @@
     - Sample rate/upsample
     - RC rolloff
 - [ ] Figure out simple channelizer
-- [ ] Try to do cyclo detect with only one FFT (by aligning baud and fft spacing)
+- [X] Try to do cyclo detect with only one FFT (by aligning baud and fft spacing)
 - [ ] Try to use cyclo detect FFT for channelizer
