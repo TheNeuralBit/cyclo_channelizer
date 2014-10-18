@@ -1,4 +1,6 @@
 %% Configuruable Parameters
+%CYC_SPEC_METHOD = 'freq_shift';
+CYC_SPEC_METHOD = 'one_fft';
 PACKETIZE = 1;              % Whether or not to insert header bits with packet size
                             % If this is not set only message sizes that
                             % are a multiple of PACKET_SIZE_BITS will work
