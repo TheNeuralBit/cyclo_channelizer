@@ -3,13 +3,15 @@ configuration;
 
 numbits = 2048*100;
 input_bits = randn(1, numbits)<0;
-PN = 20;
+PN = 40;
+bauds = [F_S/8, F_S/16, F_S/4, F_S/16];
+UP = length(bauds);
 
-tx = gen_test_sig(input_bits, PN);
+tx = gen_test_sig(input_bits, PN, bauds);
 
 plot_spectrum(tx, F_S*UP);
 
-nfft = 1024;
+nfft = 256;
 
 alpha1 = 0;
 alpha2 = F_S/8;
@@ -37,6 +39,7 @@ plot3(f, alpha1*ones(1,nfft), 10*log(abs(cyc1)), '-b', ...
       f, alpha6*ones(1,nfft), 10*log(abs(cyc6)), '-b');
 set(h1, 'Ydir', 'reverse');
     
+% TODO use the same FFT for all of these? BECAUSE I CAN
 plot_cyc_spec(tx, F_S/16, nfft, F_S*UP, CYC_SPEC_METHOD);
 plot_cyc_spec(tx, F_S/8,  nfft, F_S*UP, CYC_SPEC_METHOD);
 plot_cyc_spec(tx, F_S/4,  nfft, F_S*UP, CYC_SPEC_METHOD);
