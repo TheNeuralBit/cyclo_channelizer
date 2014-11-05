@@ -8,7 +8,11 @@
     - List of bauds for cyclo detect
     - Sample rate/upsample
     - RC rolloff
-- [ ] Figure out simple channelizer
+- [X] Figure out simple channelizer
+    - [ ] Figure out why channels are offset by half channel spacing
+- [ ] Create simple synthesis channelizer for recombining adjacent channels
+- [ ] Create combination synthesis/analysis channelizer
 - [X] Try to do cyclo detect with only one FFT (by aligning baud and fft spacing)
 - [ ] Average cyclo detects over time
-- [ ] Try to use cyclo detect FFT for channelizer
+- [ ] direct analysis/synthesis channelizer with cyclo detects
+- [ ] ~~Try to use cyclo detect FFT for channelizer~~
