@@ -1,4 +1,5 @@
 %% Configuruable Parameters
+AVERAGING = 10;
 %CYC_SPEC_METHOD = 'freq_shift';
 CYC_SPEC_METHOD = 'one_fft';
 PACKETIZE = 1;              % Whether or not to insert header bits with packet size

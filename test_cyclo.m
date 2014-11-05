@@ -20,12 +20,12 @@ alpha4 = 3*F_S/8;
 alpha5 = F_S/2;
 alpha6 = F_S/16;
 
-cyc1 = cyclic_spectrum(tx, alpha1, nfft, F_S*UP, CYC_SPEC_METHOD) ;
-cyc2 = cyclic_spectrum(tx, alpha2, nfft, F_S*UP, CYC_SPEC_METHOD) ;
-cyc3 = cyclic_spectrum(tx, alpha3, nfft, F_S*UP, CYC_SPEC_METHOD) ;
-cyc4 = cyclic_spectrum(tx, alpha4, nfft, F_S*UP, CYC_SPEC_METHOD) ;
-cyc5 = cyclic_spectrum(tx, alpha5, nfft, F_S*UP, CYC_SPEC_METHOD) ;
-cyc6 = cyclic_spectrum(tx, alpha6, nfft, F_S*UP, CYC_SPEC_METHOD) ;
+cyc1 = cyclic_spectrum(tx, alpha1, nfft, F_S*UP, CYC_SPEC_METHOD, AVERAGING) ;
+cyc2 = cyclic_spectrum(tx, alpha2, nfft, F_S*UP, CYC_SPEC_METHOD, AVERAGING) ;
+cyc3 = cyclic_spectrum(tx, alpha3, nfft, F_S*UP, CYC_SPEC_METHOD, AVERAGING) ;
+cyc4 = cyclic_spectrum(tx, alpha4, nfft, F_S*UP, CYC_SPEC_METHOD, AVERAGING) ;
+cyc5 = cyclic_spectrum(tx, alpha5, nfft, F_S*UP, CYC_SPEC_METHOD, AVERAGING) ;
+cyc6 = cyclic_spectrum(tx, alpha6, nfft, F_S*UP, CYC_SPEC_METHOD, AVERAGING) ;
 
 f = linspace(-F_S*UP/2, F_S*UP/2, nfft);
 
@@ -40,9 +40,9 @@ plot3(f, alpha1*ones(1,nfft), 10*log(abs(cyc1)), '-b', ...
 set(h1, 'Ydir', 'reverse');
     
 % TODO use the same FFT for all of these? BECAUSE I CAN
-plot_cyc_spec(tx, F_S/16, nfft, F_S*UP, CYC_SPEC_METHOD);
-plot_cyc_spec(tx, F_S/8,  nfft, F_S*UP, CYC_SPEC_METHOD);
-plot_cyc_spec(tx, F_S/4,  nfft, F_S*UP, CYC_SPEC_METHOD);
-plot_cyc_spec(tx, F_S/2,  nfft, F_S*UP, CYC_SPEC_METHOD);
-plot_cyc_spec(tx, F_S,    nfft, F_S*UP, CYC_SPEC_METHOD);
-plot_cyc_spec(tx, 2*F_S,  nfft, F_S*UP, CYC_SPEC_METHOD);
+plot_cyc_spec(tx, F_S/16, nfft, F_S*UP, CYC_SPEC_METHOD, AVERAGING);
+plot_cyc_spec(tx, F_S/8,  nfft, F_S*UP, CYC_SPEC_METHOD, AVERAGING);
+plot_cyc_spec(tx, F_S/4,  nfft, F_S*UP, CYC_SPEC_METHOD, AVERAGING);
+plot_cyc_spec(tx, F_S/2,  nfft, F_S*UP, CYC_SPEC_METHOD, AVERAGING);
+plot_cyc_spec(tx, F_S,    nfft, F_S*UP, CYC_SPEC_METHOD, AVERAGING);
+plot_cyc_spec(tx, 2*F_S,  nfft, F_S*UP, CYC_SPEC_METHOD, AVERAGING);

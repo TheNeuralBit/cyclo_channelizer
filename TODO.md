@@ -13,6 +13,6 @@
 - [ ] Create simple synthesis channelizer for recombining adjacent channels
 - [ ] Create combination synthesis/analysis channelizer
 - [X] Try to do cyclo detect with only one FFT (by aligning baud and fft spacing)
-- [ ] Average cyclo detects over time
+- [X] Average cyclo detects over time
 - [ ] direct analysis/synthesis channelizer with cyclo detects
 - [ ] ~~Try to use cyclo detect FFT for channelizer~~
