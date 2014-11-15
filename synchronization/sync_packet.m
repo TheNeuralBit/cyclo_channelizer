@@ -20,8 +20,8 @@ corr = abs(corr);
 [~, sync_loc] = max(corr);
 sync_loc = lags(sync_loc)+search_start;
 
-% figure;
-% plot(lags, corr);
+%figure;
+%plot(lags, corr);
 
 % The sync location cant be earlier than the beginning of input_samps
 if sync_loc < 1
