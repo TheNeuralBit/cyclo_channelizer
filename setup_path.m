@@ -5,4 +5,6 @@ function setup_path()
     path([pwd '/pulse_shaping'], path)
     path([pwd '/synchronization'], path)
     path([pwd '/testbench'], path)
+    path([pwd '/file_utils'], path)
+    path([pwd '/configuration'], path)
 end
