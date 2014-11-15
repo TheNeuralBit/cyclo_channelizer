@@ -45,6 +45,6 @@ end
 %% FFT
 disp('Performing FFT...')
 % compute fft of each column
-channels = fftshift(fft(filt_output, FFT_SIZE, 1), 1);
+channels = fftshift(fft(filt_output, FFT_SIZE, 1));
 
 end

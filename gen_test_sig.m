@@ -2,8 +2,6 @@ function [tx] = gen_test_sig(bits, noise_power, channel_bauds )
 configuration;
 num_sigs = length(channel_bauds);
 UP = num_sigs;
-modulation = 'QPSK';
-bits_per_symbol = 2;
 
 for baud=channel_bauds
     if mod(F_S, baud) ~= 0
@@ -15,24 +13,21 @@ end
 
 samps_per_sym =  F_S./channel_bauds;
 
-shortest_sig_len = length(bits)/bits_per_symbol*min(samps_per_sym);
-bit_lengths = shortest_sig_len*bits_per_symbol./samps_per_sym;
-
 %% Run the Transmitter
-sigs = zeros(num_sigs, shortest_sig_len);
-for idx=1:num_sigs
-    sigs(idx,:) = gen_sig(bits(1:bit_lengths(idx)), samps_per_sym(idx), modulation)';
-end
-
-% upsample data
 Hd=design(fdesign.lowpass('Fp,Fst',3/4/UP, 1/UP), 'equiripple');
-
-tx = zeros(1, shortest_sig_len*UP);
-t = 0:1/F_S/UP:(length(tx) - 1)/F_S/UP;
+tx = [];
 for idx=1:num_sigs
+    % Generate
+    sig = gen_sig(bits, samps_per_sym(idx), MODULATION);
+
+    % Upsample, Filter and Frequency Shift
+    sig = filter(Hd, upsample(sig, UP));
     pos = idx - 0.5 - num_sigs/2;
-    % upsample the channel, frequency shift it to appropriate location
-    tx = tx + filter(Hd, upsample(sigs(idx,:), UP)).*exp(1*pi*j*pos*2*F_S*t);
+    t = 0:1/F_S/UP:(length(sig) - 1)/F_S/UP;
+    sig = sig.*exp(1*pi*j*pos*2*F_S*t);
+
+    % Add to WB signal
+    tx = add_and_zero_pad(tx, sig);
 end
 
 % Compute Noise variance based on desired noise power
@@ -46,5 +41,21 @@ end
 
 function [samples] = gen_sig(bits, samples_per_sym, modulation)
     configuration;
-    samples = simple_tx(bits, modulation, samples_per_sym, F_S, RC_ROLLOFF);
+    SAMPLES_PER_SYMBOL = samples_per_sym;
+    recompute_configuration;
+    samples = MyTransmitter(bits);
+end
+
+function [result] = add_and_zero_pad(left, right)
+    if length(left) == length(right)
+        result = left + right;
+        return
+    end
+    if length(left) > length(right)
+        tmp = left;
+        left = right;
+        right = tmp;
+    end
+    left = [left zeros(1, length(right) - length(left))];
+    result = left + right;
 end
