@@ -15,9 +15,13 @@ if PACKETIZE
 end
 
 %% Convolutional Encoding %%
-encoded_bits = conv_encode(input, 1, GENERATING_POLYS, CONSTRAINT_LENGTH);
-
-encoded_bits = interleave(encoded_bits, 64); %Assumes coded packet size of 4096 bits
+if CODING
+    encoded_bits = conv_encode(input, 1, GENERATING_POLYS, CONSTRAINT_LENGTH);
+    
+    encoded_bits = interleave(encoded_bits, 64); %Assumes coded packet size of 4096 bits
+else
+    encoded_bits = input;
+end
 
 %% Add pilot/sync bits
 bits_with_sync = add_sync_bits(encoded_bits, SYNC_PATTERN, PACKET_SIZE_BITS/CODE_RATE);

@@ -72,8 +72,12 @@ all_symbols = all_symbols(:).';
 %decoded_bits = viterbi_decode(bits, 1, GENERATING_POLYS, CONSTRAINT_LENGTH); 
 
 % Soft Decision %
-softbits = interleave(softbits, 64); %Assumes coded packet size of 4096 bits
-decoded_bits = soft_viterbi_decode(softbits, 1, GENERATING_POLYS, CONSTRAINT_LENGTH);
+if CODING
+    softbits = interleave(softbits, 64); %Assumes coded packet size of 4096 bits
+    decoded_bits = soft_viterbi_decode(softbits, 1, GENERATING_POLYS, CONSTRAINT_LENGTH);
+else
+    decoded_bits = bits;
+end
 
 %% Depacketize %%
 if PACKETIZE

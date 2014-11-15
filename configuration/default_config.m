@@ -5,7 +5,8 @@ CYCLO_AVERAGING = 10;
 CYC_SPEC_METHOD = 'one_fft';
 PACKETIZE = 1;              % Whether or not to insert header bits with packet size
                             % If this is not set only message sizes that
-                            % are a multiple of PACKET_SIZE_BITS will work
+                            % are a multiple of PACKET_SIZE_BITS will wor
+CODING = 0;
 MODULATION = 'QPSK';        % 16QAM or QPSK
 PACKET_SIZE_BITS = 2048;    % Packet size including header bits
 HEADER_SIZE_BITS = 16;

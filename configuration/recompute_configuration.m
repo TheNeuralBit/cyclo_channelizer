@@ -3,7 +3,11 @@ configuration;
 DATA_SIZE_BITS = PACKET_SIZE_BITS - HEADER_SIZE_BITS;
 T = SAMPLES_PER_SYMBOL/F_S; % symbol time
 
-CODE_RATE = 1/length(GENERATING_POLYS);
+if CODING
+    CODE_RATE = 1/length(GENERATING_POLYS);
+else
+    CODE_RATE = 1;
+end
 
 if strcmp(MODULATION, 'QPSK')
     M = 2;
