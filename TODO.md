@@ -12,6 +12,7 @@ Core Goals
     - RC rolloff
 - [X] Figure out simple channelizer
     - [ ] Figure out why channels are offset by half channel spacing
+    - [X] Fix channelized output first and second halves being switched
 - [X] Create simple synthesis channelizer for recombining adjacent channels
     - [ ] Create synthesis channelizer test
     - [ ] Perfect reconstruction filter?
