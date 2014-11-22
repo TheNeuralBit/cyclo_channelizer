@@ -22,6 +22,9 @@ Core Goals
 - [ ] direct analysis/synthesis channelizer with cyclo detects
 - [ ] Speed up packetization if I still need it
 - [ ] ~~Try to use cyclo detect FFT for channelizer~~
+- [ ] Allow empty channels
+- [ ] Rolloff filter faster? Why are we getting aliasing from neighboring channels
+    - Seems like filter is sharp enough... tried just filtering a single channel and downsampling and everything was fine
 
 
 Extras

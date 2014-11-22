@@ -5,8 +5,7 @@ FFT_SIZE = num_channels;
 disp('Designing the filter...')
 b = design_filter(F_S, num_channels)
 
-figure;
-plot_spectrum(b, F_S);
+fvtool(b, 1);
 
 % zero pad
 b = [b zeros(1, FFT_SIZE - mod(length(b), FFT_SIZE))];
@@ -28,6 +27,6 @@ end
 %% FFT
 disp('Performing FFT...')
 % compute fft of each column
-channels = fft(filt_output, FFT_SIZE, 1);
+channels = fftshift(fft(filt_output, FFT_SIZE, 1), 1);
 
 end
