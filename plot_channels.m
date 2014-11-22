@@ -18,6 +18,6 @@ function plot_channels(channels, f_s)
     figure;
     for i=1:num_channels
         subplot(factors(1), factors(2), i);
-        plot_spectrum(channels(i, 1:90000), f_s);
+        plot_spectrum(channels(i, :), f_s);
     end
 end
