@@ -1,26 +1,9 @@
-function [channels] = channelizer(data, num_channels, F_S)
+function [channels] = analysis_channelizer(data, num_channels, F_S)
 FFT_SIZE = num_channels;
 
 %% DESIGN THE FILTER
 disp('Designing the filter...')
-filt_cutoff = F_S/FFT_SIZE/2
-
-rp = 3;           % Passband ripple
-rs = 50;          % Stopband ripple
-f = [0.75*filt_cutoff filt_cutoff];    % Cutoff frequencies
-a = [1 0];        % Desired amplitudes
-
-% Compute deviations
-dev = [(10^(rp/20)-1)/(10^(rp/20)+1)  10^(-rs/20)]; 
-
-c = firpmord( f, a, dev, F_S, 'cell');
-b = firpm(c{:});
-
-%b=remez(511,[0 96 160 192*32]/(192*32),[1 1 0 0],[1 13]);
-%b(1)=b(2)/4;
-%b(2)=b(2)/2;
-%b(512)=b(1);
-%b(511)=b(2);
+b = design_filter(F_S, num_channels)
 
 figure(2);
 plot_spectrum(b, F_S);

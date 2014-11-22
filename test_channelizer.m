@@ -18,7 +18,7 @@ plot_spectrum(tx, F_S*UP);
 %binary_to_text_file(bits, 'test_0.txt');
 
 
-channels = channelizer(tx, length(bauds), F_S*UP);
+channels = analysis_channelizer(tx, length(bauds), F_S*UP);
 
 %% Plot results
 disp('Plotting results...')
