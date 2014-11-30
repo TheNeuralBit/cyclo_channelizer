@@ -133,9 +133,9 @@ different digital signals.
 % Dedication and Acknowledgments are both optional
 % \chapter*{Dedication}
 \chapter*{Acknowledgments}
-I would like to acknowledge the work of both Craig Carlson and Ruth Stoehr. Much
-of the source for this project for both generating and processing a simple QPSK
-came from the ECE5654 project which we all worked on.
+I would like to acknowledge the work of both Craig Carlson and Ruth Stoehr. Much of the source for this project for both generating and processing a simple 
+QPSK signal came from the ECE5654 project which we completed in the Spring 
+of 2013.
 
 I would like to thank my current employer, n~ask, inc., and all of my co-workers
 there for their support.
@@ -163,10 +163,11 @@ Finally I would like to thank my friends and family, particularly my girlfriend 
 
 A common problem when designing a Software-Defined Radio (SDR) system is the problem of detecting and tuning signals of interest. A typical SDR will sample at a relatively high rate to acquire a wideband signal. Then it will attempt to detect the channels that contain frequencies of interest, and then tune, filter, decimate, and demodulate those signals. 
 
-%TODO: links to SDR frameworks
-Many popular SDR applications perform this detection step with a "man in the loop".  A falling raster of the wideband data is presented and the man in the loop will "click-tune" to select  the frequencies that (s)he would like to process. One common version of this is to acquire a wideband slice of the HAM radio spectrum and then click tune to different frequencies to demodulate new FM Push-to-Talk signals and listen to them.
+%TODO: links to SDR frameworks (webSDR)
+%TODO: image of SDR plotting
+Many popular SDR applications perform this detection step with a "man-in-the-loop".  A falling raster of the wideband data is presented and the man-in-the-loop will "click-tune" to select  the frequencies that (s)he would like to process. One common version of this is to acquire a wideband slice of the HAM radio spectrum and then click tune to different frequencies to demodulate new FM Push-to-Talk signals and listen to them.
 
-In this paper I will investigate and simulate a structure that automates this process - but rather than working for a single, analog signal, this framework is intended for an arbitrary number of digital signals. Detection is performed by a cyclostationary detector rather than by a man-in-the-loop, in order to exploit the cyclostationary properties exhibited by most digital signals with a fixed baud rate.  Tuning, filtering, and decimating is performed by a channelizer, so that many signals can be processed at once.  I will examine two different channelizer structures. They will be compared on two important criteria: 1) Their ability to accurately reproduce every detected signal, and 2) Their computational efficiency when combined with a cyclostationary detector.
+In this paper I will investigate and simulate a structure that automates this process - but rather than working for a single analog signal, this framework is intended for an arbitrary number of digital signals. Detection is performed by a cyclostationary detector rather than by a man-in-the-loop, in order to exploit the cyclostationary properties exhibited by most digital signals with a fixed baud rate.  Tuning, filtering, and decimating is performed by a channelizer, so that many signals can be processed at once.  I will examine two different channelizer structures. They will be compared on two important criteria: 1) Their ability to accurately reproduce every detected signal, and 2) Their computational efficiency when combined with a cyclostationary detector.
 
 In Chapter~\ref{sec:cyclo} I will provide background information on cyclostationary properties and the cyclic spectra upon which my detector relies.  Chapter~\ref{sec:chan} discusses and compares both of the channelizer structures that I will simulate. Chapter~\ref{sec:sim}  discusses the MATLAB simulation I have created and the results of it. Finally, Chapter~\ref{sec:source} provides annotated source code for key parts of the simulation, as well as locations where the entire source code can be found.
 
