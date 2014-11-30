@@ -143,6 +143,8 @@ there for their support.
 I would also like to thank the members of my committee, particularly Dr.
 Zaghloul, for their seemingly endless patience and support.
 
+Finally I would like to thank my friends and family, particularly my girlfriend Meredith, for letting me use ``My Master's" as an excuse for nearly anything.
+
 \tableofcontents
 \pagebreak
 
@@ -159,18 +161,27 @@ Zaghloul, for their seemingly endless patience and support.
 \label{sec:intro}
 \markright{Brian H. Hulette \hfill Chapter \ref{sec:intro}. Introduction \hfill}
 
-William Shakespeare has profoundly affected the field of literature
-worldwide.  In the United States there was a surge of Shakespearean
-literature starting in the 1960s, with the opening of the Montgomery
-Shakespearean festival and continuing into the present ...
+A common problem when designing a Software-Defined Radio (SDR) system is the problem of detecting and tuning signals of interest. A typical SDR will sample at a relatively high rate to acquire a wideband signal. Then it will attempt to detect the channels that contain frequencies of interest, and then tune, filter, decimate, and demodulate those signals. 
+
+%TODO: links to SDR frameworks
+Many popular SDR applications perform this detection step with a "man in the loop".  A falling raster of the wideband data is presented and the man in the loop will "click-tune" to select  the frequencies that (s)he would like to process. One common version of this is to acquire a wideband slice of the HAM radio spectrum and then click tune to different frequencies to demodulate new FM Push-to-Talk signals and listen to them.
+
+In this paper I will investigate and simulate a structure that automates this process - but rather than working for a single, analog signal, this framework is intended for an arbitrary number of digital signals. Detection is performed by a cyclostationary detector rather than by a man-in-the-loop, in order to exploit the cyclostationary properties exhibited by most digital signals with a fixed baud rate.  Tuning, filtering, and decimating is performed by a channelizer, so that many signals can be processed at once.  I will examine two different channelizer structures. They will be compared on two important criteria: 1) Their ability to accurately reproduce every detected signal, and 2) Their computational efficiency when combined with a cyclostationary detector.
+
+In Chapter~\ref{sec:cyclo} I will provide background information on cyclostationary properties and the cyclic spectra upon which my detector relies.  Chapter~\ref{sec:chan} discusses and compares both of the channelizer structures that I will simulate. Chapter~\ref{sec:sim}  discusses the MATLAB simulation I have created and the results of it. Finally, Chapter~\ref{sec:source} provides annotated source code for key parts of the simulation, as well as locations where the entire source code can be found.
 
 \chapter{Cyclostationary Detection}
 \label{sec:cyclo}
 \markright{Brian H. Hulette \hfill Chapter \ref{sec:cyclo}. Cyclostationary Detection \hfill}
 
-\chapter{Polyphase Analysis/Synthesis Channelizer}
+\chapter{Channelizer Structures}
 \label{sec:chan}
-\markright{Brian H. Hulette \hfill Chapter \ref{sec:chan}. Polphase Analysis/Synthesis Channelizer \hfill}
+\markright{Brian H. Hulette \hfill Chapter \ref{sec:chan}. Channelizer Structures\hfill}
+\section{Polyphase Analysis/Synthesis Channelizer}
+\label{sec:poly_chan}
+
+\section{Overlap-save Filter Bank}
+\label{sec:filter_bank}
 
 \chapter{Simulation}
 \label{sec:sim}
