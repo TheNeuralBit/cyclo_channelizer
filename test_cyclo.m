@@ -11,14 +11,14 @@ tx = gen_test_sig(input_bits, PN, bauds);
 
 plot_spectrum(tx, F_S*UP);
 
-nfft = 256;
+nfft = 1024;
 
 alpha1 = 0;
-alpha2 = F_S/8;
-alpha3 = F_S/4;
-alpha4 = 3*F_S/8;
-alpha5 = F_S/2;
-alpha6 = F_S/16;
+alpha2 = F_S/16;
+alpha3 = F_S/8;
+alpha4 = F_S/4;
+alpha5 = 3*F_S/8;
+alpha6 = F_S/2;
 
 cyc1 = cyclic_spectrum(tx, alpha1, nfft, F_S*UP, CYC_SPEC_METHOD, CYCLO_AVERAGING) ;
 cyc2 = cyclic_spectrum(tx, alpha2, nfft, F_S*UP, CYC_SPEC_METHOD, CYCLO_AVERAGING) ;

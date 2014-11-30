@@ -1,0 +1,228 @@
+%
+% PROJECT: <ETD> Electronic Thesis and Dissertation Initiative
+%   TITLE: LaTeX report template for ETDs in LaTeX
+%  AUTHOR: Neill Kipp, nkipp@vt.edu
+%     URL: http://etd.vt.edu/latex/
+% SAVE AS: etd.tex
+% REVISED: September 6, 1997 [GMc 8/30/10]
+% 
+
+% Instructions: Remove the data from this document and replace it with your own,
+% keeping the style and formatting information intact.  More instructions
+% appear on the Web site listed above.
+
+\documentclass[12pt,dvips]{report}
+
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{8.5in}
+\setlength{\evensidemargin}{0in}
+\setlength{\oddsidemargin}{0in}
+\setlength{\topmargin}{0in}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.1in}
+
+% Uncomment for double-spaced document.
+% \renewcommand{\baselinestretch}{2}
+
+% \usepackage{epsf}
+
+% BHH Packages
+\usepackage[]{mcode}
+
+
+\begin{document}
+
+\thispagestyle{empty}
+\pagenumbering{roman}
+\begin{center}
+
+% TITLE
+{\Large 
+Simulation of Cyclostationary Detector
+Directed Polyphase Analysis/Synthesis Channelizer
+}
+
+\vfill
+
+Brian H. Hulette
+
+\vfill
+
+Project Report submitted to the Faculty of the \\
+Virginia Polytechnic Institute and State University \\
+in partial fulfillment of the requirements for the degree of
+
+\vfill
+
+Master of Engineering \\
+in \\
+Electrical Engineering
+
+\vfill
+
+Amir I. Zaghloul, Co-Chair \\
+Jeffrey H. Reed, Co-Chair \\
+T. Charles Clancy
+
+\vfill
+
+February 16, 2015 \\
+Falls Church, Virginia
+
+\vfill
+
+Keywords: Metaphysics, Information Retrieval, Spacecraft
+\\
+Copyright 2015, Brian H. Hulette
+
+\end{center}
+
+\pagebreak
+
+\thispagestyle{empty}
+\begin{center}
+
+{\large Simulation of Cyclostationary Detector
+Directed Polyphase Analysis/Synthesis Channelizer}
+
+\vfill
+
+Brian H. Hulette
+
+\vfill
+
+(ABSTRACT)
+
+\vfill
+
+\end{center}
+
+A MATLAB simulation of an SDR framework for detecting and subband tuning
+channelized signals is presented.  Detection is performed using cyclic spectra
+at various baud rates of interest.  These detections are then used to direct a
+channelizer which will tune, filter, and decimate all of the detected signals.
+Two different channelizer structures are examined - a polyphase
+analysis/synthesis channelizer [harris] and an overlap-save filter bank
+[Borgerding]. This framework has applications in both Cognitive Radio and
+Electronic Warfare.
+
+A summary of relevant background information is provided.  This includes a
+discussion of cyclostationarity and the cyclic spectrum as well as background
+on both channelizer structures. For the overlap-save filter bank it will be 
+shown that in many cases computation can be saved by re-using the FFT computed
+for the cyclostationary detector.
+
+In this simulation simple QPSK signals are used to model the signals of 
+interest, but the framework is applicable to any modulation or signal type
+that has cyclostationary features - which is true of most digital signals. 
+While other means of signal detection may be more reliable for specific signals,
+a cyclostationary detector's primary strength is its ability to function for many
+different digital signals.
+
+\vfill
+
+% GRANT INFORMATION
+
+%That this work received support from the Southeastern Universities
+%Research Association (SURA) ``Monticello Library Project'' is purely
+%coincidental.
+
+\pagebreak
+
+% Dedication and Acknowledgments are both optional
+% \chapter*{Dedication}
+\chapter*{Acknowledgments}
+I would like to acknowledge the work of both Craig Carlson and Ruth Stoehr. Much
+of the source for this project for both generating and processing a simple QPSK
+came from the ECE5654 project which we all worked on.
+
+I would like to thank my current employer, n~ask, inc., and all of my co-workers
+there for their support.
+
+I would also like to thank the members of my committee, particularly Dr.
+Zaghloul, for their seemingly endless patience and support.
+
+\tableofcontents
+\pagebreak
+
+\listoffigures
+\pagebreak
+
+\listoftables
+\pagebreak
+
+\pagenumbering{arabic}
+\pagestyle{myheadings}
+
+\chapter{Introduction}
+\label{sec:intro}
+\markright{Brian H. Hulette \hfill Chapter \ref{sec:intro}. Introduction \hfill}
+
+William Shakespeare has profoundly affected the field of literature
+worldwide.  In the United States there was a surge of Shakespearean
+literature starting in the 1960s, with the opening of the Montgomery
+Shakespearean festival and continuing into the present ...
+
+\chapter{Cyclostationary Detection}
+\label{sec:cyclo}
+\markright{Brian H. Hulette \hfill Chapter \ref{sec:cyclo}. Cyclostationary Detection \hfill}
+
+\chapter{Polyphase Analysis/Synthesis Channelizer}
+\label{sec:chan}
+\markright{Brian H. Hulette \hfill Chapter \ref{sec:chan}. Polphase Analysis/Synthesis Channelizer \hfill}
+
+\chapter{Simulation}
+\label{sec:sim}
+\markright{Brian H. Hulette \hfill Chapter \ref{sec:sim}. Simulation \hfill}
+
+\chapter{Results}
+\label{sec:results}
+\markright{Brian H. Hulette \hfill Chapter \ref{sec:results}. Results \hfill}
+
+%%%%%%%%%%%%%%%%%
+%
+% Include an EPS figure with this command:
+%   \epsffile{filename.eps}
+%
+
+%%%%%%%%%%%%%%%%
+%
+% Do tables like this:
+
+ \begin{table}
+ \caption{The Graduate School wants captions above the tables.}
+\begin{center}
+ \begin{tabular}{ccc}
+ x & 1 & 2 \\ \hline
+ 1 & 1 & 2 \\
+ 2 & 2 & 4 \\ \hline
+ \end{tabular}
+\end{center}
+ \end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% If you are using BibTeX, uncomment the following:
+% \thebibliography
+%
+% Otherwise, uncomment the following:
+% \chapter*{Bibliography}
+
+% \appendix
+
+% In LaTeX, each appendix is a "chapter"
+\chapter{Project Source}
+\label{sec:source}
+\markright{Brian H. Hulette \hfill Chapter \ref{sec:source}. Project Source \hfill}
+% TODO: make sure this is a link - and make the project public!
+The full source is hosted on GitHub (\texttt{https://github.com/TheNeuralBit/cyclo\_channelizer}), but I will include some of the critical files below.
+
+\section{\texttt{cyclic\_spectrum.m}}
+\lstinputlisting{../cyclic_spectrum.m}
+\section{\texttt{synthesis\_channelizer.m}}
+\lstinputlisting{../synthesis_channelizer.m}
+\section{\texttt{analysis\_channelizer.m}}
+\lstinputlisting{../analysis_channelizer.m}
+
+\end{document}

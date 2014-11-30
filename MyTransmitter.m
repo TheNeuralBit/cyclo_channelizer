@@ -3,16 +3,17 @@ function [ OutPutSamples ] = MyTransmitter( input )
 % ones) of unknown length and outputs a vector of complex samples labeled
 % as OutPutSamples of length N with unit average power. The data in input
 % will be given in terms of real numbers.
-tic;
 
 %% Load the config file to adjust parameters %%
 configuration;
 
 % Place bits into packets of specified size %%
+tic;
 if PACKETIZE
     packets = packetizeBits(input, HEADER_SIZE_BITS, PACKET_SIZE_BITS); 
     input = packets(:)';
 end
+toc;
 
 %% Convolutional Encoding %%
 if CODING
@@ -31,8 +32,6 @@ modulated_samples = modulate(bits_with_sync, MODULATION, SAMPLES_PER_SYMBOL);
 
 %% Apply the pulse shaping %%
 OutPutSamples = apply_filt(modulated_samples, PULSE_SHAPE);
-
-toc;
 
 end
 

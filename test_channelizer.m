@@ -12,7 +12,7 @@ tx = gen_test_sig(input_bits, PN, bauds);
 figure;
 plot_spectrum(tx, F_S*UP);
 t = 0:(1/F_S/UP):((length(tx)-1)/F_S/UP);
-tx = tx.*exp(1i.*2*pi.*-F_S/2.*t); %Perform frequency shift 
+tx = tx.*exp(1i.*2*pi.*-F_S/4.*t); %Perform frequency shift 
 
 figure;
 plot_spectrum(tx, F_S*UP);
@@ -41,7 +41,7 @@ end
 
 reconstruction = synthesis_channelizer(channels, F_S);
 t = 0:(1/F_S/UP):((length(reconstruction)-1)/F_S/UP);
-reconstruction = reconstruction.*exp(1i.*2*pi.*F_S/2.*t); %Perform frequency shift 
+reconstruction = reconstruction.*exp(1i.*2*pi.*F_S/4.*t); %Perform frequency shift 
 figure;
 plot_spectrum(reconstruction, F_S*UP);
 
