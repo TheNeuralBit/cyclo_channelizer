@@ -29,6 +29,9 @@
 
 % BHH Packages
 \usepackage[]{mcode}
+\usepackage[retainorgcmds]{IEEEtrantools}
+\usepackage{amsmath}
+\usepackage{amssymb}
 
 
 \begin{document}
@@ -38,10 +41,9 @@
 \begin{center}
 
 % TITLE
-{\Large 
-Simulation of Cyclostationary Detector
-Directed Polyphase Analysis/Synthesis Channelizer
-}
+{\large
+Simulation of Various Channelizer Structures 
+Directed by Cyclostationary Detector}
 
 \vfill
 
@@ -83,8 +85,8 @@ Copyright 2015, Brian H. Hulette
 \thispagestyle{empty}
 \begin{center}
 
-{\large Simulation of Cyclostationary Detector
-Directed Polyphase Analysis/Synthesis Channelizer}
+{\large Simulation of Various Channelizer Structures 
+Directed by Cyclostationary Detector}
 
 \vfill
 
@@ -98,20 +100,27 @@ Brian H. Hulette
 
 \end{center}
 
+A common problem in Software-Defined Radio (SDR) systems is the problem of
+detecting and tuning narrow signals of interest in acquired wideband data. This
+involves using some means to detect the frequency of one or more signals of
+interest and then tuning, filtering, and decimating them. This problem is
+particularly challenging due to the high sample rate of this wideband data,
+so efficient algorithms are very desirable.
+
 A MATLAB simulation of an SDR framework for detecting and subband tuning
-channelized signals is presented.  Detection is performed using cyclic spectra
-at various baud rates of interest.  These detections are then used to direct a
-channelizer which will tune, filter, and decimate all of the detected signals.
+channelized signals is presented.  Detection is performed using the
+spectral-correlation density function [gardner].  These detections are then used to direct
+a channelizer which will tune, filter, and decimate all of the detected signals.
 Two different channelizer structures are examined - a polyphase
 analysis/synthesis channelizer [harris] and an overlap-save filter bank
 [Borgerding]. This framework has applications in both Cognitive Radio and
 Electronic Warfare.
 
 A summary of relevant background information is provided.  This includes a
-discussion of cyclostationarity and the cyclic spectrum as well as background
-on both channelizer structures. For the overlap-save filter bank it will be 
-shown that in many cases computation can be saved by re-using the FFT computed
-for the cyclostationary detector.
+discussion of cyclostationarity and the spectral-correlation density function
+as well as background on both channelizer structures. For the overlap-save
+filter bank it will be shown that in many cases computation can be saved by
+re-using the FFT computed for the cyclostationary detector.
 
 In this simulation simple QPSK signals are used to model the signals of 
 interest, but the framework is applicable to any modulation or signal type
@@ -174,6 +183,33 @@ In Chapter~\ref{sec:cyclo} I will provide background information on cyclostation
 \chapter{Cyclostationary Detection}
 \label{sec:cyclo}
 \markright{Brian H. Hulette \hfill Chapter \ref{sec:cyclo}. Cyclostationary Detection \hfill}
+
+\section{Cyclostationarity}
+\label{sec:cyclo_prop}
+Often signals are modeled as stochastic random processes with properties such as
+mean and variance, but many man-made signals, particularly digital communications,
+can be modeled with another second-order statistical property called
+\emph{cyclostationarity}. This is simply a property that implies the
+auto-correlation function fluctuates at a particular rate\cite{Gardner1}.
+% Gardner1 = Exploitation of Spectral Redundancy in Cyclostationary Signals
+
+
+\section{Exploiting Cyclostationarity for Detection}
+\label{sec:exploit_cyc}
+For the problem defined in Chapter \ref{sec:intro} we can define the wideband
+signal $W(t)$ as the sum of $N$ cyclostationary signals, tuned to
+various frequencies, in an AWGN channel:
+\begin{IEEEeqnarray*}{lCl}
+    W(t) & = & \sum C_{i}(t) e^{j 2 \pi f_i t} + N(t)
+\end{IEEEeqnarray*}
+
+Where the $C_i(t)$ are cyclostationary random processes at various baud rates,
+tuned to corresponding frequencies $f_i$ and $N(t)$ is the AWGN.
+
+We would like to exploit the cyclostationarity of the $C_i$ waveforms to
+identify the frequency, $f_i$, of those waveforms which are transmitted at a
+specific baud rate.
+
 
 \chapter{Channelizer Structures}
 \label{sec:chan}
