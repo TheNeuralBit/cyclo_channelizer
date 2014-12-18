@@ -100,34 +100,14 @@ Brian H. Hulette
 
 \end{center}
 
-A common problem in Software-Defined Radio (SDR) systems is the problem of
-detecting and tuning narrow signals of interest in acquired wideband data. This
-involves using some means to detect the frequency of one or more signals of
-interest and then tuning, filtering, and decimating them. This problem is
-particularly challenging due to the high sample rate of this wideband data,
-so efficient algorithms are very desirable.
+One common problem in Software-Defined Radio (SDR) systems is the problem of detecting and then isolating narrow signals of interest in wideband sampled data. This involves using some means to detect the frequency of one or more signals of interest and then tuning, filtering, and decimating them. This problem is particularly challenging due to the high sample rate of this wideband data, so efficient algorithms are very desirable. Solutions to this problem have applications in many areas, including both Cognitive Radio and Electronic Warfare.
 
-A MATLAB simulation of an SDR framework for detecting and subband tuning
-channelized signals is presented.  Detection is performed using the
-spectral-correlation density function [gardner].  These detections are then used to direct
-a channelizer which will tune, filter, and decimate all of the detected signals.
-Two different channelizer structures are examined - a polyphase
-analysis/synthesis channelizer [harris] and an overlap-save filter bank
-[Borgerding]. This framework has applications in both Cognitive Radio and
-Electronic Warfare.
+A MATLAB simulation of an SDR framework for detecting and sub-band tuning channelized signals is presented, with a focus on finding an efficient means to combine the two algorithms. Detection is performed using the spectral-correlation density function which exploits the cyclostationary property of digital signals \cite{Gardner1}.  These detections are then used to direct a channelizer which will tune, filter, and decimate all of the detected signals. Two different channelizer structures are examined – a polyphase analysis/synthesis channelizer \cite{Harris1} and an overlap-save filter bank \cite{Borgerding1}.
 
-A summary of relevant background information is provided.  This includes a
-discussion of cyclostationarity and the spectral-correlation density function
-as well as background on both channelizer structures. For the overlap-save
-filter bank it will be shown that in many cases computation can be saved by
-re-using the FFT computed for the cyclostationary detector.
+A summary of relevant background information is provided.  This includes a discussion of cyclostationarity and the spectral-correlation density function as well as background on both channelizer structures. For the overlap-save filter bank it will be shown that in many cases computation can be saved by using the same FFT computation for both the cyclostationary detector and the channelizer.
 
-In this simulation simple QPSK signals are used to model the signals of 
-interest, but the framework is applicable to any modulation or signal type
-that has cyclostationary features - which is true of most digital signals. 
-While other means of signal detection may be more reliable for specific signals,
-a cyclostationary detector's primary strength is its ability to function for many
-different digital signals.
+In this simulation, simple QPSK signals are used to model the signals of interest, but the framework is applicable to any modulation or signal type that has cyclostationary features. While other means of signal detection may be more reliable for specific signals, a cyclostationary detector's primary strength is its ability to function for many different types of digital signals.
+
 
 \vfill
 
@@ -220,6 +200,9 @@ frequency, $\alpha$. \cite{Gardner1}.
 % Gardner1 = Exploitation of Spectral Redundancy in Cyclostationary Signals
 % Oner1 = Cyclostationarity Based Air Interface Recognition for Software Radio Systems
 % Gardner2 = Spectral Correlation of Modulated Signals: Part II - Digital Modulation
+% Harris1 = Digital Receivers and Transmitters Using Polyphase
+Filter Banks for Wireless Communications
+% Borgerding1 = Turning Overlap-Save into a Multiband Mixing, Downsampling Filter Bank
 
 Of particular interest is second-order cyclostationarity, where a signal has a
 periodic autocorrelation:
