@@ -170,15 +170,39 @@ Finally I would like to thank my friends and family, particularly my girlfriend 
 \label{sec:intro}
 \markright{Brian H. Hulette \hfill Chapter \ref{sec:intro}. Introduction \hfill}
 
-A common problem when designing a Software-Defined Radio (SDR) system is the problem of detecting and tuning signals of interest. A typical SDR will sample at a relatively high rate to acquire a wideband signal. Then it will attempt to detect the channels that contain frequencies of interest, and then tune, filter, decimate, and demodulate those signals. 
+A common problem when designing a Software-Defined Radio (SDR) system is the
+problem of detecting and tuning signals of interest. A typical SDR will sample
+at a relatively high rate to acquire a wideband signal. Then it will attempt to
+detect the channels within the acquired frequency range that contain signals of
+interest, and then tune, filter, decimate, and demodulate those signals. 
 
 %TODO: links to SDR frameworks (webSDR)
 %TODO: image of SDR plotting
-Many popular SDR applications perform this detection step with a "man-in-the-loop".  A falling raster of the wideband data is presented and the man-in-the-loop will "click-tune" to select  the frequencies that (s)he would like to process. One common version of this is to acquire a wideband slice of the HAM radio spectrum and then click tune to different frequencies to demodulate new FM Push-to-Talk signals and listen to them.
+Many popular SDR applications perform this detection step with a
+"man-in-the-loop".  A falling raster of the wideband data is presented and the
+man-in-the-loop will "click-tune" to select  the frequencies that (s)he would
+like to process. One common version of this is to acquire a wideband slice of
+the HAM radio spectrum and then click tune to different frequencies to
+demodulate new FM Push-to-Talk signals and listen to them.
 
-In this paper I will investigate and simulate a structure that automates this process - but rather than working for a single analog signal, this framework is intended for an arbitrary number of digital signals. Detection is performed by a cyclostationary detector rather than by a man-in-the-loop, in order to exploit the cyclostationary properties exhibited by most digital signals with a fixed baud rate.  Tuning, filtering, and decimating is performed by a channelizer, so that many signals can be processed at once.  I will examine two different channelizer structures. They will be compared on two important criteria: 1) Their ability to accurately reproduce every detected signal, and 2) Their computational efficiency when combined with a cyclostationary detector.
+In this paper I will investigate and simulate a structure that automates this
+process - but rather than working for a single analog signal, this framework is
+intended for an arbitrary number of digital signals. Detection is performed by
+a cyclostationary detector rather than by a man-in-the-loop, in order to exploit
+the cyclostationary properties exhibited by most digital signals with a fixed
+symbol rate.  Tuning, filtering, and decimating is performed by a channelizer, so
+that many signals can be processed at once.  I will examine two different
+channelizer structures. They will be compared on two important criteria:
+1) Their ability to accurately reproduce every detected signal, and 2) Their
+computational efficiency when combined with a cyclostationary detector.
 
-In Chapter~\ref{sec:cyclo} I will provide background information on cyclostationary properties and the cyclic spectra upon which my detector relies.  Chapter~\ref{sec:chan} discusses and compares both of the channelizer structures that I will simulate. Chapter~\ref{sec:sim}  discusses the MATLAB simulation I have created and the results of it. Finally, Chapter~\ref{sec:source} provides annotated source code for key parts of the simulation, as well as locations where the entire source code can be found.
+In Chapter~\ref{sec:cyclo} I will provide background information on
+cyclostationary properties and the cyclic spectra upon which my detector relies.
+Chapter~\ref{sec:chan} discusses and compares both of the channelizer structures
+that I will simulate. Chapter~\ref{sec:sim}  discusses the MATLAB simulation I 
+have created and the results of it. Finally, Chapter~\ref{sec:source} provides
+annotated source code for key parts of the simulation, as well as locations
+where the entire source code can be found.
 
 \chapter{Cyclostationary Detection}
 \label{sec:cyclo}
@@ -188,27 +212,65 @@ In Chapter~\ref{sec:cyclo} I will provide background information on cyclostation
 \label{sec:cyclo_prop}
 Often signals are modeled as stochastic random processes with properties such as
 mean and variance, but many man-made signals, particularly digital communications,
-can be modeled with another second-order statistical property called
-\emph{cyclostationarity}. This is simply a property that implies the
-auto-correlation function fluctuates at a particular rate\cite{Gardner1}.
+can be modeled with another statistical property called
+\emph{cyclostationarity} which implies the signal has some parameter which
+varies with time. The frequency of this variation is called the cyclic
+frequency, $\alpha$. \cite{Gardner1}.
+
 % Gardner1 = Exploitation of Spectral Redundancy in Cyclostationary Signals
+% Oner1 = Cyclostationarity Based Air Interface Recognition for Software Radio Systems
+% Gardner2 = Spectral Correlation of Modulated Signals: Part II - Digital Modulation
 
+Of particular interest is second-order cyclostationarity, where a signal has a
+periodic autocorrelation:
 
-\section{Exploiting Cyclostationarity for Detection}
-\label{sec:exploit_cyc}
-For the problem defined in Chapter \ref{sec:intro} we can define the wideband
-signal $W(t)$ as the sum of $N$ cyclostationary signals, tuned to
-various frequencies, in an AWGN channel:
 \begin{IEEEeqnarray*}{lCl}
-    W(t) & = & \sum C_{i}(t) e^{j 2 \pi f_i t} + N(t)
+    R_{xx}(t, t+\tau) = E\{x(t)x^*(t+\tau)\} = \sum_{\alpha} R_{xx}^{\alpha}(\tau)e^{j2 \pi \alpha t}
 \end{IEEEeqnarray*}
 
-Where the $C_i(t)$ are cyclostationary random processes at various baud rates,
-tuned to corresponding frequencies $f_i$ and $N(t)$ is the AWGN.
+% TODO more detail here based on Oner1
 
-We would like to exploit the cyclostationarity of the $C_i$ waveforms to
-identify the frequency, $f_i$, of those waveforms which are transmitted at a
-specific baud rate.
+\begin{IEEEeqnarray*}{lCl}
+    R_{xx}^{\alpha}(\tau) = \lim_{T \to \infty} \frac{1}{T}\int_{-T/2}^{T/2} R_{xx}(t, t+\tau)e^{-j2\pi \alpha t} dt
+\end{IEEEeqnarray*}
+% TODO: reference papers that perform time domain detection (listed in "Energy Efficient Spectrum Sensing using Cyclostationarity")
+% "Cyclostationary Based Air Interface Recognition For Software Radio Systems" is also a time domain approach
+The cyclic autocorrelation function (CAF), given by $R_{xx}^{\alpha}(\tau)$, can
+be used for signal detection in the time domain. An estimate of the 2D function
+versus $\alpha$ and $\tau$ can be computed, then features within this plane can be
+detected. However, what I am interested in is the fourier transform of the CAF,
+called the Spectral Correlation Density (SCD):
+
+\begin{IEEEeqnarray*}{lCl}
+    S_{xx}(\alpha, f) = \int_{-\infty}^{\infty} R_{xx}^{\alpha}(\tau)e^{-j2\pi f \tau} d\tau
+\end{IEEEeqnarray*}
+
+The SCD is a generalization of the conventional PSD, which it reduces to at $\alpha=0$
+\cite{Oner1}. Like the CAF, the SCD also contains unique features based on the modulation
+type, symbol rate, and carrier frequency of the transmitted signal, which we can
+exploit for signal detection. In \cite{Gardner2}, Gardner defines this SCD for
+various basic modulation types, including QPSK, which is used in my simulation.
+
+%\section{Exploiting Cyclostationarity for Detection}
+%\label{sec:exploit_cyc}
+%For the problem defined in Chapter \ref{sec:intro} we can define the wideband
+%signal $W(t)$ as the sum of $N$ cyclostationary signals, tuned to
+%various frequencies, in an AWGN channel:
+%\begin{IEEEeqnarray*}{lCl}
+%    W(t) & = & \sum C_{i}(t) e^{j 2 \pi f_i t} + N(t)
+%\end{IEEEeqnarray*}
+%
+%Where the $C_i(t)$ are cyclostationary random processes at various symbol rates,
+%tuned to corresponding frequencies $f_i$ and $N(t)$ is the AWGN.
+%
+%We would like to exploit the cyclostationarity of the $C_i$ waveforms to
+%identify the frequency, $f_i$, of those waveforms which are transmitted at a
+%specific symbol rate.
+
+\section{Estimating the SCD}
+% Use Gardner1 to show that SCD is conjugate multiplication of frequency shifted spectra
+
+% Discuss possibility of circular shifting a forward FFT to estimate SCD slice
 
 
 \chapter{Channelizer Structures}
