@@ -14,7 +14,7 @@ Core Goals
     - [ ] Figure out why channels are offset by half channel spacing
     - [X] Fix channelized output first and second halves being switched
 - [X] Create simple synthesis channelizer for recombining adjacent channels
-    - [ ] Create synthesis channelizer test
+    - [X] Create synthesis channelizer test
     - [ ] Perfect reconstruction filter?
 - [ ] Create combination synthesis/analysis channelizer
 - [X] Try to do cyclo detect with only one FFT (by aligning baud and fft spacing)
@@ -26,6 +26,8 @@ Core Goals
 - [ ] Rolloff filter faster? Why are we getting aliasing from neighboring channels
     - Seems like filter is sharp enough... tried just filtering a single channel and downsampling and everything was fine
     - Definitely related to the goofy sidebands we get in "test_synthesis_chan"... If I can figure that out I think we're golden
+- [X] Create overlap-save channelizer
+- [ ] Compute graph of Pd vs Pfa vs SNR empirically
 
 
 Extras
