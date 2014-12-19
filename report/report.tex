@@ -36,6 +36,8 @@
 
 \begin{document}
 
+\newcommand{\fourier}{\mathcal{F}}
+
 \thispagestyle{empty}
 \pagenumbering{roman}
 \begin{center}
@@ -100,13 +102,37 @@ Brian H. Hulette
 
 \end{center}
 
-One common problem in Software-Defined Radio (SDR) systems is the problem of detecting and then isolating narrow signals of interest in wideband sampled data. This involves using some means to detect the frequency of one or more signals of interest and then tuning, filtering, and decimating them. This problem is particularly challenging due to the high sample rate of this wideband data, so efficient algorithms are very desirable. Solutions to this problem have applications in many areas, including both Cognitive Radio and Electronic Warfare.
+One common problem in Software-Defined Radio (SDR) systems is the problem of
+detecting and then isolating narrow signals of interest in wideband sampled
+data. This involves using some means to detect the frequency of one or more
+signals of interest and then tuning, filtering, and decimating them. This
+problem is particularly challenging due to the high sample rate of this
+wideband data, so efficient algorithms are very desirable. Solutions to this
+problem have applications in many areas, including both Cognitive Radio and
+Electronic Warfare.
 
-A MATLAB simulation of an SDR framework for detecting and sub-band tuning channelized signals is presented, with a focus on finding an efficient means to combine the two algorithms. Detection is performed using the spectral-correlation density function which exploits the cyclostationary property of digital signals \cite{Gardner1}.  These detections are then used to direct a channelizer which will tune, filter, and decimate all of the detected signals. Two different channelizer structures are examined – a polyphase analysis/synthesis channelizer \cite{Harris1} and an overlap-save filter bank \cite{Borgerding1}.
+A MATLAB simulation of an SDR framework for detecting and sub-band tuning
+channelized signals is presented, with a focus on finding an efficient means to
+combine the two algorithms. Detection is performed using the
+spectral-correlation density function which exploits the cyclostationary
+property of digital signals \cite{Gardner1}.  These detections are then used to
+direct a channelizer which will tune, filter, and decimate all of the detected
+signals. Two different channelizer structures are examined – a polyphase
+analysis/synthesis channelizer \cite{Harris1} and an overlap-save filter bank
+\cite{Borgerding1}.
 
-A summary of relevant background information is provided.  This includes a discussion of cyclostationarity and the spectral-correlation density function as well as background on both channelizer structures. For the overlap-save filter bank it will be shown that in many cases computation can be saved by using the same FFT computation for both the cyclostationary detector and the channelizer.
+A summary of relevant background information is provided.  This includes
+a discussion of cyclostationarity and the spectral-correlation density function
+as well as background on both channelizer structures. For the overlap-save
+filter bank it will be shown that in many cases computation can be saved by
+using the same FFT computation for both the cyclostationary detector and the
+channelizer.
 
-In this simulation, simple QPSK signals are used to model the signals of interest, but the framework is applicable to any modulation or signal type that has cyclostationary features. While other means of signal detection may be more reliable for specific signals, a cyclostationary detector's primary strength is its ability to function for many different types of digital signals.
+In this simulation, simple QPSK signals are used to model the signals of
+interest, but the framework is applicable to any modulation or signal type that
+has cyclostationary features. While other means of signal detection may be more
+reliable for specific signals, a cyclostationary detector's primary strength is
+its ability to function for many different types of digital signals.
 
 
 \vfill
@@ -122,17 +148,19 @@ In this simulation, simple QPSK signals are used to model the signals of interes
 % Dedication and Acknowledgments are both optional
 % \chapter*{Dedication}
 \chapter*{Acknowledgments}
-I would like to acknowledge the work of both Craig Carlson and Ruth Stoehr. Much of the source for this project for both generating and processing a simple 
-QPSK signal came from the ECE5654 project which we completed in the Spring 
-of 2013.
+I would like to acknowledge the work of both Craig Carlson and Ruth Stoehr.
+Much of the source for this project for both generating and processing a simple
+QPSK signal came from the ECE5654 project which we completed in the Spring of
+2013.
 
-I would like to thank my current employer, n~ask, inc., and all of my co-workers
-there for their support.
+I would like to thank my current employer, n~ask, inc., and all of my
+co-workers there for their support.
 
 I would also like to thank the members of my committee, particularly Dr.
 Zaghloul, for their seemingly endless patience and support.
 
-Finally I would like to thank my friends and family, particularly my girlfriend Meredith, for letting me use ``My Master's" as an excuse for nearly anything.
+Finally I would like to thank my friends and family, particularly my girlfriend
+Meredith, for letting me use ``My Masters" as an excuse for nearly anything.
 
 \tableofcontents
 \pagebreak
@@ -156,33 +184,34 @@ at a relatively high rate to acquire a wideband signal. Then it will attempt to
 detect the channels within the acquired frequency range that contain signals of
 interest, and then tune, filter, decimate, and demodulate those signals. 
 
-%TODO: links to SDR frameworks (webSDR)
-%TODO: image of SDR plotting
-Many popular SDR applications perform this detection step with a
-"man-in-the-loop".  A falling raster of the wideband data is presented and the
-man-in-the-loop will "click-tune" to select  the frequencies that (s)he would
-like to process. One common version of this is to acquire a wideband slice of
-the HAM radio spectrum and then click tune to different frequencies to
+%TODO: links to SDR frameworks (webSDR) TODO: image of SDR plotting
+Many popular SDR applications perform this detection step with
+a "man-in-the-loop".  A falling raster of the wideband data is presented and
+the man-in-the-loop will "click-tune" to select  the frequencies that (s)he
+would like to process. One common version of this is to acquire a wideband
+slice of the HAM radio spectrum and then click tune to different frequencies to
 demodulate new FM Push-to-Talk signals and listen to them.
 
 In this paper I will investigate and simulate a structure that automates this
 process - but rather than working for a single analog signal, this framework is
 intended for an arbitrary number of digital signals. Detection is performed by
-a cyclostationary detector rather than by a man-in-the-loop, in order to exploit
-the cyclostationary properties exhibited by most digital signals with a fixed
-symbol rate.  Tuning, filtering, and decimating is performed by a channelizer, so
-that many signals can be processed at once.  I will examine two different
-channelizer structures. They will be compared on two important criteria:
+a cyclostationary detector rather than by a man-in-the-loop, in order to
+exploit the cyclostationary properties exhibited by most digital signals with
+a fixed symbol rate.  Tuning, filtering, and decimating is performed by
+a channelizer, so that many signals can be processed at once.  I will examine
+two different channelizer structures. They will be compared on two important
+criteria:
 1) Their ability to accurately reproduce every detected signal, and 2) Their
 computational efficiency when combined with a cyclostationary detector.
+% TODO: list papers that discuss SCD for various protocols
 
 In Chapter~\ref{sec:cyclo} I will provide background information on
-cyclostationary properties and the cyclic spectra upon which my detector relies.
-Chapter~\ref{sec:chan} discusses and compares both of the channelizer structures
-that I will simulate. Chapter~\ref{sec:sim}  discusses the MATLAB simulation I 
-have created and the results of it. Finally, Chapter~\ref{sec:source} provides
-annotated source code for key parts of the simulation, as well as locations
-where the entire source code can be found.
+cyclostationary properties and the cyclic spectra upon which my detector
+relies.  Chapter~\ref{sec:chan} discusses and compares both of the channelizer
+structures that I will simulate. Chapter~\ref{sec:sim}  discusses the MATLAB
+simulation I have created and the results of it. Finally,
+Chapter~\ref{sec:source} provides annotated source code for key parts of the
+simulation, as well as locations where the entire source code can be found.
 
 \chapter{Cyclostationary Detection}
 \label{sec:cyclo}
@@ -197,11 +226,11 @@ can be modeled with another statistical property called
 varies with time. The frequency of this variation is called the cyclic
 frequency, $\alpha$. \cite{Gardner1}.
 
+% TODO: make a real bibliography
 % Gardner1 = Exploitation of Spectral Redundancy in Cyclostationary Signals
 % Oner1 = Cyclostationarity Based Air Interface Recognition for Software Radio Systems
 % Gardner2 = Spectral Correlation of Modulated Signals: Part II - Digital Modulation
-% Harris1 = Digital Receivers and Transmitters Using Polyphase
-Filter Banks for Wireless Communications
+% Harris1 = Digital Receivers and Transmitters Using Polyphase Filter Banks for Wireless Communications
 % Borgerding1 = Turning Overlap-Save into a Multiband Mixing, Downsampling Filter Bank
 
 Of particular interest is second-order cyclostationarity, where a signal has a
@@ -218,21 +247,22 @@ periodic autocorrelation:
 \end{IEEEeqnarray*}
 % TODO: reference papers that perform time domain detection (listed in "Energy Efficient Spectrum Sensing using Cyclostationarity")
 % "Cyclostationary Based Air Interface Recognition For Software Radio Systems" is also a time domain approach
-The cyclic autocorrelation function (CAF), given by $R_{xx}^{\alpha}(\tau)$, can
-be used for signal detection in the time domain. An estimate of the 2D function
-versus $\alpha$ and $\tau$ can be computed, then features within this plane can be
-detected. However, what I am interested in is the fourier transform of the CAF,
-called the Spectral Correlation Density (SCD):
+The cyclic autocorrelation function (CAF), given by $R_{xx}^{\alpha}(\tau)$,
+can be used for signal detection in the time domain. An estimate of the 2D
+function versus $\alpha$ and $\tau$ can be computed, then features within this
+plane can be detected. However, what I am interested in is the fourier
+transform of the CAF, called the Spectral Correlation Density (SCD):
 
 \begin{IEEEeqnarray*}{lCl}
     S_{xx}(\alpha, f) = \int_{-\infty}^{\infty} R_{xx}^{\alpha}(\tau)e^{-j2\pi f \tau} d\tau
 \end{IEEEeqnarray*}
 
-The SCD is a generalization of the conventional PSD, which it reduces to at $\alpha=0$
-\cite{Oner1}. Like the CAF, the SCD also contains unique features based on the modulation
-type, symbol rate, and carrier frequency of the transmitted signal, which we can
-exploit for signal detection. In \cite{Gardner2}, Gardner defines this SCD for
-various basic modulation types, including QPSK, which is used in my simulation.
+The SCD is a generalization of the conventional PSD, which it reduces to at
+$\alpha=0$ \cite{Oner1}. Like the CAF, the SCD also contains unique features
+based on the modulation type, symbol rate, and carrier frequency of the
+transmitted signal, which we can exploit for signal detection. In
+\cite{Gardner2}, Gardner defines this SCD for various basic modulation types,
+including QPSK, which is used in my simulation.
 
 %\section{Exploiting Cyclostationarity for Detection}
 %\label{sec:exploit_cyc}
@@ -252,8 +282,41 @@ various basic modulation types, including QPSK, which is used in my simulation.
 
 \section{Estimating the SCD}
 % Use Gardner1 to show that SCD is conjugate multiplication of frequency shifted spectra
+% TODO:
+% - cyclic wiener relation on Gardner1 pg. 153
+% - attempts to derive in lab notebook pg. 20-21
+Thus we can compute a discrete slice of the SCD at cyclic freqency $\alpha$ as
+the cross spectral density of the two frequency-shifted time sequences
+$x_L(t) = x(t)e^{j\pi\alpha t}$ and $x_U(t) = x(t)e^{-j\pi\alpha t}$. The cross
+spectral density of these two sequences is equivalent to the conjugate
+multiplication of their individual fourier transforms:
+
+\begin{IEEEeqnarray*}{lCl}
+    S_{xx}(\alpha, f) & = & \fourier \{ X_L(f)X_U^* (f) \} \\
+                      & = & \fourier \{ X(f - \alpha/2)X_U^*(f + \alpha/2) \}
+\end{IEEEeqnarray*}
 
 % Discuss possibility of circular shifting a forward FFT to estimate SCD slice
+This means that we can compute $S_{xx}(\alpha, f)$ using a single forward FFT
+by shifting the spectrum in either direction by $\alpha/2$, and then conjugate
+multiplying the two shifted spectra together. This is significant, since a
+forward FFT of the acquired data is useful for other operations, such as
+channelization, as we will see in Section \ref{sec:poly_chan}.
+
+Of course there is a caveat. In order to perform this shift accurately using an
+FFT we need to circular shift the FFT by an integer number of bins.  This
+means we can only accurately perform this frequency shift when $\alpha/2$ is
+a multiple of the FFT resolution.  Thus $\alpha$ must satisfy the following
+relationship:
+\begin{IEEEeqnarray*}{lCl}
+    \alpha = \frac{2kf_s}{N_{fft}} \text{, } k \in \mathbb{Z}
+\end{IEEEeqnarray*}
+
+If an estimate of the SCD at a cyclic frequency that does not satisfy this
+relation is required, then we must perform the frequency shift in the time
+domain to be perfectly accurate. Alternatively, we can still use a single
+forward FFT and approximate the shift by interpolating between bins, but this
+is only an approximation.
 
 
 \chapter{Channelizer Structures}
