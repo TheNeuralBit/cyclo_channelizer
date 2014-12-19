@@ -292,16 +292,16 @@ spectral density of these two sequences is equivalent to the conjugate
 multiplication of their individual fourier transforms:
 
 \begin{IEEEeqnarray*}{lCl}
-    S_{xx}(\alpha, f) & = & \fourier \{ X_L(f)X_U^* (f) \} \\
-                      & = & \fourier \{ X(f - \alpha/2)X_U^*(f + \alpha/2) \}
+    S_{xx}(\alpha, f) & = & X_L(f)X_U^* (f) \\
+                      & = & X(f - \alpha/2)X^*(f + \alpha/2)
 \end{IEEEeqnarray*}
 
 % Discuss possibility of circular shifting a forward FFT to estimate SCD slice
 This means that we can compute $S_{xx}(\alpha, f)$ using a single forward FFT
 by shifting the spectrum in either direction by $\alpha/2$, and then conjugate
-multiplying the two shifted spectra together. This is significant, since a
-forward FFT of the acquired data is useful for other operations, such as
-channelization, as we will see in Section \ref{sec:poly_chan}.
+multiplying the two shifted spectra together. This is significant, since
+a simple forward FFT of the acquired data is useful for other operations, such
+as channelization, as we will see in Section \ref{sec:poly_chan}.
 
 Of course there is a caveat. In order to perform this shift accurately using an
 FFT we need to circular shift the FFT by an integer number of bins.  This
