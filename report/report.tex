@@ -170,8 +170,8 @@ Meredith, for letting me use ``My Masters" as an excuse for nearly anything.
 \listoffigures
 \pagebreak
 
-\listoftables
-\pagebreak
+%\listoftables
+%\pagebreak
 
 \pagenumbering{arabic}
 \pagestyle{myheadings}
@@ -329,7 +329,7 @@ is only an approximation.
 
 \section{Overlap-save Filter Bank}
 \label{sec:filter_bank}
-The ``overlap-save filter bank" structure tht I use is based entirely on
+The ``overlap-save filter bank" structure that I use is based entirely on
 a description by Mark Borgerding from March 2006 \cite{Borgerding1}.
 Borgerding's concept is based on the well known Overlap-Save fast convolution
 technique.
@@ -344,11 +344,37 @@ There is nothing new about this idea, but Borgerding's innovation is that he
 shows how to extend this concept to tune, filter and decimate any number of
 channels with arbitrary frequencies and bandwidths.
 
+For my description, I will use the same terms that Borgerding defines:
+
+\begin{tabular}{ll}
+    $x(n)$        & Input data \\
+    $h(n)$        & Baseband filter response \\
+    $y(n)$        & Tuned, filtered and decimated output data \\
+    $P$           & Length of $h(n)$ \\
+    $N$           & FFT size \\
+    $D$           & Decimation factor \\
+    $V = N/(P-1)$ & Ratio of FFT size to filter order \\
+\end{tabular}
+
+\begin{figure}[h!]
+\centerline{
+    \subfloat[Performing frequency shift by circular shifting the FFT output]
+    {\includegraphics[width=0.45\textwidth]{overlap_save_shift}%
+    \label{fig:overlap_save_shift}}
+    \hfill
+    \subfloat[Performing precise frequency shift in the time-domain]
+    {\includegraphics[width=0.45\textwidth]{overlap_save_time_domain}%
+    \label{fig:overlap_save_time_domain}}
+}
+\caption{Overlap-Save Filter Bank Structures}
+\label{fig:overlap_save_filter_banks}
+\end{figure*}
+
 \emph{Tuning:} If the frequency of the signal of interest corresponds to one of
 the FFT bins then we can simply circular shift the FFT output to place that bin
 at the center. Then filtering can be performed at baseband.  If all channels
 satisfy this criteria then we can re-use a single forward FFT for every
-channel, simply by circular shifting it to the appropriate bin in every case.
+channel, simply by circular shifting it to the appropriate bin in every case. This approach is shown in Figure \ref{fig:overlap_save_shift}
 
 However, if this condition is not satisfied then we will need to perform the
 frequency shift in the time domain by multiplying by a complex phasor.
@@ -356,21 +382,77 @@ Fortunately, there is a still a way to re-use the forward FFT in this case.
 After taking an FFT of the non frequency-shifted signal we can shift the
 baseband filter response up to the desired frequency, then after the filtered
 signal is IFFT'd back into the time domain, we perform the frequency shift with
-the complex phasor.  This has the added benefit that the frequency shift is
-performed after decimation.
+a complex phasor.  This is even better than frequency shifting before the
+forward FFT since the multiplication is performed after decimation. This
+approach is shown in Figure \ref{fig:overlap_save_time_domain}.
 
+\emph{Decimation:} Following the frequency domain filtering we have two
+different options for decimation. The first option is to perform a full size
+inverse FFT of the output, and then decimate in the time domain. The issue with
+this approach is that we are computing a larger inverse FFT than we really need
+to. As a solution to this, Borgerding suggests decimating in the frequency
+domain. The approach (called ``Wrap/Sum" in Figure
+\ref{fig:overlap_save_filter_banks}) is simple: coherently add together the aliased
+components of the frequency spectrum.  For example, if the FFT size is 1024 and
+we need to decimate by a factor of 4, then coherently sum FFT samples 0 to 255,
+256 to 511, 512 to 767 and 768 to 1024.  The result is a 256 sample frequency
+spectrum which we can now inverse FFT to produce the decimated output. The only
+trick with this approach is that we must discard just $(P-1)/D$ samples rather
+than $P-1$ to accont for the overlap.  This reveals one restriction of this
+structure: the filter order $P-1$ must be an integer multiple of the
+decimation, $D$.
 
-\begin{figure}[h!]
-\centerline{
-    \subfloat[ARQ]{\includegraphics[width=0.45\textwidth]{overlap_save_shift}%
-    \label{fig:overlap_save_shift}}
-    \hfill
-    \subfloat[HARQ Type I]{\includegraphics[width=0.45\textwidth]{overlap_save_time_domain}%
-    \label{fig:overlap_save_time_domain}}
-}
-\caption{HARQ Techniques}
-\label{fig:arq_types}
-\end{figure*}
+\subsection{Limitations}
+\label{sec:os_limitations}
+There are a few limitations of this structure that are worth mentioning. First,
+as mentioned earlier, the filter order $P-1$ must be an integer multiple of the
+decimation factor $D$. This problem is pretty easy to solve though, simply
+zero-pad the filter to achieve an appropriate length. Another limitation that
+is potentially challenging is that the FFT size, $N$, must be an integer
+multiple of the decimation rate, $D$. So decimation rates whose prime factors
+are larger than 2 or 5 (or others, depending on the FFT implementation) could
+lead to FFT inefficency for this structure.
+
+One more limitation occurs when attempting to rotate the FFT to frequency shift.
+As previously mentioned, the precision of the frequency shift is limited by the
+resolution of the FFT. However, the precision is also limited further by the
+ratio of FFT size to filter order, $V$. This is because we must restrict mixing
+to the frequencies whose period completes in $L=N-(P-1)$ samples. Borgerding
+provides the following equation for computing the number of FFT bins to rotate
+to shift to frequency $f$ (\cite{Borgerding1} Equation (1)):
+
+\begin{equation*}
+    N_{rot} = \text{round}\left( \frac{Nf}{Vf_s} \right) V
+\end{equation*}
+
+Where $f_s$ is the base sample rate. This equation simply adjusts $N_{rot}$ to
+the nearest multiple of $V$ bins. It is worth noting that my solution for
+making $P-1$ an integer multiple of $D$ is only making this problem worse by
+making $V$ larger - but there's nothing to be done about that other than opting
+for a shorter filter.
+
+\subsection{Combining with SCD Estimation}
+\label{sec:os_scd_estimation}
+
+The greatest benefit of the Overlap-Save Filter Bank for this application is
+the ease with which it can be combined with SCD Estimation for cyclostationary
+detection. Obviously, the first step for both algorithms is a forward FFT of the
+wideband input. If we were to design a joint cyclostationary
+detector/Overlap-Save Filter Bank we could re-use the same forward FFT for both
+algorithms.
+
+The only design challenge (which is certainly significant) is finding
+a combination of FFT size, sample rate, and decimation factor that will work
+for both algorithms.
+
+% TODO: Analysis of this problem. Decimation factor is related to alpha by the amount of oversampling.
+% Started this analysis a bit in lab notebook pg. 23
+
+%We can say that the output sample rate is some integer multiple of the symbol rate:
+%\begin{equation}
+%    f_s' = \beta \alpha \text{, } \beta = 1,2,\hdots
+%\end{equation}
+%Where the integer multiple $\beta$ is simply the amount of oversampling. Then we can 
 
 \chapter{Simulation}
 \label{sec:sim}
@@ -390,16 +472,16 @@ performed after decimation.
 %
 % Do tables like this:
 
- \begin{table}
- \caption{The Graduate School wants captions above the tables.}
-\begin{center}
- \begin{tabular}{ccc}
- x & 1 & 2 \\ \hline
- 1 & 1 & 2 \\
- 2 & 2 & 4 \\ \hline
- \end{tabular}
-\end{center}
- \end{table}
+% \begin{table}
+% \caption{The Graduate School wants captions above the tables.}
+%\begin{center}
+% \begin{tabular}{ccc}
+% x & 1 & 2 \\ \hline
+% 1 & 1 & 2 \\
+% 2 & 2 & 4 \\ \hline
+% \end{tabular}
+%\end{center}
+% \end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -409,14 +491,14 @@ performed after decimation.
 % Otherwise, uncomment the following:
 % \chapter*{Bibliography}
 
-% \appendix
+\appendix
 
 % In LaTeX, each appendix is a "chapter"
 \chapter{Project Source}
 \label{sec:source}
 \markright{Brian H. Hulette \hfill Chapter \ref{sec:source}. Project Source \hfill}
 % TODO: make sure this is a link - and make the project public!
-The full source is hosted on GitHub (\texttt{https://github.com/TheNeuralBit/cyclo\_channelizer}), but I will include some of the critical files below.
+The full source is hosted on GitHub (\texttt{https://github.com/TheNeuralBit/cyclo\_channelizer}). Some of the critical files are included in this appendix, below.
 
 \section{\texttt{cyclic\_spectrum.m}}
 \lstinputlisting{../cyclic_spectrum.m}
