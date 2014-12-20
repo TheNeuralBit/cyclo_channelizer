@@ -22,11 +22,11 @@ Core Goals
 - [ ] direct analysis/synthesis channelizer with cyclo detects
 - [ ] Speed up packetization if I still need it
 - [ ] ~~Try to use cyclo detect FFT for channelizer~~
-- [ ] Allow empty channels
 - [ ] Rolloff filter faster? Why are we getting aliasing from neighboring channels
     - Seems like filter is sharp enough... tried just filtering a single channel and downsampling and everything was fine
     - Definitely related to the goofy sidebands we get in "test_synthesis_chan"... If I can figure that out I think we're golden
-- [X] Create overlap-save channelizer
+- [X] Create overlap-save filter bank
+    - [ ] Make os filter bank work for N channels
 - [ ] Compute graph of Pd vs Pfa vs SNR empirically
 
 

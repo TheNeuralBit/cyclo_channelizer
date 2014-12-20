@@ -1,4 +1,3 @@
-%
 % PROJECT: <ETD> Electronic Thesis and Dissertation Initiative
 %   TITLE: LaTeX report template for ETDs in LaTeX
 %  AUTHOR: Neill Kipp, nkipp@vt.edu
@@ -11,7 +10,8 @@
 % keeping the style and formatting information intact.  More instructions
 % appear on the Web site listed above.
 
-\documentclass[12pt,dvips]{report}
+%\documentclass[12pt,dvips]{report}
+\documentclass[12pt]{report}
 
 \setlength{\textwidth}{6.5in}
 \setlength{\textheight}{8.5in}
@@ -32,6 +32,8 @@
 \usepackage[retainorgcmds]{IEEEtrantools}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{graphicx,dblfloatfix}
+\usepackage{subfig}
 
 
 \begin{document}
@@ -76,7 +78,7 @@ Falls Church, Virginia
 
 \vfill
 
-Keywords: Metaphysics, Information Retrieval, Spacecraft
+Keywords: SDR, Cyclostationarity, Detection, Channelizer
 \\
 Copyright 2015, Brian H. Hulette
 
@@ -327,6 +329,48 @@ is only an approximation.
 
 \section{Overlap-save Filter Bank}
 \label{sec:filter_bank}
+The ``overlap-save filter bank" structure tht I use is based entirely on
+a description by Mark Borgerding from March 2006 \cite{Borgerding1}.
+Borgerding's concept is based on the well known Overlap-Save fast convolution
+technique.
+
+% TODO cite Borgerdings [1]-[5] here for Overlap-Save?
+OS fast convolution can be used to speed up convolution with
+a filter that has a long impulse response. The concept is that rather than
+convolving in the time-domain - complexity $O(N^2)$ - it is faster to first
+perform an FFT of both the signal and the filter and multiply in the frequency
+domain, then IFFT to go back to the time domain - complexity $O(N\log_2N)$.
+There is nothing new about this idea, but Borgerding's innovation is that he
+shows how to extend this concept to tune, filter and decimate any number of
+channels with arbitrary frequencies and bandwidths.
+
+\emph{Tuning:} If the frequency of the signal of interest corresponds to one of
+the FFT bins then we can simply circular shift the FFT output to place that bin
+at the center. Then filtering can be performed at baseband.  If all channels
+satisfy this criteria then we can re-use a single forward FFT for every
+channel, simply by circular shifting it to the appropriate bin in every case.
+
+However, if this condition is not satisfied then we will need to perform the
+frequency shift in the time domain by multiplying by a complex phasor.
+Fortunately, there is a still a way to re-use the forward FFT in this case.
+After taking an FFT of the non frequency-shifted signal we can shift the
+baseband filter response up to the desired frequency, then after the filtered
+signal is IFFT'd back into the time domain, we perform the frequency shift with
+the complex phasor.  This has the added benefit that the frequency shift is
+performed after decimation.
+
+
+\begin{figure}[h!]
+\centerline{
+    \subfloat[ARQ]{\includegraphics[width=0.45\textwidth]{overlap_save_shift}%
+    \label{fig:overlap_save_shift}}
+    \hfill
+    \subfloat[HARQ Type I]{\includegraphics[width=0.45\textwidth]{overlap_save_time_domain}%
+    \label{fig:overlap_save_time_domain}}
+}
+\caption{HARQ Techniques}
+\label{fig:arq_types}
+\end{figure*}
 
 \chapter{Simulation}
 \label{sec:sim}
@@ -380,5 +424,7 @@ The full source is hosted on GitHub (\texttt{https://github.com/TheNeuralBit/cyc
 \lstinputlisting{../synthesis_channelizer.m}
 \section{\texttt{analysis\_channelizer.m}}
 \lstinputlisting{../analysis_channelizer.m}
+\section{\texttt{overlap\_save\_channelizer.m}}
+\lstinputlisting{../overlap_save_channelizer.m}
 
 \end{document}
