@@ -14,7 +14,7 @@ function [ dec2vect ] = create_dec2vect( K )
 dec2vect = zeros(2^K,K);
 for a = 1:2^K
     for b = 1:K
-        dec2vect(a,b) = bitget(a-1,b);
+        dec2vect(a,K-b+1) = bitget(a-1,b);
     end
 end
 
