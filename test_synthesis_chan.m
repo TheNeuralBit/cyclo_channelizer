@@ -7,7 +7,7 @@ input_bits = input_bits(1:numbits);
 
 tx = MyTransmitter(input_bits);
 t = 0:(1/F_S):((length(tx)-1)/F_S);
-tx = tx.*exp(1i.*2.*pi.*-F_S/2.*t); %Perform frequency shift 
+%tx = tx.*exp(1i.*2.*pi.*-F_S/2.*t); %Perform frequency shift 
 
 plot_spectrum(tx, F_S);
 
