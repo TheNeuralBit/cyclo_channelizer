@@ -20,10 +20,6 @@ tx = tx.*exp(1i.*2*pi.*F_S/2.*t); %Perform frequency shift
 figure;
 plot_spectrum(tx, F_S*UP);
 
-%bits = MyReceiver(tx);
-%binary_to_text_file(bits, 'test_0.txt');
-
-
 fprintf('\n');
 disp('Running Analysis Channelizer');
 disp('----------------------------');
@@ -42,7 +38,7 @@ for i=1:length(bauds)
     SAMPLES_PER_SYMBOL = F_S/bauds(i);
     recompute_configuration;
     bits = MyReceiver(channels(i,:));
-    fname = sprintf('test_%d.txt', i);
+    fname = sprintf('channel_%d.bits', i);
     fprintf('Writing %s...\n', fname);
     % Trim down to numbits, because we know anything after that is garbage
     % in the higher baud rate signals

@@ -14,10 +14,6 @@ plot_spectrum(tx, F_S*UP);
 t = 0:(1/F_S/UP):((length(tx)-1)/F_S/UP);
 %tx = tx.*exp(1i.*2*pi.*-F_S/4.*t); %Perform frequency shift 
 
-%bits = MyReceiver(tx);
-%binary_to_text_file(bits, 'test_0.txt');
-
-
 channel = overlap_save_channelizer(tx, .5E7, 4, F_S*UP, 1024);
 figure;
 plot_spectrum(channel, F_S);
@@ -25,7 +21,7 @@ plot_spectrum(channel, F_S);
 SAMPLES_PER_SYMBOL = 16;
 recompute_configuration;
 bits = MyReceiver(channel);
-fname = 'test.txt';
+fname = 'os_output.bits';
 fprintf('Writing %s...\n', fname);
 % Trim down to numbits, because we know anything after that is garbage
 % in the higher baud rate signals

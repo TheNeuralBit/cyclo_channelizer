@@ -12,7 +12,7 @@ t = 0:(1/F_S):((length(tx)-1)/F_S);
 plot_spectrum(tx, F_S);
 
 %perfect_bits = MyReceiver(tx);
-%binary_to_text_file(perfect_bits, 'perfect_bits.txt');
+%binary_to_text_file(perfect_bits, 'perfect.bits');
 %sum(abs(input_bits-perfect_bits'))/numbits*100
 
 channels = analysis_channelizer(tx, 2, F_S);
@@ -27,7 +27,5 @@ figure;
 plot_spectrum(output, F_S);
 
 reconstructed_bits = MyReceiver(output);
-binary_to_text_file(reconstructed_bits, 'reconstructed_bits.txt');
-size(input_bits)
-size(reconstructed_bits)
-sum(abs(input_bits-reconstructed_bits(1:numbits)'))/numbits*100
+binary_to_text_file(reconstructed_bits, 'reconstructed.bits');
+%sum(abs(input_bits-reconstructed_bits(1:numbits)'))/numbits*100
