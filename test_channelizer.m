@@ -5,14 +5,14 @@ numbits = 2048*10;
 input_bits = text_file_to_binary('tale_of_two_cities.txt');
 input_bits = input_bits(1:numbits);
 PN = 10;
-bauds = [F_S/8 F_S/4 F_S/16 F_S/8];
+bauds = [F_S/4 F_S/8 F_S/8 F_S/8];
 UP = length(bauds);
 
 tx = gen_test_sig(input_bits, PN, bauds);
 figure;
 plot_spectrum(tx, F_S*UP);
 t = 0:(1/F_S/UP):((length(tx)-1)/F_S/UP);
-tx = tx.*exp(1i.*2*pi.*-F_S/2.*t); %Perform frequency shift 
+tx = tx.*exp(1i.*2*pi.*F_S/2.*t); %Perform frequency shift 
 
 figure;
 plot_spectrum(tx, F_S*UP);

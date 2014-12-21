@@ -55,7 +55,6 @@ for i=1:packet_count;
 
     %% Fine Frequency Sync %%
     all_symbols(:,i) = window_phase_sync(equalized_packet, PHASE_WINDOW, MODULATION, SAMPLES_PER_SYMBOL, PULSE_SHAPE);
-
 end
 
 all_symbols = all_symbols(:).';
