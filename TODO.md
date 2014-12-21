@@ -25,7 +25,6 @@ Core Goals
     - RC rolloff
 - [ ] Create combination synthesis/analysis channelizer
 - [ ] direct analysis/synthesis channelizer with cyclo detects
-- [ ] Speed up packetization if I still need it
 - [ ] ~~Try to use cyclo detect FFT for channelizer~~
 - [X] Create overlap-save filter bank
     - [ ] Make os filter bank work for N channels
@@ -36,3 +35,4 @@ Extras
 ------
 - [ ] Experiment with morphological filter for peak extraction
 - [ ] Compute graph of Pd vs Pfa vs SNR empirically
+- [ ] Speed up packetization if I still need it
