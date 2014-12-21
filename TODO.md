@@ -29,6 +29,7 @@ Core Goals
 - [X] Create overlap-save filter bank
     - [ ] Make os filter bank work for N channels
 - [ ] Get channel input/output straight for synthesis/analysis channelizers (output from one should be able to go directly to the other)
+- [ ] Combine OS and cyclo_detect
 
 
 Extras
