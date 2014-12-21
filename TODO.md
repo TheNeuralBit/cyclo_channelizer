@@ -1,5 +1,6 @@
 Core Goals
 ----------
+- [ ] ~~Try to use cyclo detect FFT for channelizer~~
 - [X] Figure out simple channelizer
     - [X] Figure out why channels are offset by half channel spacing
         - Because thats how the channelizer works - valid frequencies are integer multiples of the output sample rate (since we rely on aliasing for tuning)
@@ -25,7 +26,6 @@ Core Goals
     - RC rolloff
 - [ ] Create combination synthesis/analysis channelizer
 - [ ] direct analysis/synthesis channelizer with cyclo detects
-- [ ] ~~Try to use cyclo detect FFT for channelizer~~
 - [X] Create overlap-save filter bank
     - [ ] Make os filter bank work for N channels
 - [ ] Get channel input/output straight for synthesis/analysis channelizers (output from one should be able to go directly to the other)
@@ -33,6 +33,6 @@ Core Goals
 
 Extras
 ------
+- [X] Speed up packetization if I still need it
 - [ ] Experiment with morphological filter for peak extraction
 - [ ] Compute graph of Pd vs Pfa vs SNR empirically
-- [ ] Speed up packetization if I still need it

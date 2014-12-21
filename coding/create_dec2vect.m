@@ -13,9 +13,8 @@ function [ dec2vect ] = create_dec2vect( K )
 
 dec2vect = zeros(2^K,K);
 for a = 1:2^K
-    bin_str = dec2bin(a-1,K);
-    for b=1:length(bin_str)
-        dec2vect(a,b) = str2double(bin_str(b));
+    for b = 1:K
+        dec2vect(a,b) = bitget(a-1,b);
     end
 end
 

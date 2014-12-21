@@ -28,15 +28,14 @@ num_packets_guess = ceil(length(input)/(sync_size+PACKET_SIZE_SAMPLES)) + 1;
 all_packets = zeros(PACKET_SIZE_SAMPLES, num_packets_guess);
 
 packet_count = 1;
-PACKET_SIZE_SAMPLES
 [packet, index, rxd_sync] = sync_packet(input, sync_symbols, PACKET_SIZE_SAMPLES, 1, sync_size+PACKET_SIZE_SAMPLES);
-fprintf('End of first packet at %d\n', index);
+%fprintf('End of first packet at %d\n', index);
 rxd_sync_syms = rxd_sync';
 all_packets(:, packet_count) = packet;
 while (index+sync_size+PACKET_SIZE_SAMPLES) <= length(input)
     packet_count = packet_count + 1;
     [packet, index, rxd_sync] = sync_packet(input, sync_symbols, PACKET_SIZE_SAMPLES, index-sync_size, index+2*sync_size);
-    fprintf('End of packet at %d\n', index);
+    %fprintf('End of packet at %d\n', index);
     rxd_sync_syms = horzcat(rxd_sync_syms, rxd_sync');
     all_packets(:, packet_count) = packet;
 end

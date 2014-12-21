@@ -30,8 +30,8 @@ dataSizeHeader = headerSize - paritySize;
 numBits = length(in_bits);
 maxDataSize = packetSize - headerSize;
 numPackets = ceil(numBits/maxDataSize);
-out_bits = zeros(packetSize,numPackets);
-dataSizeBits = zeros(dataSizeHeader,1);
+out_bits = zeros(packetSize, numPackets);
+dataSizeBits = zeros(dataSizeHeader, 1);
 parityBits = zeros(paritySize,1);
 dec2vect = create_dec2vect(dataSizeHeader);
 
@@ -40,6 +40,11 @@ if packetSize > 2^headerSize-1+headerSize
     error('Specified packet size is too large for the given header size')
 end
 
+
+paddingSize = maxDataSize - (mod(length(in_bits)-1, maxDataSize)+1);
+in_bits = [in_bits; zeros(paddingSize, 1);];
+last_packet_size = maxDataSize - paddingSize;
+in_bits_2d = reshape(in_bits, maxDataSize, []);
 
 startBit = 1;
 for a = 1:numPackets
