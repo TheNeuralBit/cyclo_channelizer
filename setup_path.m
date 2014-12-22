@@ -7,4 +7,5 @@ function setup_path()
     path([pwd '/testbench'], path)
     path([pwd '/file_utils'], path)
     path([pwd '/configuration'], path)
+    path([pwd '/cyclo'], path)
 end
