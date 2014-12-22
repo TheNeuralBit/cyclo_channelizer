@@ -30,9 +30,9 @@ Core Goals
     - [ ] Make os filter bank work for N channels
 - [ ] Get channel input/output straight for synthesis/analysis channelizers (output from one should be able to go directly to the other)
 - [ ] Combine OS and cyclo_detect
-- [ ] Polish cyclo
+- [X] Polish cyclo
     - [X] Compute multiple cyclic spectra to search for frequencies with specific baud rates
-    - [ ] Use a single FFT for each baud
+    - [X] Use a single FFT for each baud
 - [ ] Comparison of runtime vs num channels with the folllowing three things:
     - cyclo and OS (without combined FFT)
     - cyclo and OS (with combined FFT)
