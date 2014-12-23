@@ -12,15 +12,13 @@ tx = gen_test_sig(input_bits, PN, bauds);
 figure;
 plot_spectrum(tx, F_S*UP);
 t = 0:(1/F_S/UP):((length(tx)-1)/F_S/UP);
-%tx = tx.*exp(1i.*2*pi.*-F_S/4.*t); %Perform frequency shift 
 
-channel = overlap_save_channelizer(tx, [.5E7], [4], F_S*UP, 1024);
-figure;
-plot_spectrum(channel{1}, F_S);
+channels = overlap_save_channelizer(tx, [-.5E7 -1.5E7], [4 4], F_S*UP, 1024);
+plot_channels(channels, [F_S*UP/4 F_S*UP/8]);
 
-SAMPLES_PER_SYMBOL = 16;
+SAMPLES_PER_SYMBOL = 4;
 recompute_configuration;
-bits = MyReceiver(channel{1});
+bits = MyReceiver(channels{1});
 fname = 'os_output.bits';
 fprintf('Writing %s...\n', fname);
 % Trim down to numbits, because we know anything after that is garbage

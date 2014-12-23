@@ -14,6 +14,9 @@ Core Goals
     - Seems like filter is sharp enough... tried just filtering a single channel and downsampling and everything was fine
     - Definitely related to the goofy sidebands we get in "test_synthesis_chan"... If I can figure that out I think we're golden
     - Problem was caused by synthesis channelizer input commutator running in the wrong direction - resolved now
+- [X] Polish cyclo
+    - [X] Compute multiple cyclic spectra to search for frequencies with specific baud rates
+    - [X] Use a single FFT for each baud
 - [X] Create function for generating WB file given a list of freqs/bauds/modulations
     - [ ] List of freqs
     - [ ] List of modulations
@@ -24,15 +27,16 @@ Core Goals
     - List of bauds for cyclo detect
     - Sample rate/upsample
     - RC rolloff
-- [ ] Create combination synthesis/analysis channelizer
 - [ ] direct analysis/synthesis channelizer with cyclo detects
 - [X] Create overlap-save filter bank
-    - [ ] Make os filter bank work for N channels
-- [ ] Get channel input/output straight for synthesis/analysis channelizers (output from one should be able to go directly to the other)
+    - [X] Make os filter bank work for N channels
+    - [ ] allow frequency shifting in EITHER time or frequency
+        - When we do shifting in time we can relax the requirement for ldf(P, fft_size)
+- Polyphase todo
+    - [ ] Get channel input/output straight for synthesis/analysis channelizers (output from one should be able to go directly to the other)
+    - [ ] Return a cell array
+    - [ ] Create combination synthesis/analysis channelizer
 - [ ] Combine OS and cyclo_detect
-- [X] Polish cyclo
-    - [X] Compute multiple cyclic spectra to search for frequencies with specific baud rates
-    - [X] Use a single FFT for each baud
 - [ ] Comparison of runtime vs num channels with the folllowing three things:
     - cyclo and OS (without combined FFT)
     - cyclo and OS (with combined FFT)
