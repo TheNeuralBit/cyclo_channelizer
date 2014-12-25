@@ -24,7 +24,7 @@ fprintf('\n');
 disp('Running Analysis Channelizer');
 disp('----------------------------');
 channels = analysis_channelizer(tx, length(bauds), F_S*UP);
-plot_channels(channels, F_S);
+plot_channels(channels, F_S*ones(4,1));
 
 fprintf('\n');
 disp('Demodulating Each Channel');
@@ -37,7 +37,7 @@ for i=1:length(bauds)
     %plot_spectrum(channels(i,:), F_S*UP/length(bauds));
     SAMPLES_PER_SYMBOL = F_S/bauds(i);
     recompute_configuration;
-    bits = MyReceiver(channels(i,:));
+    bits = MyReceiver(channels{i});
     fname = sprintf('channel_%d.bits', i);
     fprintf('Writing %s...\n', fname);
     % Trim down to numbits, because we know anything after that is garbage

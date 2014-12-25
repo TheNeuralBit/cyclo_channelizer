@@ -1,7 +1,8 @@
 function [output] = synthesis_channelizer(data, F_S)
 % data: dimension 1 = channel
 %       dimension 2 = time
-num_channels = size(data, 1);
+num_channels = length(data);
+data = cell2mat(data);
 FFT_SIZE = num_channels;
 
 %% DESIGN THE FILTER

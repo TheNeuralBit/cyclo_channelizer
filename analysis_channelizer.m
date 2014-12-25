@@ -1,6 +1,8 @@
 function [channels] = analysis_channelizer(data, num_channels, F_S)
 FFT_SIZE = num_channels;
 
+channels = cell(num_channels, 1);
+
 %% DESIGN THE FILTER
 disp('Designing the filter...')
 b = design_filter(F_S, num_channels);
@@ -30,5 +32,7 @@ disp('Performing FFT...')
 channels = flipud(fftshift(fft(filt_output, FFT_SIZE, 1), 1));
 % f_k = 2*pi/D
 % channels(k,:) = channel at f_k
+
+channels = num2cell(channels, 2);
 
 end
