@@ -228,12 +228,6 @@ can be modeled with another statistical property called
 varies with time. The frequency of this variation is called the cyclic
 frequency, $\alpha$. \cite{Gardner1}.
 
-% TODO: make a real bibliography
-% Gardner1 = Exploitation of Spectral Redundancy in Cyclostationary Signals
-% Oner1 = Cyclostationarity Based Air Interface Recognition for Software Radio Systems
-% Gardner2 = Spectral Correlation of Modulated Signals: Part II - Digital Modulation
-% Harris1 = Digital Receivers and Transmitters Using Polyphase Filter Banks for Wireless Communications
-% Borgerding1 = Turning Overlap-Save into a Multiband Mixing, Downsampling Filter Bank
 
 Of particular interest is second-order cyclostationarity, where a signal has a
 periodic autocorrelation:
@@ -326,6 +320,29 @@ is only an approximation.
 \markright{Brian H. Hulette \hfill Chapter \ref{sec:chan}. Channelizer Structures\hfill}
 \section{Polyphase Analysis/Synthesis Channelizer}
 \label{sec:poly_chan}
+Fred Harris has described the related structures that he calls Polyphase
+Analysis and Polyphase Synthesis Channelizers \cite{Harris1}. A Polyphase
+Analysis channelizer can be used to break up a wideband signal into $N$ distinct
+channels, each decimated by a factor of $N$ from the wideband sample rate. The
+channelized frequencies are integer multiples of the output sample rate:
+
+\begin{IEEEeqnarray}{lCl}
+    f_k = k \frac{f_s}{N}
+\end{IEEEeqnarray}
+
+Where $f_k$ is the center frequency of channel $k$ and $f_s$ is the input sample
+rate. A Polyphase Synthesis Channelizer performs the reverse operation - it
+combines $N$ distinct channels with equal sample rate into a single wideband
+signal.
+
+These two structures can be combined to create a very flexible channelizer that
+can tune channels with arbitrary center frequencies and various bandwidths
+\cite{Harris2}.
+
+In \cite{Harris1}, Harris shows how the Polyphase Analysis Channelizer works by
+starting with a basic filter/decimator and making incremental modifications
+until it becomes an Analysis Channelizer. I will provide a brief summary of
+this description here.
 
 \section{Overlap-save Filter Bank}
 \label{sec:filter_bank}
@@ -454,6 +471,10 @@ for both algorithms.
 %\end{equation}
 %Where the integer multiple $\beta$ is simply the amount of oversampling. Then we can 
 
+Averaging the overlapped FFT frames together may have an effect on the accuracy
+of the SCD estimation, but analyzing this effect is beyond the scope of this
+project.
+
 \chapter{Simulation}
 \label{sec:sim}
 \markright{Brian H. Hulette \hfill Chapter \ref{sec:sim}. Simulation \hfill}
@@ -486,7 +507,9 @@ for both algorithms.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % If you are using BibTeX, uncomment the following:
-% \thebibliography
+\nocite{*}
+\bibliographystyle{IEEEtran}
+\bibliography{bibliography}
 %
 % Otherwise, uncomment the following:
 % \chapter*{Bibliography}
@@ -498,7 +521,9 @@ for both algorithms.
 \label{sec:source}
 \markright{Brian H. Hulette \hfill Chapter \ref{sec:source}. Project Source \hfill}
 % TODO: make sure this is a link - and make the project public!
-The full source is hosted on GitHub (\texttt{https://github.com/TheNeuralBit/cyclo\_channelizer}). Some of the critical files are included in this appendix, below.
+The full source is hosted on GitHub
+(\texttt{https://github.com/TheNeuralBit/cyclo\_channelizer}). Some of the
+critical files are included in this appendix, below.
 
 \section{\texttt{cyclic\_spectrum.m}}
 \lstinputlisting{../cyclo/cyclic_spectrum.m}
