@@ -1,4 +1,5 @@
 function setup_path()
+    path([pwd '/lib'], path)
     path([pwd '/coding'], path)
     path([pwd '/detection_equalization'], path)
     path([pwd '/packetizing'], path)
