@@ -341,8 +341,102 @@ can tune channels with arbitrary center frequencies and various bandwidths
 
 In \cite{Harris1}, Harris shows how the Polyphase Analysis Channelizer works by
 starting with a basic filter/decimator and making incremental modifications
-until it becomes an Analysis Channelizer. I will provide a brief summary of
-this description here.
+until it becomes an Analysis Channelizer as shown in Figure
+\ref{fig:polyphase_4}. I will provide a brief summary of this description here.
+
+
+\begin{figure}[h!]
+\centerline{
+    \subfloat[Single channel of a simple tuning, filtering, and decimating channelizer. $h(n)$ is a baseband low-pass filter.]
+    {\includegraphics[width=0.45\textwidth]{polyphase_1}%
+    \label{fig:polyphase_1}}
+    \hfill
+    \subfloat[Equivalency theorem allows the tuning step to be moved after the decimation. The baseband filter must be shifted up to $f_k$. If $f_k$ is a multiple of the output sample rate,  $\frac{f_s}{D}$, the tuning step can be dropped.]
+    {\includegraphics[width=0.45\textwidth]{polyphase_2}%
+    \label{fig:polyphase_2}}
+}
+\centerline{
+    \subfloat[The Noble Identity allows the filtering and decimation to be combined to remove excess computations.]
+    {\includegraphics[width=0.45\textwidth]{polyphase_3}%
+    \label{fig:polyphase_3}}
+    \hfill
+    \subfloat[The series of delays and decimation steps can be replaced with an input commutator and complex phasors can be added after each filter to select channel $k$.]
+    {\includegraphics[width=0.45\textwidth]{polyphase_4}%
+    \label{fig:polyphase_4}}
+}
+\caption{Creating a single channel of a polyphase analysis channelizer}
+\label{fig:polyphase_proof}
+\end{figure}
+
+We start with a single channel of a very basic channelizer in Figure
+\ref{fig:polyphase_1}. This channel consists of a multiplication with a complex
+phasor to tune the desired center frequency down to baseband, followed by
+a low-pass filter, represented by $h(n)$, and finally a decimation step. The
+first modification we can make takes advantage of the Equivalency Theorem,
+which says that we can switch the order of the tuner and the filter, \emph{if}
+the filter is changed to a bandpass filter centered at $f_k$. This modification
+is shown in Figure \ref{fig:polyphase_2}. In this figure the tuner has also
+been moved after the decimator. Note that if the channel frequency, $f_k$, is
+an integer multiple of the output sample rate, $\frac{f_s}{D}$, then the tuner
+simplifies to $e^{j2\pi n} = 1$, so it can be dropped completely.  Thus we will
+restrict the polyphase analysis channelizer to center frequencies which are
+integer multiples of the output sample rate.
+
+Next we can use the Noble Identity to switch the place of the decimation and
+the filter, as shown in Figure \ref{fig:polyphase_3}. In order to do so we need to define a set of new filters, $H_r(z)$, such that:
+
+\begin{IEEEeqnarray}{lCl}
+    H(z) = H_0(z) + z^{-1}H_1(z) + \hdots + z^{-(D-1)}H_{D-1}(z)
+\end{IEEEeqnarray}
+
+This means that each filter, $H_r(z)$, has has an impulse response which is $h(n)$
+shifted by $i$ samples and decimated by $D$. Using the Noble Identity in this
+way saves us from performing computations for samples that will just be dropped
+by the decimator. Note that in Figure \ref{fig:polyphase_3} the tuner has been
+dropped since we are restricting the channelizer to frequencies which are
+multiples of the output sample rate.
+
+Finally, we complete the structure for a single channel of a polyphase analysis
+channelizer in Figure \ref{fig:polyphase_4}. The combination of delays and
+decimators at the front of the previous structure is actually just
+a commutator. In \cite{Harris1} Harris explains this by thinking about the
+decimators as a switch that closes every $D$ samples. So in Figure
+\ref{fig:polyphase_3}, when all of the switches close the filter at the bottom
+gets the oldest sample, and each filter as you go up gets one newer sample
+until you get to the most recent sample on the top. The next sample is not
+processed until the switches close again, and it is passed to the filter at the
+bottom. With this explanation it is easy to see the whole structure can be
+replaced with a commutator.
+
+The final structure has one more modification. The outputs are multiplied by complex phasors which select the individual channel, $k$, centered at $f_k$. For more info on why this works refer to \cite{Harris1}. The great thing about these complex phasors is that the set of phasors that are multiplied and then summed together for channel $k$ correspond to the $k$th output of a DFT:
+
+\begin{IEEEeqnarray}{lCl}
+    y_k(n) & = & \sum_{r=0}^{D-1} y_r(n) e^{j(2\pi/D)rk} 
+\end{IEEEeqnarray}
+
+Where $y_r(n)$ represents the output of the $r$th filter. Thus we can compute all $D$ channels using a $D$ point FFT, as shown in Figure \ref{fig:polyphase_final}. The structure of the Polyphase Synthesis Channelizer can be seen in Figure \ref{fig:polyphase_synthesis}. It is essentially a mirror image of the Analysis case - an IFFT followed by filters and a reverse commutator.
+
+% TODO: reverse commutator? is that a thing?
+
+\begin{figure}[h!]
+\centerline{
+    \subfloat[Analysis]
+    {\includegraphics[width=0.45\textwidth]{polyphase_final}%
+    \label{fig:polyphase_final}}
+    \hfill
+    \subfloat[Synthesis]
+    {\includegraphics[width=0.45\textwidth]{polyphase_final}%
+    \label{fig:polyphase_synthesis}}
+}
+\caption{Full Polyphase Analysis/Synthesis Channelizer Structures}
+\label{fig:overlap_save_filter_banks}
+\end{figure}
+
+\subsection{Limitations}
+\label{sec:poly_limitations}
+
+\subsection{Advantages}
+\label{sec:poly_advantages}
 
 \section{Overlap-save Filter Bank}
 \label{sec:filter_bank}
@@ -448,10 +542,10 @@ making $P-1$ an integer multiple of $D$ is only making this problem worse by
 making $V$ larger - but there's nothing to be done about that other than opting
 for a shorter filter.
 
-\subsection{Combining with SCD Estimation}
+\subsection{Advantages}
 \label{sec:os_scd_estimation}
 
-The greatest benefit of the Overlap-Save Filter Bank for this application is
+The greatest benefit of the Overlap-Save Filter Bank for my application is
 the ease with which it can be combined with SCD Estimation for cyclostationary
 detection. Obviously, the first step for both algorithms is a forward FFT of the
 wideband input. If we were to design a joint cyclostationary

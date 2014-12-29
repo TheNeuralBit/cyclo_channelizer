@@ -9,6 +9,10 @@ Rough Draft Goals
 - [ ] Discussion of overall architecture (cyclo + fred harris)
 - [ ] Code details
 
+Required tasks
+--------------
+- [ ] Polyphase synthesis final structure.
+
 Other thoughts
 --------------
 - [ ] Clarify use of the word channelizer? Overlap-save channelizer works for
