@@ -386,11 +386,11 @@ Next we can use the Noble Identity to switch the place of the decimation and
 the filter, as shown in Figure \ref{fig:polyphase_3}. In order to do so we need to define a set of new filters, $H_r(z)$, such that:
 
 \begin{IEEEeqnarray}{lCl}
-    H(z) = H_0(z) + z^{-1}H_1(z) + \hdots + z^{-(D-1)}H_{D-1}(z)
+    H(z) = H_0(z^D) + z^{-1}H_1(z^D) + \hdots + z^{-(D-1)}H_{D-1}(z^D)
 \end{IEEEeqnarray}
 
 This means that each filter, $H_r(z)$, has has an impulse response which is $h(n)$
-shifted by $i$ samples and decimated by $D$. Using the Noble Identity in this
+shifted by $r$ samples and decimated by $D$. Using the Noble Identity in this
 way saves us from performing computations for samples that will just be dropped
 by the decimator. Note that in Figure \ref{fig:polyphase_3} the tuner has been
 dropped since we are restricting the channelizer to frequencies which are
@@ -414,7 +414,12 @@ The final structure has one more modification. The outputs are multiplied by com
     y_k(n) & = & \sum_{r=0}^{D-1} y_r(n) e^{j(2\pi/D)rk} 
 \end{IEEEeqnarray}
 
-Where $y_r(n)$ represents the output of the $r$th filter. Thus we can compute all $D$ channels using a $D$ point FFT, as shown in Figure \ref{fig:polyphase_final}. The structure of the Polyphase Synthesis Channelizer can be seen in Figure \ref{fig:polyphase_synthesis}. It is essentially a mirror image of the Analysis case - an IFFT followed by filters and a reverse commutator.
+Where $y_r(n)$ represents the output of filter $H_r(z)$. Thus we can compute
+all $D$ channels using a $D$ point FFT, as shown in Figure
+\ref{fig:polyphase_final}. The structure of the Polyphase Synthesis Channelizer
+can be seen in Figure \ref{fig:polyphase_synthesis}. It is essentially a mirror
+image of the Analysis case - an IFFT followed by filters and a reverse
+commutator.
 
 % TODO: reverse commutator? is that a thing?
 
@@ -434,6 +439,13 @@ Where $y_r(n)$ represents the output of the $r$th filter. Thus we can compute al
 
 \subsection{Limitations}
 \label{sec:poly_limitations}
+This structure has a couple of obvious limitations if a Polyphase Analysis
+Channelizer is used by itself. Every channel must be at the same output sample
+rate, $f_s/D$, and they must have center frequencies which are multiples of
+that sample rate. In \cite{Harris2}, Harris shows how analysis and synthesis
+channelizers can be used in concert, along with complex phasors, to tune out
+arbitrary center frequencies at unequal sample rates, but this adds
+a significant amount of complexity.
 
 \subsection{Advantages}
 \label{sec:poly_advantages}
@@ -617,7 +629,7 @@ project.
 % TODO: make sure this is a link - and make the project public!
 The full source is hosted on GitHub
 (\texttt{https://github.com/TheNeuralBit/cyclo\_channelizer}). Some of the
-critical files are included in this appendix, below.
+critical files are included in this appendix.
 
 \section{\texttt{cyclic\_spectrum.m}}
 \lstinputlisting{../cyclo/cyclic_spectrum.m}
