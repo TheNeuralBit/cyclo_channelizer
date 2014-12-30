@@ -4,14 +4,14 @@ Rough Draft Goals
 - [X] Introduction
 - [X] Cyclostationarity and SCD discussion
 - [X] Overlap-Save Channelizer Discussion
-- [ ] fred harris Channelizer Discussion
+- [X] fred harris Channelizer Discussion
 - [ ] Discussion of overall architecture (cyclo + OS)
 - [ ] Discussion of overall architecture (cyclo + fred harris)
 - [ ] Code details
 
 Required tasks
 --------------
-- [ ] Polyphase synthesis final structure.
+- [ ] Polyphase synthesis final structure figure
 
 Other thoughts
 --------------

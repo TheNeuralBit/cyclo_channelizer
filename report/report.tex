@@ -442,13 +442,16 @@ commutator.
 This structure has a couple of obvious limitations if a Polyphase Analysis
 Channelizer is used by itself. Every channel must be at the same output sample
 rate, $f_s/D$, and they must have center frequencies which are multiples of
-that sample rate. In \cite{Harris2}, Harris shows how analysis and synthesis
+that sample rate.
+
+In \cite{Harris2}, Harris shows how analysis and synthesis
 channelizers can be used in concert, along with complex phasors, to tune out
-arbitrary center frequencies at unequal sample rates, but this adds
-a significant amount of complexity.
+arbitrary center frequencies at unequal sample rates. Unfortunately, this adds
+a significant amount of complexity and is beyond the scope of this project.
 
 \subsection{Advantages}
 \label{sec:poly_advantages}
+The primary advantage of a Polyphase Analysis Channelizer is its simplicity and efficiency.
 
 \section{Overlap-save Filter Bank}
 \label{sec:filter_bank}
@@ -584,6 +587,27 @@ project.
 \chapter{Simulation}
 \label{sec:sim}
 \markright{Brian H. Hulette \hfill Chapter \ref{sec:sim}. Simulation \hfill}
+I have created a MATLAB simulation of these structures. Directions to find all
+of the source code can be found in Appendix \ref{sec:source}. Each module
+- cyclostationary detector, polyphase analysis channelizer, and overlap-save
+filter bank - was developed and tested separately. I then combined the detector
+with each channelizer and evaluated their performance. I will follow that same
+logical flow in this Chapter as I describe the simulation.
+
+\section{Cyclostationary Detector}
+\label{sec:sim_cyclo}
+
+\section{Polyphase Analysis Channelizer}
+\label{sec:sim_poly}
+
+\subsection{Adding Cyclo Detection}
+\label{sec:sim_poly_cyclo}
+
+\section{Overlap-Save Filter Bank}
+\label{sec:sim_os}
+
+\subsection{Adding Cyclo Detection}
+\label{sec:sim_os_cyclo}
 
 \chapter{Conclusion}
 \label{sec:conclusion}
