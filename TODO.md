@@ -18,9 +18,9 @@ Core Goals
     - [X] Compute multiple cyclic spectra to search for frequencies with specific baud rates
     - [X] Use a single FFT for each baud
 - [X] Create function for generating WB file given a list of freqs/bauds/modulations
-    - [ ] List of freqs
-    - [ ] List of modulations
-    - [ ] Allow empty channels
+    - [X] List of freqs
+    - [ ] ~~List of modulations~~
+    - [X] Allow empty channels
 - [ ] Fix noise power calculation
 - [ ] Move parameters to a configuration file
     - List of freqs/bauds/modulations for WB
@@ -34,7 +34,7 @@ Core Goals
         - When we do shifting in time we can relax the requirement for ldf(P, fft_size)
 - Polyphase todo
     - [ ] Get channel input/output straight for synthesis/analysis channelizers (output from one should be able to go directly to the other)
-    - [ ] Return a cell array
+    - [X] Return a cell array
     - [ ] Create combination synthesis/analysis channelizer
 - [ ] Combine OS and cyclo_detect
 - [ ] Comparison of runtime vs num channels with the folllowing three things:
