@@ -1,12 +1,12 @@
 function [output] = overlap_save_channelizer(data, freqs, decimations, F_S, fft_size)
 
-dec_lcm = lcms(decimations)
+dec_lcm = lcms(decimations);
 %dec_lcm = 32;
 
-output = cell(length(freqs), 1)
+output = cell(length(freqs), 1);
 
 longest_filt = design_filter(F_S, max(decimations));
-P = length(longest_filt)
+P = length(longest_filt);
 
 % TODO: allow frequency shifting in EITHER time or frequency
 % If we are frequency shifting in the time domain then
@@ -15,20 +15,19 @@ P = length(longest_filt)
 
 % If shifting in the frequency domain we need to be a little more
 % ensure that V is an integer
-P = ldf(P-1, fft_size) + 1
+P = ldf(P-1, fft_size) + 1;
 
-V = round(fft_size/(P - 1))
+V = round(fft_size/(P - 1));
 
 % Compute FFT
 data_fft = fft(buffer(data, fft_size, (P - 1)), [], 1);
-size(data_fft)
 
 for idx = 1:length(freqs)
   freq = freqs(idx);
   decimation = decimations(idx);
   
   %% DESIGN THE FILTERS
-  disp('Designing the filters...')
+  disp('Designing the filter...')
   filt_time = design_filter(F_S, decimation);
   % Zero pad so that filter is length P-1
   if length(filt_time) < P
@@ -37,16 +36,19 @@ for idx = 1:length(freqs)
   filt_fft = fft(filt_time, fft_size);
 
   % Rotate FFT to desired center freq
-  num_bins = -round(fft_size*freq/F_S/V)*V
+  disp('Rotating FFT...')
+  num_bins = -round(fft_size*freq/F_S/V)*V;
   rot_fft = circshift(data_fft, num_bins, 1);
   
   % Filter FFT
+  disp('Filtering FFT...')
   filt_data_fft = zeros(size(rot_fft));
   for i = 1:size(rot_fft, 2)
       filt_data_fft(:,i) = filt_fft'.*rot_fft(:,i);
   end
   %rot_fft.*repmat(filt_fft', size(rot_fft, 1));
   
+  disp('Decimating and Returning to Time Domain...')
   inv_fft = ifft(filt_data_fft, [], 1);
   tmp = buffer(inv_fft(:), fft_size - (P - 1), -(P - 1));
   tmp = tmp(:).';
