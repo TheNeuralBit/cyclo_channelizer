@@ -16,7 +16,8 @@ plot_spectrum(tx, F_S);
 
 output_samps_per_sym = 4;
 bauds_to_check = sort(unique(bauds))
-channels = cyclo_and_overlap_save(tx, bauds_to_check, output_samps_per_sym, F_S);
+CYCLO_PEAK_MIN_SPACING = F_S/4/2;
+channels = cyclo_and_overlap_save(tx, bauds_to_check, output_samps_per_sym);
 plot_channels(channels, ones(length(channels), 1).*(F_S*4));
 
 fprintf('\n');

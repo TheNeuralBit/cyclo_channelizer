@@ -44,6 +44,13 @@ Core Goals
     - Note that I need to decide how to compare - should the WB sample rate
       always be the same? Probably
 
+Figures To Generate
+-------------------
+- [ ] Full SCD plot
+- [ ] SCD estimates at specific baud rates for WB signal
+- [ ] Output channels for OS filter bank
+- [ ] Output channels for polyphase channelizer
+
 
 Extras
 ------

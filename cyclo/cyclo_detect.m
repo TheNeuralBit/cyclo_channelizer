@@ -13,8 +13,10 @@ cyc_fft = compute_cyclo_fft(data, nfft, CYCLO_AVERAGING);
 for idx = 1:length(bauds_to_check)
     spec = single_fft_cyclo(cyc_fft, bauds_to_check(idx), f_s);
     %spec = cyclic_spectrum(data, bauds_to_check(idx), nfft, f_s, CYC_SPEC_METHOD, CYCLO_AVERAGING);
-    %figure;
-    %plot(abs(spec));
+    if DEBUG_FIGURES
+        figure;
+        plot(abs(spec));
+    end
     [pks, locs] = findpeaks(abs(spec), 'MinPeakHeight', threshold, ...
                                        'MinPeakDistance', round(peak_distance/(f_s/nfft)));
     % Iterate through the peaks

@@ -21,4 +21,10 @@ F_S = 1e7;   % given, sample rate = 10 Msps
 
 SAMPLES_PER_SYMBOL = 4;  % given, samp/symbol >= 4
 
+%% Cyclo Detect Parameters
+CYCLO_PEAK_THRESH = 80;
+CYCLO_PEAK_MIN_SPACING = 2E6;
+
+DEBUG_FIGURES = 0; % To enable some debug figures, set this to 1
+
 recompute_configuration;

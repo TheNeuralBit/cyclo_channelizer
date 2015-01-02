@@ -1,10 +1,11 @@
-function [channels] = cyclo_and_overlap_save(data, bauds_to_check, samps_per_sym, f_s)
-    threshold = 80;
-    min_spacing = 2E6;
+function [channels] = cyclo_and_overlap_save(data, bauds_to_check, samps_per_sym)
+    configuration;
+    threshold = CYCLO_PEAK_THRESH;
+    min_spacing = CYCLO_PEAK_MIN_SPACING;
     nfft = 1024;
 
-    [freqs, bauds] = cyclo_detect(data, bauds_to_check, threshold, min_spacing, nfft, f_s)
-    decimations = f_s./bauds./samps_per_sym
+    [freqs, bauds] = cyclo_detect(data, bauds_to_check, threshold, min_spacing, nfft, F_S)
+    decimations = F_S./bauds./samps_per_sym
 
-    channels = overlap_save_channelizer(data, freqs, decimations, f_s, nfft);
+    channels = overlap_save_channelizer(data, freqs, decimations, F_S, nfft);
 end
