@@ -1,11 +1,11 @@
-function [tx] = gen_test_sig(bits, noise_power, channel_bauds )
+function [tx] = gen_test_sig(bits, noise_power, channel_bauds, freqs)
 configuration;
 num_sigs = length(channel_bauds);
-UP = num_sigs;
 
 for baud=channel_bauds
     if mod(F_S, baud) ~= 0
-        disp('Baud rates must all be a multiple of Sample Rate!');
+        disp('Sample Rate must be a multiple of all baud rates!');
+        fprintf('%f != k%f\n', F_S, baud);
         tx=0;
         return;
     end
@@ -14,17 +14,14 @@ end
 samps_per_sym =  F_S./channel_bauds;
 
 %% Run the Transmitter
-Hd=design(fdesign.lowpass('Fp,Fst',3/4/UP, 1/UP), 'equiripple');
 tx = [];
 for idx=1:num_sigs
     % Generate
     sig = gen_sig(bits, samps_per_sym(idx), MODULATION);
 
-    % Upsample, Filter and Frequency Shift
-    sig = filter(Hd, upsample(sig, UP));
-    pos = idx - 0.5 - num_sigs/2;
-    t = 0:1/F_S/UP:(length(sig) - 1)/F_S/UP;
-    sig = sig.*exp(1*pi*j*pos*2*F_S*t);
+    % Frequency Shift
+    t = 0:1/F_S:(length(sig) - 1)/F_S;
+    sig = sig.*exp(j*2*pi*freqs(idx)*t);
 
     % Add to WB signal
     tx = add_and_zero_pad(tx, sig);
@@ -32,10 +29,10 @@ end
 
 % Compute Noise variance based on desired noise power
 % pretty sure this is wrong
-noise_variance = 10.^(0.1*noise_power)/(F_S*UP*2);
+noise_variance = 10.^(0.1*noise_power)/(F_S*2);
 
 % add noise
-tx = awgnChannel(tx, noise_variance, F_S*UP, 0, 0, 0, 0);
+tx = awgnChannel(tx, noise_variance, F_S, 0, 0, 0, 0);
 
 end
 

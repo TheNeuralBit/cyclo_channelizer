@@ -5,15 +5,18 @@ numbits = 2048*10;
 input_bits = text_file_to_binary('tale_of_two_cities.txt');
 input_bits = input_bits(1:numbits);
 PN = 40;
-bauds = [F_S/8, F_S/16, F_S/4, F_S/16];
+bauds = [1/8 1/16 1/4].*F_S./4;
 UP = length(bauds);
 
-tx = gen_test_sig(input_bits, PN, bauds);
+freqs = (-(length(bauds) - 1)/2:(length(bauds) - 1)/2).*(F_S/(length(bauds) + 1))
 
-plot_spectrum(tx, F_S*UP);
+tx = gen_test_sig(input_bits, PN, bauds, freqs);
+
+plot_spectrum(tx, F_S);
 
 output_samps_per_sym = 4;
-channels = cyclo_and_overlap_save(tx, [F_S/16 F_S/8 F_S/4], output_samps_per_sym, F_S*UP);
+bauds_to_check = sort(unique(bauds))
+channels = cyclo_and_overlap_save(tx, bauds_to_check, output_samps_per_sym, F_S);
 plot_channels(channels, ones(length(channels), 1).*(F_S*4));
 
 fprintf('\n');
