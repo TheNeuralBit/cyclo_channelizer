@@ -1,4 +1,5 @@
 function setup_path()
+    path([pwd '/configuration'], path)
     path([pwd '/lib'], path)
     path([pwd '/coding'], path)
     path([pwd '/detection_equalization'], path)
@@ -7,6 +8,6 @@ function setup_path()
     path([pwd '/synchronization'], path)
     path([pwd '/testbench'], path)
     path([pwd '/file_utils'], path)
-    path([pwd '/configuration'], path)
     path([pwd '/cyclo'], path)
+    path([pwd '/channelize'], path)
 end
