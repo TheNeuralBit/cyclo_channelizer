@@ -212,7 +212,7 @@ cyclostationary properties and the cyclic spectra upon which my detector
 relies.  Chapter~\ref{sec:chan} discusses and compares both of the channelizer
 structures that I will simulate. Chapter~\ref{sec:sim}  discusses the MATLAB
 simulation I have created and the results of it. Finally,
-Chapter~\ref{sec:source} provides annotated source code for key parts of the
+Appendix~\ref{sec:source} provides annotated source code for key parts of the
 simulation, as well as locations where the entire source code can be found.
 
 \chapter{Cyclostationary Detection}
@@ -500,7 +500,8 @@ For my description, I will use the same terms that Borgerding defines:
 the FFT bins then we can simply circular shift the FFT output to place that bin
 at the center. Then filtering can be performed at baseband.  If all channels
 satisfy this criteria then we can re-use a single forward FFT for every
-channel, simply by circular shifting it to the appropriate bin in every case. This approach is shown in Figure \ref{fig:overlap_save_shift}
+channel, simply by circular shifting it to the appropriate bin in every case. 
+This approach is shown in Figure \ref{fig:overlap_save_shift}
 
 However, if this condition is not satisfied then we will need to perform the
 frequency shift in the time domain by multiplying by a complex phasor.
