@@ -500,7 +500,8 @@ This report uses the same terms that Borgerding defines:
 the FFT bins then we can simply circular shift the FFT output to place that bin
 at the center. Then filtering can be performed at baseband.  If all channels
 satisfy this criteria then we can re-use a single forward FFT for every
-channel, simply by circular shifting it to the appropriate bin in every case. This approach is shown in Figure \ref{fig:overlap_save_shift}
+channel, simply by circular shifting it to the appropriate bin in every case. 
+This approach is shown in Figure \ref{fig:overlap_save_shift}
 
 However, if this condition is not satisfied then we will need to perform the
 frequency shift in the time domain by multiplying by a complex phasor.
