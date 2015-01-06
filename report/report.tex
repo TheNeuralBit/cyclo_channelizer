@@ -194,25 +194,25 @@ would like to process. One common version of this is to acquire a wideband
 slice of the HAM radio spectrum and then click tune to different frequencies to
 demodulate new FM Push-to-Talk signals and listen to them.
 
-In this paper I will investigate and simulate a structure that automates this
-process - but rather than working for a single analog signal, this framework is
-intended for an arbitrary number of digital signals. Detection is performed by
+This paper investigates a structure that automates this process - but rather
+than working for a single analog signal, this framework is intended for an
+arbitrary number of digital signals. Detection is performed by
 a cyclostationary detector rather than by a man-in-the-loop, in order to
 exploit the cyclostationary properties exhibited by most digital signals with
 a fixed symbol rate.  Tuning, filtering, and decimating is performed by
-a channelizer, so that many signals can be processed at once.  I will examine
-two different channelizer structures. They will be compared on two important
+a channelizer, so that many signals can be processed at once.  Two different
+channelizer structures are examined. They are compared on two important
 criteria:
 1) Their ability to accurately reproduce every detected signal, and 2) Their
 computational efficiency when combined with a cyclostationary detector.
 % TODO: list papers that discuss SCD for various protocols
 
-In Chapter~\ref{sec:cyclo} I will provide background information on
-cyclostationary properties and the cyclic spectra upon which my detector
-relies.  Chapter~\ref{sec:chan} discusses and compares both of the channelizer
-structures that I will simulate. Chapter~\ref{sec:sim}  discusses the MATLAB
-simulation I have created and the results of it. Finally,
-Chapter~\ref{sec:source} provides annotated source code for key parts of the
+Chapter~\ref{sec:cyclo} provides background information on cyclostationary
+properties and the Specral Correlation Density (SCD) function upon which the
+detector relies.  Chapter~\ref{sec:chan} discusses and compares both of the
+channelizer structures that are simulated. Chapter~\ref{sec:sim}  discusses the
+MATLAB simulation that was created and the results of it. Finally,
+Appendix~\ref{sec:source} provides annotated source code for key parts of the
 simulation, as well as locations where the entire source code can be found.
 
 \chapter{Cyclostationary Detection}
@@ -246,19 +246,19 @@ periodic autocorrelation:
 The cyclic autocorrelation function (CAF), given by $R_{xx}^{\alpha}(\tau)$,
 can be used for signal detection in the time domain. An estimate of the 2D
 function versus $\alpha$ and $\tau$ can be computed, then features within this
-plane can be detected. However, what I am interested in is the fourier
-transform of the CAF, called the Spectral Correlation Density (SCD):
+plane can be detected. However, what is of interest for this project is the
+fourier transform of the CAF, called the Spectral Correlation Density (SCD):
 
 \begin{IEEEeqnarray*}{lCl}
     S_{xx}(\alpha, f) = \int_{-\infty}^{\infty} R_{xx}^{\alpha}(\tau)e^{-j2\pi f \tau} d\tau
 \end{IEEEeqnarray*}
 
-The SCD is a generalization of the conventional PSD, which it reduces to at
-$\alpha=0$ \cite{Oner1}. Like the CAF, the SCD also contains unique features
-based on the modulation type, symbol rate, and carrier frequency of the
-transmitted signal, which we can exploit for signal detection. In
-\cite{Gardner2}, Gardner defines this SCD for various basic modulation types,
-including QPSK, which is used in my simulation.
+The SCD is a generalization of the conventional Power-Spectral Density (PSD),
+which it reduces to at $\alpha=0$ \cite{Oner1}. Like the CAF, the SCD also
+contains unique features based on the modulation type, symbol rate, and carrier
+frequency of the transmitted signal, which we can exploit for signal detection.
+In \cite{Gardner2}, Gardner defines this SCD for various basic modulation
+types, including QPSK, which is used in the presented simulation.
 
 %\section{Exploiting Cyclostationarity for Detection}
 %\label{sec:exploit_cyc}
@@ -330,7 +330,7 @@ channelized frequencies are integer multiples of the output sample rate:
     f_k = k \frac{f_s}{N}
 \end{IEEEeqnarray}
 
-Where $f_k$ is the center frequency of channel $k$ and $f_s$ is the input sample
+where $f_k$ is the center frequency of channel $k$ and $f_s$ is the input sample
 rate. A Polyphase Synthesis Channelizer performs the reverse operation - it
 combines $N$ distinct channels with equal sample rate into a single wideband
 signal.
@@ -342,7 +342,7 @@ can tune channels with arbitrary center frequencies and various bandwidths
 In \cite{Harris1}, Harris shows how the Polyphase Analysis Channelizer works by
 starting with a basic filter/decimator and making incremental modifications
 until it becomes an Analysis Channelizer as shown in Figure
-\ref{fig:polyphase_4}. I will provide a brief summary of this description here.
+\ref{fig:polyphase_4}. A brief summary of this description is provided here.
 
 
 \begin{figure}[h!]
@@ -455,10 +455,10 @@ The primary advantage of a Polyphase Analysis Channelizer is its simplicity and 
 
 \section{Overlap-save Filter Bank}
 \label{sec:filter_bank}
-The ``overlap-save filter bank" structure that I use is based entirely on
-a description by Mark Borgerding from March 2006 \cite{Borgerding1}.
-Borgerding's concept is based on the well known Overlap-Save fast convolution
-technique.
+The ``overlap-save filter bank" structure used in this simulation is based
+entirely on a description by Mark Borgerding from March 2006
+\cite{Borgerding1}.  Borgerding's concept is based on the well known
+Overlap-Save fast convolution technique.
 
 % TODO cite Borgerdings [1]-[5] here for Overlap-Save?
 OS fast convolution can be used to speed up convolution with
@@ -470,7 +470,7 @@ There is nothing new about this idea, but Borgerding's innovation is that he
 shows how to extend this concept to tune, filter and decimate any number of
 channels with arbitrary frequencies and bandwidths.
 
-For my description, I will use the same terms that Borgerding defines:
+This report uses the same terms that Borgerding defines:
 
 \begin{tabular}{ll}
     $x(n)$        & Input data \\
@@ -587,12 +587,12 @@ project.
 \chapter{Simulation}
 \label{sec:sim}
 \markright{Brian H. Hulette \hfill Chapter \ref{sec:sim}. Simulation \hfill}
-I have created a MATLAB simulation of these structures. Directions to find all
-of the source code can be found in Appendix \ref{sec:source}. Each module
+A MATLAB simulation of these structures has been written. Directions to find
+all of the source code can be found in Appendix \ref{sec:source}. Each module
 - cyclostationary detector, polyphase analysis channelizer, and overlap-save
-filter bank - was developed and tested separately. I then combined the detector
-with each channelizer and evaluated their performance. I will follow that same
-logical flow in this Chapter as I describe the simulation.
+filter bank - was developed and tested separately. The detector was then
+combined with each channelizer and their performance was evaluated. The same
+logical flow is followed in this Chapter as the modules are presented.
 
 \section{Cyclostationary Detector}
 \label{sec:sim_cyclo}
@@ -649,7 +649,7 @@ logical flow in this Chapter as I describe the simulation.
 % In LaTeX, each appendix is a "chapter"
 \chapter{Project Source}
 \label{sec:source}
-\markright{Brian H. Hulette \hfill Chapter \ref{sec:source}. Project Source \hfill}
+\markright{Brian H. Hulette \hfill Appendix \ref{sec:source}. Project Source \hfill}
 % TODO: make sure this is a link - and make the project public!
 The full source is hosted on GitHub
 (\texttt{https://github.com/TheNeuralBit/cyclo\_channelizer}). Some of the
