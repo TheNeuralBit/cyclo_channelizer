@@ -1,5 +1,5 @@
 function plot_channels(channels, f_s)
-    num_channels = size(channels, 1);
+    num_channels = length(channels);
     if num_channels == 2
         factors = [1 2];
     else

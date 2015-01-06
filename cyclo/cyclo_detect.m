@@ -1,3 +1,5 @@
+% TODO if data is 2D then interpret it as an fft - nfft must match the fft
+% dimension size
 function [output_freqs, bauds] = cyclo_detect(data, bauds_to_check, threshold, peak_distance, nfft, f_s)
 
 overall = tic;
@@ -7,9 +9,10 @@ configuration;
 output_freqs = [];
 bauds = [];
 
+cyc_fft = compute_cyclo_fft(data, nfft, CYCLO_AVERAGING);
+
 freqs = linspace(-f_s/2, f_s/2, nfft);
 spec = zeros(length(bauds), 1);
-cyc_fft = compute_cyclo_fft(data, nfft, CYCLO_AVERAGING);
 for idx = 1:length(bauds_to_check)
     spec = single_fft_cyclo(cyc_fft, bauds_to_check(idx), f_s);
     %spec = cyclic_spectrum(data, bauds_to_check(idx), nfft, f_s, CYC_SPEC_METHOD, CYCLO_AVERAGING);

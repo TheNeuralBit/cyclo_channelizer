@@ -1,4 +1,4 @@
-function b = design_filter(f_s, num_channels)
+function b = design_filter(num_channels)
 filename = sprintf('filt_%d.mat', num_channels);
 if exist(filename)
     load(filename, 'b');

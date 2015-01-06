@@ -55,6 +55,6 @@ Figures To Generate
 Extras
 ------
 - [X] Speed up packetization if I still need it
-- [ ] Cache generated filters so we dont have to regenerate
+- [X] Cache generated filters so we dont have to regenerate
 - [ ] Compute graphs of Pd vs Pfa vs SNR empirically
 - [ ] ~~Experiment with morphological filter for peak extraction~~

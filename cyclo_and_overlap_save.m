@@ -4,8 +4,9 @@ function [channels] = cyclo_and_overlap_save(data, bauds_to_check, samps_per_sym
     min_spacing = CYCLO_PEAK_MIN_SPACING;
     nfft = 1024;
 
-    [freqs, bauds] = cyclo_detect(data, bauds_to_check, threshold, min_spacing, nfft, F_S)
     decimations = F_S./bauds./samps_per_sym
 
-    channels = overlap_save_channelizer(data, freqs, decimations, F_S, nfft);
+    [data_fft, P, V] = os_fft(data, decimations, fft_size);
+    [freqs, bauds] = cyclo_detect(data_fft, bauds_to_check, threshold, min_spacing, nfft, F_S)
+    channels = os_filter(data_fft, freqs, decimations, F_S, fft_size, P, V);
 end

@@ -5,7 +5,7 @@ channels = cell(num_channels, 1);
 
 %% DESIGN THE FILTER
 disp('Designing the filter...')
-b = design_filter(F_S, num_channels);
+b = design_filter(num_channels);
 
 fvtool(b, 1);
 
