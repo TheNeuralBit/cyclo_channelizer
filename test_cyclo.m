@@ -5,11 +5,12 @@ numbits = 2048*10;
 input_bits = randn(1, numbits)<0;
 PN = 40;
 num_chans = 4;
-bauds = [1/8, 1/16, 1/4, 1/16].*F_S./num_chans;
+output_f_s = F_S/4;
+bauds = [1/8, 1/16, 1/4].*F_S./num_chans
 UP = length(bauds);
 
 freqs = -F_S/2:output_f_s:F_S/2;
-freqs = freqs(1:end-1) + output_f_s/2;
+freqs = freqs(1:end-2) + output_f_s
 
 tx = gen_test_sig(input_bits, PN, bauds, freqs);
 
@@ -44,6 +45,7 @@ plot3(f, alpha1*ones(1, nfft), 10*log(abs(cyc1)), '-b', ...
 set(h1, 'Ydir', 'reverse');
     
 % TODO use the same FFT for all of these? BECAUSE I CAN
+plot_cyc_spec(tx, 0, nfft, F_S, CYC_SPEC_METHOD, CYCLO_AVERAGING);
 plot_cyc_spec(tx, F_S/num_chans/16, nfft, F_S, CYC_SPEC_METHOD, CYCLO_AVERAGING);
 plot_cyc_spec(tx, F_S/num_chans/8,  nfft, F_S, CYC_SPEC_METHOD, CYCLO_AVERAGING);
 plot_cyc_spec(tx, F_S/num_chans/4,  nfft, F_S, CYC_SPEC_METHOD, CYCLO_AVERAGING);
