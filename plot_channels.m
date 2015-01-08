@@ -1,11 +1,15 @@
-function plot_channels(channels, f_s)
+function plot_channels(channels, f_s, titles)
     num_channels = length(channels);
     if num_channels == 2
         factors = [1 2];
     else
         factors = factor(num_channels);
         if length(factors) == 1
-            factors = factor(num_channels + 1);
+            if max(factors(1) == [3 5])
+                factors = [1 factors];
+            else
+                factors = factor(num_channels + 1);
+            end
         end
         while length(factors) > 2
             [val, idx] = min(factors);
@@ -18,6 +22,7 @@ function plot_channels(channels, f_s)
     figure;
     for i=1:num_channels
         subplot(factors(1), factors(2), i);
-        plot_spectrum(channels{i}, f_s(i));
+        plot_spectrum(channels{i}, f_s(i), 1024);
+        title(titles{i});
     end
 end

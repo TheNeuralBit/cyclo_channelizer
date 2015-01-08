@@ -5,11 +5,17 @@ function [output_freqs, bauds] = cyclo_detect(data, bauds_to_check, threshold, p
 overall = tic;
 
 configuration;
+DEBUG_FIGURES = 1;
 
 output_freqs = [];
 bauds = [];
 
-cyc_fft = compute_cyclo_fft(data, nfft, CYCLO_AVERAGING);
+if size(data, 1) == nfft
+    cyc_fft = data(:, 1:CYCLO_AVERAGING);
+else
+    cyc_fft = compute_cyclo_fft(data, nfft, CYCLO_AVERAGING);
+end
+
 
 freqs = linspace(-f_s/2, f_s/2, nfft);
 spec = zeros(length(bauds), 1);
@@ -18,7 +24,8 @@ for idx = 1:length(bauds_to_check)
     %spec = cyclic_spectrum(data, bauds_to_check(idx), nfft, f_s, CYC_SPEC_METHOD, CYCLO_AVERAGING);
     if DEBUG_FIGURES
         figure;
-        plot(abs(spec));
+        plot(linspace(-f_s/2, f_s/2, nfft), 10*log(abs(spec)));
+        title(sprintf('SCD at \\alpha = %d', bauds_to_check(idx)));
     end
     [pks, locs] = findpeaks(abs(spec), 'MinPeakHeight', threshold, ...
                                        'MinPeakDistance', round(peak_distance/(f_s/nfft)));

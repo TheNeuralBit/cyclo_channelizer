@@ -5,10 +5,11 @@ numbits = 2048*10;
 input_bits = text_file_to_binary('tale_of_two_cities.txt');
 input_bits = input_bits(1:numbits);
 PN = 40;
-bauds = [1/8 1/16 1/4].*F_S./4;
+bauds = [1/8, 1/16, 1/4].*F_S./4;
 UP = length(bauds);
 
-freqs = (-(length(bauds) - 1)/2:(length(bauds) - 1)/2).*(F_S/(length(bauds) + 1))
+freqs = -F_S/2:F_S/4:F_S/2;
+freqs = freqs(1:end-2) + F_S/4;
 
 tx = gen_test_sig(input_bits, PN, bauds, freqs);
 
@@ -17,8 +18,12 @@ plot_spectrum(tx, F_S);
 output_samps_per_sym = 4;
 bauds_to_check = sort(unique(bauds))
 CYCLO_PEAK_MIN_SPACING = F_S/4/2;
-channels = cyclo_and_overlap_save(tx, bauds_to_check, output_samps_per_sym);
-plot_channels(channels, ones(length(channels), 1).*(F_S*4));
+[channels output_f_s freqs] = cyclo_and_overlap_save(tx, bauds_to_check, output_samps_per_sym);
+titles = cell(size(freqs));
+for i=1:length(freqs)
+    titles{i} = sprintf('%.3f MHz', freqs(i)/1E6);
+end
+plot_channels(channels, output_f_s, titles);
 
 fprintf('\n');
 disp('Demodulating Each Channel');

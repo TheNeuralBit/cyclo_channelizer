@@ -3,8 +3,8 @@ if nargin < 6
     averaging = 1;
 end
 
-data_reshape = reshape(data(1:fft_size*averaging), fft_size, averaging);
 if strcmp(method, 'freq_shift')
+    data_reshape = reshape(data(1:fft_size*averaging), fft_size, averaging);
     t = 0:1/F_S:(fft_size*averaging - 1)/F_S;
     t = reshape(t, fft_size, averaging);
     d_right = data_reshape.*exp( j*2*pi*alpha/2*t);
