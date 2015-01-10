@@ -17,7 +17,7 @@ dev = [(10^(rp/20)-1)/(10^(rp/20)+1)  10^(-rs/20)];
 c = firpmord( f, a, dev, 1, 'cell');
 b = firpm(c{:});
 
-Hd=design(fdesign.lowpass('Fp,Fst',0.8/num_channels, 1.2/num_channels), 'equiripple');
+Hd=design(fdesign.lowpass('Fp,Fst',0.9/num_channels, 1.2/num_channels), 'equiripple');
 
 s = coeffs(Hd);
 b = s.Numerator;
