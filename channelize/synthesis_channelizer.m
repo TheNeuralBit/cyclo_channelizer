@@ -1,6 +1,8 @@
 function [output] = synthesis_channelizer(data, F_S)
 % data: dimension 1 = channel
 %       dimension 2 = time
+configuration;
+
 num_channels = length(data);
 data = cell2mat(data);
 FFT_SIZE = num_channels;
@@ -10,7 +12,9 @@ disp('Designing the filter...');
 b = design_filter(num_channels);
 
 % plot the filter
-fvtool(b, 1);
+if DEBUG_FIGURES
+    fvtool(b, 1);
+end
 
 % zero pad the filter, split coefficients up
 b = [b zeros(1, FFT_SIZE - mod(length(b), FFT_SIZE))];

@@ -1,4 +1,7 @@
 function plot_channels(channels, f_s, titles)
+    if nargin < 3
+        titles = cell(length(channels), 1);
+    end
     num_channels = length(channels);
     if num_channels == 2
         factors = [1 2];

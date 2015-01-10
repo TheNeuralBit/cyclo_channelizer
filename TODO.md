@@ -27,16 +27,17 @@ Core Goals
     - List of bauds for cyclo detect
     - Sample rate/upsample
     - RC rolloff
-- [ ] direct analysis/synthesis channelizer with cyclo detects
+- [X] direct analysis/synthesis channelizer with cyclo detects
 - [X] Create overlap-save filter bank
     - [X] Make os filter bank work for N channels
     - [ ] allow frequency shifting in EITHER time or frequency
         - When we do shifting in time we can relax the requirement for ldf(P, fft_size)
 - Polyphase todo
-    - [ ] Get channel input/output straight for synthesis/analysis channelizers (output from one should be able to go directly to the other)
+    - [X] Get channel input/output straight for synthesis/analysis channelizers (output from one should be able to go directly to the other)
     - [X] Return a cell array
-    - [ ] Create combination synthesis/analysis channelizer
-- [ ] Combine OS and cyclo_detect
+    - [X] Create combination synthesis/analysis channelizer
+    - [ ] Get scaling consistent for various size of synthesis
+- [X] Combine OS and cyclo_detect
 - [ ] Comparison of runtime vs num channels with the folllowing three things:
     - cyclo and OS (without combined FFT)
     - cyclo and OS (with combined FFT)
@@ -47,8 +48,8 @@ Core Goals
 Figures To Generate
 -------------------
 - [ ] Full SCD plot
-- [ ] SCD estimates at specific baud rates for WB signal
-- [ ] Output channels for OS filter bank
+- [X] SCD estimates at specific baud rates for WB signal
+- [X] Output channels for OS filter bank
 - [ ] Output channels for polyphase channelizer
 
 
