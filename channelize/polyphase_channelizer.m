@@ -7,7 +7,7 @@ function [output] = polyphase_channelizer(data, freqs, decimations, F_S)
     split_channels = analysis_channelizer(data, D, F_S);
     split_f_s = F_S/D;
     if DEBUG_FIGURES
-        plot_channels(split_channels, repmat(split_f_s, D, 1));
+        plot_channels(split_channels, repmat(split_f_s, D, 1), 'AxisLabels', 0, 'YMin', -60, 'YMax', 20);
     end
 
     % TODO: correct freq offset

@@ -23,7 +23,7 @@ titles = cell(size(freqs));
 for i=1:length(freqs)
     titles{i} = sprintf('%.3f MHz', freqs(i)/1E6);
 end
-plot_channels(channels, output_f_s, titles);
+plot_channels(channels, output_f_s, 'AxisLabels', 1, 'Titles', titles);
 
 fprintf('\n');
 disp('Demodulating Each Channel');
