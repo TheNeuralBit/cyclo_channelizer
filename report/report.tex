@@ -418,26 +418,67 @@ The final structure has one more modification. The outputs are multiplied by com
 
 Where $y_r(n)$ represents the output of filter $H_r(z)$. Thus we can compute
 all $D$ channels using a $D$ point FFT, as shown in Figure
-\ref{fig:polyphase_final}. The structure of the Polyphase Synthesis Channelizer
-can be seen in Figure \ref{fig:polyphase_synthesis}. It is essentially a mirror
-image of the Analysis case - an IFFT followed by filters and a reverse
-commutator.
+\ref{fig:polyphase_analysis}. Figure \ref{fig:polyphase_synthesis} shows the
+complementary structure: the Polyphase Synthesis Channelizer. It is essentially
+a mirror image of the Analysis case - an IFFT followed by filters and a reverse
+commutator. It combines $D$ channels at an equal sample rate, $f_s$, into
+a single wideband signal at sample rate $Df_s$. The following section shows how
+these two structures can be used together to produce a very flexible structure.
 
 % TODO: reverse commutator? is that a thing?
 
 \begin{figure}[h!]
 \centerline{
     \subfloat[Analysis]
-    {\includegraphics[width=0.45\textwidth]{polyphase_final}%
-    \label{fig:polyphase_final}}
+    {\includegraphics[height=4cm]{polyphase_analysis}%
+    \label{fig:polyphase_analysis}}
     \hfill
     \subfloat[Synthesis]
-    {\includegraphics[width=0.45\textwidth]{polyphase_final}%
+    {\includegraphics[height=4cm]{polyphase_synthesis}%
     \label{fig:polyphase_synthesis}}
 }
 \caption{Full Polyphase Analysis/Synthesis Channelizer Structures}
-\label{fig:overlap_save_filter_banks}
+\label{fig:poly_analysis_synthesis_structs}
 \end{figure}
+
+\subsection{Combining Analysis and Synthesis Channelizers}
+The primary limitation of an Analysis Channelizer alone is that it is limited
+to a single output sample rate. This is perfectly acceptable when every signal
+being processed is the at the same bandwidth and symbol rate, but in many SDR
+applications this is not the case. One solution to this problem is to use
+analysis and synthesis structures \emph{together} to create one very flexible
+strucuture.
+
+Figure \ref{fig:analysis_and_synthesis} illustrates one simple way that this
+might be implemented. The first step of this process uses an Analysis
+Channelizer to break up the wideband into small equal parts (1). Then,
+Synthesis Channelizers are used to re-combine the parts of the signal that
+correspond to signals of interest (2). Finally, complex phasors are used to
+remove the frequency offset created by the Synthesis Channelizers, as well as
+any residual offset based on the desired center frequency (3).
+
+The analysis channelizer can be running all the time, while the synthesis
+channelizers and phasors in steps (2) and (3) can be dynamically allocated as
+signals of interest are detected (by some external detector).
+
+\begin{figure}[h!]
+    \begin{center}
+    \includegraphics[width=0.8\textwidth]{polyphase}%
+    \end{center}
+    \caption{
+Using Polyphase Analysis/Synthesis Channelizer Structures in concert. Step (1)
+is an Analysis Channelizer that breaks the signal into 16 channels, Step (2) is
+a set of Synthesis Channelizers for each signal of interest, and Step (3) is
+a complex phasor that corrects the frequency offset. Note that this figure
+depicts the signal in the frequency domain, simply for ease of illustration -
+all inputs and outputs are time-domain signals.
+    }
+    \label{fig:analysis_and_synthesis}
+\end{figure}
+
+\cite{Harris2} shows a more complex take on this same concept.
+% TODO: more detail about Harris2 if I want to bring it up
+
 
 \subsection{Limitations}
 \label{sec:poly_limitations}
@@ -714,8 +755,20 @@ when they do away.
 \section{Polyphase Analysis Channelizer}
 \label{sec:sim_poly}
 
+\begin{figure}[bh!]
+    \includegraphics[width=\textwidth]{polyphase_splits}%
+    \caption{X Axes are frequency in Hz, Y Axes are magnitude in dB}
+    \label{fig:cyclo_os_results}
+\end{figure}
+
 \subsection{Adding Cyclo Detection}
 \label{sec:sim_poly_cyclo}
+
+\begin{figure}[bh!]
+    \includegraphics[width=\textwidth]{cyclo_poly_results}%
+\caption{Output of the combined cyclostationary detector and polyphases channelizer. All three test signals sampled at four samples per symbol.}
+\label{fig:cyclo_os_results}
+\end{figure}
 
 \section{Overlap-Save Filter Bank}
 \label{sec:sim_os}
@@ -727,7 +780,7 @@ simulation cannot be configured to tune in the time domain at this time.
 The channelizer is fully implemented in \texttt{overlap\_save\_channelizer(...)}.
 The function accepts three important parameters which determine how it
 operates: 1) a list of center frequencies to tune, 2) a list of decimation
-factors corresponding to each frequency, and 3) an FFT size to use.
+factors corresponding to each frequency, and 3) an FFT size.
 
 The first step performed in this function is determining the value of the
 variable $P$. This corresponds to the length of the filter used, and determines
@@ -769,7 +822,7 @@ particular test every channel was demodulated with a 0\% Bit Error Rate.
 
 \begin{figure}[bh!]
     \includegraphics[width=\textwidth]{cyclo_os_results}%
-\caption{Estimates of the SCD at various cyclic frequencies. FFT size = 1024, Averaged over 10 FFTs.}
+\caption{Output of the combined cyclostationary detector and overlap-save filter bank. All three test signals sampled at four samples per symbol.}
 \label{fig:cyclo_os_results}
 \end{figure}
 
