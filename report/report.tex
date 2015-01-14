@@ -442,12 +442,13 @@ these two structures can be used together to produce a very flexible structure.
 \end{figure}
 
 \subsection{Combining Analysis and Synthesis Channelizers}
-The primary limitation of an Analysis Channelizer alone is that it is limited
-to a single output sample rate. This is perfectly acceptable when every signal
-being processed is the at the same bandwidth and symbol rate, but in many SDR
-applications this is not the case. One solution to this problem is to use
-analysis and synthesis structures \emph{together} to create one very flexible
-strucuture.
+The primary limitations of an Analysis Channelizer alone are that 1) it is limited
+to a single output sample rate, and 2) the channel center frequencies must be
+a multiple of that output sample rate. This is perfectly acceptable when every
+signal being processed is at the same bandwidth and symbol rate, and they are
+channelized with a known spacing, but in many SDR applications this is not the
+case. One solution to this problem is to use analysis and synthesis structures
+\emph{together} to create one very flexible strucuture.
 
 Figure \ref{fig:analysis_and_synthesis} illustrates one simple way that this
 might be implemented. The first step of this process uses an Analysis
