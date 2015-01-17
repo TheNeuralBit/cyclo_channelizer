@@ -37,6 +37,8 @@ Core Goals
     - [X] Return a cell array
     - [X] Create combination synthesis/analysis channelizer
     - [ ] Get scaling consistent for various size of synthesis
+    - [ ] Allow analysis channelizer to operate at a higher rate so there are
+          no disallowed frequencies
 - [X] Combine OS and cyclo_detect
 - [ ] Comparison of runtime vs num channels with the folllowing three things:
     - cyclo and OS (without combined FFT)

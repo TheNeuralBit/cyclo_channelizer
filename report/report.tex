@@ -1,4 +1,4 @@
-% PROJECT: <ETD> Electronic Thesis and Dissertation Initiative
+%t PROJECT: <ETD> Electronic Thesis and Dissertation Initiative
 %   TITLE: LaTeX report template for ETDs in LaTeX
 %  AUTHOR: Neill Kipp, nkipp@vt.edu
 %     URL: http://etd.vt.edu/latex/
@@ -442,6 +442,7 @@ these two structures can be used together to produce a very flexible structure.
 \end{figure}
 
 \subsection{Combining Analysis and Synthesis Channelizers}
+\label{sec:combine_analysis_synthesis}
 The primary limitations of an Analysis Channelizer alone are that 1) it is limited
 to a single output sample rate, and 2) the channel center frequencies must be
 a multiple of that output sample rate. This is perfectly acceptable when every
@@ -668,8 +669,8 @@ parameters:
     \ref{sec:estimating_scd}: Exact time-domain frequency shifts, or a single
     FFT with frequency-domain shifts. The latter is what we are primarily concerned
     with.
-    \item[FFT Size:]Size of the FFT used to go to the frequency domain.
-    \item[Averaging:]Will average N estimates together to produce a more accurate
+    \item[FFT Size:] Size of the FFT used to go to the frequency domain.
+    \item[Averaging:] Will average N estimates together to produce a more accurate
     result.
 \end{description}
 
@@ -755,21 +756,96 @@ when they do away.
 
 \section{Polyphase Analysis Channelizer}
 \label{sec:sim_poly}
+The simulation of the polyphase analysis channelizer is broken up into three
+major parts: \texttt{analysis\_channelizer(...)},
+\texttt{synthesis\_channelizer(...)}, and \texttt{polyphase\_channelizer(...)}.  The
+latter of these combines the first two to implement the flexible channelizer
+described in Section~\ref{sec:combine_analysis_synthesis}.
+
+The implementation of \texttt{analysis\_channelizer(...)} accepts time domain
+input data and a number of channels to produce, and outputs that number of
+channels in the time domain. No additional configuration is necessary.
+A low-pass filter with cut-off at the output's nyquist frequency is designed and
+used. The output is indexed such that the first channel above $-f_s/2$ is in
+index 1, the chanel at baseband is in index $D/2$, and the channel at $f_s/2$
+is in index $D$.  This indexing is illustrated in
+Figure~\ref{fig:polyphase_channel_indexing}.
+
+% TODO create this figure
+
+\texttt{synthesis\_channelizer(...)} is designed to perfectly complement
+\texttt{analysis\_channelizer(...)}, so it will accept the list of channelized
+data produced by the synthesis channelizer, and it will produce a replica of
+the original input. Internally, it designs and uses a low-pass filter with
+cutoff at the input's nyquist frequency. Note that this means an analysis
+channelzier immediately followed by a synthesis channelizer of the same size
+will use the same filter internally.
+
+% TODO: mention that assumption is even number of channels
+
+Finally, \texttt{polyphase\_channelizer(...)} utilizes both of these functions to
+implement a flexible channelizer structure.  It accepts the input data its
+sample rate and two additional confiuration parameters:
+\begin{description}
+    \item[Frequencies:] A list of the center frequencies of the signals of interest
+    \item[Decimations:] A list of the decimation factors to be used for each
+        corresponding center frequency.  Every decimation factor must be
+        a factor of the highest decimation factor.
+    result.
+\end{description}
+The simulation will first create a synthesis channelizer with decimation equal
+to the highest requested decimation (Step (1) from
+Figure~\ref{fig:analysis_and_synthesis}), Figure~\ref{fig:polyphase_splits}.  For
+all requested outputs with this decimation factor, the nearest output of the
+analysis channelizer will be frequency shifted so that the desired center
+frequency is at baseband, and passed through. For every remaining output,
+a synthesis channelizer will be produced to combine the channels surrounding
+that frequency and a complex phasor will shift the desired center frequency
+down to baseband.
 
 \begin{figure}[bh!]
     \includegraphics[width=\textwidth]{polyphase_splits}%
-    \caption{X Axes are frequency in Hz, Y Axes are magnitude in dB}
-    \label{fig:cyclo_os_results}
+    \caption{Output of a 16 channel polyphase analysis channelizer operating on
+             the test signal. X Axes are frequency in Hz, Y Axes are magnitude
+             in dB}
+    \label{fig:polyphase_splits}
 \end{figure}
+
+The major limitation of this implementation is that certain frequencies
+at the highest decimation factor \emph{cannot} be produced. Any signal at the
+boundary between two outputs of the analysis channelizer will not be
+channelized correctly. A solution to this would be to force the analysis
+channelizer to use a higher decimation factor than any of the requested outputs.
+However there are certain trade-offs here: 1) it increases the computational
+complexity, since larger FFTs are required, and 2) every output is separated
+into more parts before being combined which could harm the signal integrity
+somewhat.
 
 \subsection{Adding Cyclo Detection}
 \label{sec:sim_poly_cyclo}
+As discussed in Section~\ref{sec:poly_limitations}, there is no way to
+efficiently combine this polyphase channelizer structure with wideband SCD
+estimation.  Thus, this simulation simply uses an unmodified version of the
+cyclostationary detector discussed previously to direct an unmodified polyphase
+channelizer. This function, \texttt{cyclo\_and\_polyphase(...)} accepts the input
+data and performs detection and channelization. The detector can be configured
+with all the same parameters discussed in Section~\ref{sec:sim_cyclo}. The
+detector outputs a list of center frequencies and corresponding symbol rates,
+which are converted to decimation factors and passed to the polyphase
+channelizer.
 
 \begin{figure}[bh!]
     \includegraphics[width=\textwidth]{cyclo_poly_results}%
 \caption{Output of the combined cyclostationary detector and polyphases channelizer. All three test signals sampled at four samples per symbol.}
-\label{fig:cyclo_os_results}
+\label{fig:cyclo_poly_results}
 \end{figure}
+
+Figure~\ref{fig:cyclo_os_results} shows the output of this simulation when run
+on our test signal. Note the small peaks in the $2.5$ MHz signal around $\pm1$
+MHz - these are not present in the original signal, they are produced from
+aliasing in the analysis channelizer, which can be seen in the corresponding
+outputs in Figure~\ref{fig:polyphase_splits}.
+% 0.9375 MHz, to be exact
 
 \section{Overlap-Save Filter Bank}
 \label{sec:sim_os}
