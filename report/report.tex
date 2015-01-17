@@ -808,7 +808,7 @@ all the time. In an actual application the cyclostationary detector should be
 run continuously to detect new signals as soon as they come up, and to detect
 when they go away.
 
-\section{Polyphase Analysis Channelizer}
+\section{Polyphase Analysis/Synthesis Channelizer}
 \label{sec:sim_poly}
 The simulation of the polyphase analysis channelizer is broken up into three
 major parts: \texttt{analysis\_channelizer(...)},
@@ -857,7 +857,7 @@ a synthesis channelizer will be produced to combine the channels surrounding
 that frequency (Step (2)) and a complex phasor will shift the desired center
 frequency down to baseband (Step (3)).
 
-\begin{figure}[bh!]
+\begin{figure}[h!]
     \includegraphics[width=\textwidth]{polyphase_splits}%
     \caption{Output of a 16 channel polyphase analysis channelizer operating on
              the test signal. X Axes are frequency in Hz, Y Axes are magnitude
