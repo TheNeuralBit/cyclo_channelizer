@@ -217,19 +217,22 @@ filter bank. These structures are evaluated on two important criteria:
 computational efficiency when combined with a cyclostationary detector.
 % TODO: list papers that discuss SCD for various protocols
 
-Chapter~\ref{sec:cyclo} provides background information on cyclostationary
+Chapter~\ref{sec:background} provides background information on cyclostationary
 properties and the Specral Correlation Density (SCD) function upon which the
-detector relies.  Chapter~\ref{sec:chan} discusses and compares both of the
-channelizer structures that are simulated. Chapter~\ref{sec:sim}  discusses the
-MATLAB simulation that was created and the results of it. Finally,
-Appendix~\ref{sec:source} provides annotated source code for key parts of the
-simulation, as well as locations where the entire source code can be found.
+detector relies, as well as  both of the channelizer structures that are
+simulated. Chapter~\ref{sec:sim}  discusses the MATLAB simulation that was
+created and the results of it. Finally, Appendix~\ref{sec:source} provides
+annotated source code for key parts of the simulation, as well as locations
+where the entire source code can be found.
 
-\chapter{Cyclostationary Detection}
+\chapter{Background Information}
+\label{sec:background}
+\markright{Brian H. Hulette \hfill Chapter \ref{sec:background}. Background Information \hfill}
+
+\section{Cyclostationary Detection}
 \label{sec:cyclo}
-\markright{Brian H. Hulette \hfill Chapter \ref{sec:cyclo}. Cyclostationary Detection \hfill}
 
-\section{Cyclostationarity}
+\subsection{Cyclostationarity}
 \label{sec:cyclo_prop}
 Often signals are modeled as stochastic random processes with properties such as
 mean and variance, but many man-made signals, particularly digital communications,
@@ -290,7 +293,7 @@ types, including QPSK, which is used in the presented simulation.
 %identify the frequency, $f_i$, of those waveforms which are transmitted at a
 %specific symbol rate.
 
-\section{Estimating the SCD}
+\subsection{Estimating the SCD}
 \label{sec:estimating_scd}
 % Use Gardner1 to show that SCD is conjugate multiplication of frequency shifted spectra
 % TODO:
@@ -339,9 +342,6 @@ can still use a single forward FFT and approximate the shift by interpolating
 between bins, but this is only an approximation.
 
 
-\chapter{Channelizer Structures}
-\label{sec:chan}
-\markright{Brian H. Hulette \hfill Chapter \ref{sec:chan}. Channelizer Structures\hfill}
 \section{Polyphase Analysis/Synthesis Channelizer}
 \label{sec:poly_chan}
 Fred Harris has described the related structures that he calls Polyphase
