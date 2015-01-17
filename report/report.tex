@@ -34,7 +34,13 @@
 \usepackage{amssymb}
 \usepackage{graphicx,dblfloatfix}
 \usepackage{subfig}
+\usepackage{hyperref}
 \graphicspath{ {./images/} }
+\hypersetup{
+    colorlinks=true,
+    urlcolor=blue           % color of external links
+}
+$ END BHH Packages
 
 
 \begin{document}
@@ -649,11 +655,17 @@ Each Module is tested with the same wideband signal. A waveform sampled at 10 MH
 \end{itemize}
 Note that the symbol rates were all chosen as fractions of the wideband sample
 rate by design, as this allows the approximation discussed in
-Section~\ref{sec:estimating_scd} to be used. Additionally, the center
-frequencies are multiples of $f_s/4$ which allows a polyphase analysis
-channelizer to be used easily.
+Section~\ref{sec:estimating_scd} to be used.
 
-TODO: Description of the QPSK Transmitter/Receiver goes here.
+A simulation of a QPSK transmitter/receiver pair is used to generate the
+signals used in this signal, and to attempt to demodulate the output of the
+channelizers. This trasmitter channel encodes the data with a convolutional
+code, packetizes the encoded data, and appends a synchronization sequence to
+each packet. The receiver uses a squared spectrum to correct any major
+frequency offsets, then uses the synchronization sequence to correct timing and
+phase offsets. on a per packet basis. Finally, it performs channel decoding and
+outputs the demodulated bits. More detail can be found in the project report, available at
+\url{http://github.com/TheNeuralBit/cyclo_channelzer/reference/ECE5654_Project_Report.pdf}.
 
 \section{Cyclostationary Detector}
 \label{sec:sim_cyclo}
@@ -950,16 +962,33 @@ particular test every channel was demodulated with a 0\% Bit Error Rate.
 \markright{Brian H. Hulette \hfill Appendix \ref{sec:source}. Project Source \hfill}
 % TODO: make sure this is a link - and make the project public!
 The full source is hosted on GitHub
-(\texttt{https://github.com/TheNeuralBit/cyclo\_channelizer}). Some of the
+(\url{https://github.com/TheNeuralBit/cyclo\_channelizer}). Some of the
 critical files are included in this appendix.
 
-\section{\texttt{cyclic\_spectrum.m}}
+\section{Cyclostationary Detection}
+\subsection{\texttt{cyclo\_detect.m}}
+\lstinputlisting{../cyclo/cyclo_detect.m}
+\subsection{\texttt{cyclic\_spectrum.m}}
 \lstinputlisting{../cyclo/cyclic_spectrum.m}
-\section{\texttt{synthesis\_channelizer.m}}
-\lstinputlisting{../channelize/synthesis_channelizer.m}
-\section{\texttt{analysis\_channelizer.m}}
+\subsection{\texttt{single\_fft\_cyclo.m}}
+\lstinputlisting{../cyclo/single_fft_cyclo.m}
+\subsection{\texttt{compute\_cyclo\_fft.m}}
+\lstinputlisting{../cyclo/compute_cyclo_fft.m}
+
+\section{Polyphase Channelizer}
+\subsection{\texttt{polyphase\_channelizer.m}}
 \lstinputlisting{../channelize/analysis_channelizer.m}
-\section{\texttt{overlap\_save\_channelizer.m}}
+\subsection{\texttt{analysis\_channelizer.m}}
+\lstinputlisting{../channelize/analysis_channelizer.m}
+\subsection{\texttt{synthesis\_channelizer.m}}
+\lstinputlisting{../channelize/synthesis_channelizer.m}
+
+\section{Overlap-Save Channelizer}
+\subsection{\texttt{overlap\_save\_channelizer.m}}
 \lstinputlisting{../channelize/overlap_save_channelizer.m}
+\subsection{\texttt{os\_fft.m}}
+\lstinputlisting{../channelize/os_fft.m}
+\subsection{\texttt{os\_filter.m}}
+\lstinputlisting{../channelize/os_filter.m}
 
 \end{document}
