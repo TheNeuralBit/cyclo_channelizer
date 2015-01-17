@@ -128,7 +128,7 @@ combine the two algorithms. Detection is performed using the
 spectral-correlation density function which exploits the cyclostationary
 property of digital signals \cite{Gardner1}.  These detections are then used to
 direct a channelizer which will tune, filter, and decimate all of the detected
-signals. Two different channelizer structures are examined – a polyphase
+signals. Two different channelizer structures are examined: a polyphase
 analysis/synthesis channelizer \cite{Harris1} and an overlap-save filter bank
 \cite{Borgerding1}.
 
@@ -159,19 +159,19 @@ its ability to function for many different types of digital signals.
 % Dedication and Acknowledgments are both optional
 % \chapter*{Dedication}
 \chapter*{Acknowledgments}
-I would like to acknowledge the work of both Craig Carlson and Ruth Stoehr.
+First I must acknowledge the work of both Craig Carlson and Ruth Stoehr.
 The core of my testbed for this project is a robust QPSK Transmitter/Receiver
-pair we designed together for an ECE5654 project which we completed in the
-Spring of 2013.
+pair we designed together for an ECE5654 project in the Spring of 2013.
 
 I would like to thank my current employer, n~ask, inc., and all of my
-co-workers there for their support.
+co-workers there for their support, as well as  the .
 
 I would also like to thank the members of my committee, particularly Dr.
 Zaghloul, for their patience and support.
 
-Finally I would like to thank my friends and family, particularly my girlfriend
-Meredith, for letting me use ``My Masters" as an excuse for nearly anything.
+Finally, I would like to thank my friends and family, particularly my girlfriend
+Meredith, for helping me through this years long process, and letting me use
+``My Masters" as an excuse for nearly anything.
 
 \tableofcontents
 \pagebreak
@@ -197,21 +197,22 @@ interest, and then tune, filter, decimate, and demodulate those signals.
 
 %TODO: links to SDR frameworks (webSDR) TODO: image of SDR plotting
 Many popular SDR applications perform this detection step with
-a "man-in-the-loop".  A falling raster of the wideband data is presented and
-the man-in-the-loop will "click-tune" to select  the frequencies that (s)he
-would like to process. One common version of this is to acquire a wideband
-slice of the HAM radio spectrum and then click tune to different frequencies to
-demodulate new FM Push-to-Talk signals and listen to them.
+a ``man in the loop".  A falling raster of the wideband data is presented and
+the man in the loop will select  the frequencies that he would like to process.
+One common example of this is to acquire a wideband slice of the HAM radio
+spectrum and then select different frequencies to demodulate new FM
+Push-to-Talk signals and listen to them.
 
 This paper investigates a structure that automates this process - but rather
-than working for a single analog signal, this framework is intended for an
-arbitrary number of digital signals. Detection is performed by
-a cyclostationary detector rather than by a man-in-the-loop, in order to
-exploit the cyclostationary properties exhibited by most digital signals with
-a fixed symbol rate.  Tuning, filtering, and decimating is performed by
-a channelizer, so that many signals can be processed at once.  Two different
-channelizer structures are examined. They are compared on two important
-criteria:
+than processing a single analog signal, this framework is intended to process
+an arbitrary number of digital signals at once. Detection is performed by
+a cyclostationary detector rather than by a man in the loop. This exploits the
+cyclostationary properties exhibited by most digital signals with a fixed
+symbol rate.  Tuning, filtering, and decimating is performed by a channelizer,
+so that many signals can be processed at once.  Two different channelizer
+structures are examined: a polyphase channelizer composed of an analysis
+channelizer followed by several synthesis channelizer, and an overlap-save
+filter bank. These structures are evaluated on two important criteria:
 1) Their ability to accurately reproduce every detected signal, and 2) Their
 computational efficiency when combined with a cyclostationary detector.
 % TODO: list papers that discuss SCD for various protocols
@@ -233,34 +234,37 @@ simulation, as well as locations where the entire source code can be found.
 Often signals are modeled as stochastic random processes with properties such as
 mean and variance, but many man-made signals, particularly digital communications,
 can be modeled with another statistical property called
-\emph{cyclostationarity} which implies the signal has some parameter which
+\emph{cyclostationarity}, which implies the signal has some parameter which
 varies with time. The frequency of this variation is called the cyclic
 frequency, $\alpha$. \cite{Gardner1}.
 
 
-Of particular interest is second-order cyclostationarity, where a signal has a
-periodic autocorrelation:
+Of particular interest for this project is second-order cyclostationarity,
+where a signal has a periodic autocorrelation, R_{xx}(t, t+\tau):
 
-\begin{IEEEeqnarray*}{lCl}
+\begin{IEEEeqnarray}{lCl}
     R_{xx}(t, t+\tau) = E\{x(t)x^*(t+\tau)\} = \sum_{\alpha} R_{xx}^{\alpha}(\tau)e^{j2 \pi \alpha t}
-\end{IEEEeqnarray*}
+\end{IEEEeqnarray}
 
 % TODO more detail here based on Oner1
+The function $R_{xx}^{\alpha}(\tau)$ is the cyclic autocorrelation function (CAF), given by:
 
-\begin{IEEEeqnarray*}{lCl}
+\begin{IEEEeqnarray}{lCl}
     R_{xx}^{\alpha}(\tau) = \lim_{T \to \infty} \frac{1}{T}\int_{-T/2}^{T/2} R_{xx}(t, t+\tau)e^{-j2\pi \alpha t} dt
-\end{IEEEeqnarray*}
+\end{IEEEeqnarray}
+The CAF is a function of two parameters, the cyclic frequency, $\alpha$ and the
+delay, $\tau$. This function can be used for signal detection in the time
+domain. An estimate of the function versus $\alpha$ and $\tau$ is computed,
+then features within this plane can be used for detection.
 % TODO: reference papers that perform time domain detection (listed in "Energy Efficient Spectrum Sensing using Cyclostationarity")
 % "Cyclostationary Based Air Interface Recognition For Software Radio Systems" is also a time domain approach
-The cyclic autocorrelation function (CAF), given by $R_{xx}^{\alpha}(\tau)$,
-can be used for signal detection in the time domain. An estimate of the 2D
-function versus $\alpha$ and $\tau$ can be computed, then features within this
-plane can be detected. However, what is of interest for this project is the
-fourier transform of the CAF, called the Spectral Correlation Density (SCD):
+However, what is of interest for this project is detection in the frequency
+domain. This can be performed using the fourier transform of the CAF, called
+the Spectral Correlation Density (SCD), giveb by:
 
-\begin{IEEEeqnarray*}{lCl}
+\begin{IEEEeqnarray}{lCl}
     S_{xx}(\alpha, f) = \int_{-\infty}^{\infty} R_{xx}^{\alpha}(\tau)e^{-j2\pi f \tau} d\tau
-\end{IEEEeqnarray*}
+\end{IEEEeqnarray}
 
 The SCD is a generalization of the conventional Power-Spectral Density (PSD),
 which it reduces to at $\alpha=0$ \cite{Oner1}. Like the CAF, the SCD also
@@ -276,10 +280,11 @@ types, including QPSK, which is used in the presented simulation.
 %various frequencies, in an AWGN channel:
 %\begin{IEEEeqnarray*}{lCl}
 %    W(t) & = & \sum C_{i}(t) e^{j 2 \pi f_i t} + N(t)
-%\end{IEEEeqnarray*}
+%\end{IEEEeqnarray}
 %
 %Where the $C_i(t)$ are cyclostationary random processes at various symbol rates,
 %tuned to corresponding frequencies $f_i$ and $N(t)$ is the AWGN.
+
 %
 %We would like to exploit the cyclostationarity of the $C_i$ waveforms to
 %identify the frequency, $f_i$, of those waveforms which are transmitted at a
@@ -291,38 +296,47 @@ types, including QPSK, which is used in the presented simulation.
 % TODO:
 % - cyclic wiener relation on Gardner1 pg. 153
 % - attempts to derive in lab notebook pg. 20-21
-Thus we can compute a discrete slice of the SCD at cyclic freqency $\alpha$ as
+% or just cite Gardner1?
+We can compute a slice of the SCD at cyclic freqency $\alpha$ as
 the cross spectral density of the two frequency-shifted time sequences
-$x_L(t) = x(t)e^{j\pi\alpha t}$ and $x_U(t) = x(t)e^{-j\pi\alpha t}$. The cross
-spectral density of these two sequences is equivalent to the conjugate
-multiplication of their individual fourier transforms:
+$x_L(t) = x(t)e^{j\pi\alpha t}$ and $x_U(t) = x(t)e^{-j\pi\alpha t}$.
 
-\begin{IEEEeqnarray*}{lCl}
+\begin{IEEEeqnarray}{lCl}
+    S_{xx}(\alpha, f) & = & X_L(f)X_U^* (f)
+\end{IEEEeqnarray}
+
+Note that $x_L(t)$ has been shifted down in frequency by $\alpha/2$, and
+$x_U(t)$ has been shifted up by the same amount. In order to estimate the SCD
+in this way we must perform two FFTs: one for both $X_L(f)$ and $X_U(f)$.
+However, it is possible to estimate both of these spectra using a single FFT,
+$X(f)$, in some cases:
+
+\begin{IEEEeqnarray}{lCl}
     S_{xx}(\alpha, f) & = & X_L(f)X_U^* (f) \\
                       & = & X(f - \alpha/2)X^*(f + \alpha/2)
-\end{IEEEeqnarray*}
+\end{IEEEeqnarray}
 
-% Discuss possibility of circular shifting a forward FFT to estimate SCD slice
-This means that we can compute $S_{xx}(\alpha, f)$ using a single forward FFT
-by shifting the spectrum in either direction by $\alpha/2$, and then conjugate
-multiplying the two shifted spectra together. This is significant, since
-a simple forward FFT of the acquired data is useful for other operations, such
-as channelization, as we will see in Section \ref{sec:poly_chan}.
+Usign the second relation we can compute $S_{xx}(\alpha, f)$ using a single
+forward FFT by shifting that FFT in either direction by $\alpha/2$, and
+then conjugate multiplying the two shifted spectra together. This is
+significant, since a simple forward FFT of the acquired data is useful for
+other operations, such as channelization, as we will see in Section
+\ref{sec:os_filter_bank}.
 
-Of course there is a caveat. In order to perform this shift accurately using an
-FFT we need to circular shift the FFT by an integer number of bins.  This
+Of course there is a caveat. In order to perform this shift accurately using a
+single FFT we need to circular shift the FFT by an integer number of bins.  This
 means we can only accurately perform this frequency shift when $\alpha/2$ is
 a multiple of the FFT resolution.  Thus $\alpha$ must satisfy the following
 relationship:
-\begin{IEEEeqnarray*}{lCl}
+\begin{IEEEeqnarray}{lCl}
     \alpha = \frac{2kf_s}{N_{fft}} \text{, } k \in \mathbb{Z}
-\end{IEEEeqnarray*}
+\end{IEEEeqnarray}
 
 If an estimate of the SCD at a cyclic frequency that does not satisfy this
-relation is required, then we must perform the frequency shift in the time
-domain to be perfectly accurate. Alternatively, we can still use a single
-forward FFT and approximate the shift by interpolating between bins, but this
-is only an approximation.
+relation is required, then we must take the original approach (perform the
+frequency shift in the time domain) to be perfectly accurate. Alternatively, we
+can still use a single forward FFT and approximate the shift by interpolating
+between bins, but this is only an approximation.
 
 
 \chapter{Channelizer Structures}
@@ -332,28 +346,28 @@ is only an approximation.
 \label{sec:poly_chan}
 Fred Harris has described the related structures that he calls Polyphase
 Analysis and Polyphase Synthesis Channelizers \cite{Harris1}. A Polyphase
-Analysis channelizer can be used to break up a wideband signal into $N$ distinct
-channels, each decimated by a factor of $N$ from the wideband sample rate. The
+Analysis channelizer can be used to break up a wideband signal into $D$ distinct
+channels, each decimated by a factor of $D$ from the wideband sample rate. The
 channelized frequencies are integer multiples of the output sample rate:
 
 \begin{IEEEeqnarray}{lCl}
-    f_k = k \frac{f_s}{N}
+    f_k = k \frac{f_s}{D}
 \end{IEEEeqnarray}
 
 where $f_k$ is the center frequency of channel $k$ and $f_s$ is the input sample
 rate. A Polyphase Synthesis Channelizer performs the reverse operation - it
-combines $N$ distinct channels with equal sample rate into a single wideband
+combines $D$ distinct channels with equal sample rate into a single wideband
 signal.
 
 These two structures can be combined to create a very flexible channelizer that
 can tune channels with arbitrary center frequencies and various bandwidths
-\cite{Harris2}.
+\cite{Harris2} - a simplified version of this structure is discussed in
+Section~\ref{sec:combine_analysis_synthesis}.
 
 In \cite{Harris1}, Harris shows how the Polyphase Analysis Channelizer works by
 starting with a basic filter/decimator and making incremental modifications
 until it becomes an Analysis Channelizer as shown in Figure
-\ref{fig:polyphase_4}. A brief summary of this description is provided here.
-
+\ref{fig:polyphase_analysis}. A brief summary of this description is provided here, which follows Figure~\ref{fig:polyphase_proof}.
 
 \begin{figure}[h!]
 \centerline{
@@ -381,9 +395,9 @@ until it becomes an Analysis Channelizer as shown in Figure
 We start with a single channel of a very basic channelizer in Figure
 \ref{fig:polyphase_1}. This channel consists of a multiplication with a complex
 phasor to tune the desired center frequency down to baseband, followed by
-a low-pass filter, represented by $h(n)$, and finally a decimation step. The
+a low-pass filter, represented by $h(n)$, and finally a decimation by $D$. The
 first modification we can make takes advantage of the Equivalency Theorem,
-which says that we can switch the order of the tuner and the filter, \emph{if}
+which says that we can switch the order of the tuner and the filter, \textbf{if}
 the filter is changed to a bandpass filter centered at $f_k$. This modification
 is shown in Figure \ref{fig:polyphase_2}. In this figure the tuner has also
 been moved after the decimator. Note that if the channel frequency, $f_k$, is
@@ -424,14 +438,15 @@ The final structure has one more modification. The outputs are multiplied by com
     y_k(n) & = & \sum_{r=0}^{D-1} y_r(n) e^{j(2\pi/D)rk} 
 \end{IEEEeqnarray}
 
-Where $y_r(n)$ represents the output of filter $H_r(z)$. Thus we can compute
-all $D$ channels using a $D$ point FFT, as shown in Figure
-\ref{fig:polyphase_analysis}. Figure \ref{fig:polyphase_synthesis} shows the
-complementary structure: the Polyphase Synthesis Channelizer. It is essentially
-a mirror image of the Analysis case - an IFFT followed by filters and a reverse
-commutator. It combines $D$ channels at an equal sample rate, $f_s$, into
-a single wideband signal at sample rate $Df_s$. The following section shows how
-these two structures can be used together to produce a very flexible structure.
+Where $y_r(n)$ represents the output of filter $H_r(z)$, and $y_k(n)$ is the
+output of channel $k$. Thus we can compute all $D$ of the complex phasors with
+a D-point FFT, as shown in Figure \ref{fig:polyphase_analysis}. Figure
+\ref{fig:polyphase_synthesis} shows the complementary structure: the Polyphase
+Synthesis Channelizer. It is essentially a mirror image of the Analysis case
+- an IFFT followed by filters and a reverse commutator. It combines $D$
+channels at an equal sample rate, $f_s$, into a single wideband signal at
+sample rate $Df_s$. The following section shows how these two structures can be
+used together to produce a very flexible channelizer.
 
 % TODO: reverse commutator? is that a thing?
 
@@ -467,10 +482,6 @@ correspond to signals of interest (2). Finally, complex phasors are used to
 remove the frequency offset created by the Synthesis Channelizers, as well as
 any residual offset based on the desired center frequency (3).
 
-The analysis channelizer can be running all the time, while the synthesis
-channelizers and phasors in steps (2) and (3) can be dynamically allocated as
-signals of interest are detected (by some external detector).
-
 \begin{figure}[h!]
     \begin{center}
     \includegraphics[width=0.8\textwidth]{polyphase}%
@@ -486,8 +497,14 @@ all inputs and outputs are time-domain signals.
     \label{fig:analysis_and_synthesis}
 \end{figure}
 
-\cite{Harris2} shows a more complex take on this same concept.
+The analysis channelizer can be running all the time, while the synthesis
+channelizers and phasors in steps (2) and (3) can be dynamically allocated as
+signals of interest are detected (by some external detector).
+
+\cite{Harris2} describes a more complex take on this same concept, but this
+simplified version is sufficient for this project.
 % TODO: more detail about Harris2 if I want to bring it up
+
 
 
 \subsection{Limitations}
@@ -497,17 +514,33 @@ Channelizer is used by itself. Every channel must be at the same output sample
 rate, $f_s/D$, and they must have center frequencies which are multiples of
 that sample rate.
 
-In \cite{Harris2}, Harris shows how analysis and synthesis
-channelizers can be used in concert, along with complex phasors, to tune out
-arbitrary center frequencies at unequal sample rates. Unfortunately, this adds
-a significant amount of complexity and is beyond the scope of this project.
+If the combination analysis/synthesis structure is used then this limitation
+can be avoided, however there are still limitations. First, the output sample
+rate must still be a decimation of the input sample rate - arbitrary rates are
+not allowed. Second, while the output signals can be reconstructed quite well
+after they have been split by the analysis channelizer, the reconstruction is
+not perfect and could introduce errors. Harris discusses the concept of
+a ``perfect reconstruction" filter \cite{Harris2} which may cirumvent this
+limitation, but it is beyond the scope of this project.
+
+Finally, there is no obvious way that this structure can be efficiently
+combined with SCD estimation for detection. Nothing about an analysis
+channelizer can be re-used for the detection approach used in this project.
+
+% TODO analysis of computational complexiy for polyphase vs cyclo
 
 \subsection{Advantages}
 \label{sec:poly_advantages}
-The primary advantage of a Polyphase Analysis Channelizer is its simplicity and efficiency.
+The primary advantage of a lone Polyphase Analysis Channelizer is its simplicity and efficiency, but its limitations make it an untenable solution for this project.
+
+The combination Polyphase Analysis/Synthesis Channelizer adds a significant
+amount of complexity, but it is still quite efficient for the amount of
+flexibility that it provides.
+
+% TODO: more stuff
 
 \section{Overlap-save Filter Bank}
-\label{sec:filter_bank}
+\label{sec:os_filter_bank}
 The ``overlap-save filter bank" structure used in this simulation is based
 entirely on a description by Mark Borgerding from March 2006
 \cite{Borgerding1}.  Borgerding's concept is based on the well known
@@ -516,9 +549,9 @@ Overlap-Save fast convolution technique.
 % TODO cite Borgerdings [1]-[5] here for Overlap-Save?
 OS fast convolution can be used to speed up convolution with
 a filter that has a long impulse response. The concept is that rather than
-convolving in the time-domain - complexity $O(N^2)$ - it is faster to first
+convolving in the time-domain, $O(N^2)$, it is faster to first
 perform an FFT of both the signal and the filter and multiply in the frequency
-domain, then IFFT to go back to the time domain - complexity $O(N\log_2N)$.
+domain, then IFFT to go back to the time domain, $O(N\log_2N)$.
 There is nothing new about this idea, but Borgerding's innovation is that he
 shows how to extend this concept to tune, filter and decimate any number of
 channels with arbitrary frequencies and bandwidths.
@@ -593,13 +626,13 @@ multiple of the decimation rate, $D$. So decimation rates whose prime factors
 are larger than 2 or 5 (or others, depending on the FFT implementation) could
 lead to FFT inefficency for this structure.
 
-One more limitation occurs when attempting to rotate the FFT to frequency shift.
-As previously mentioned, the precision of the frequency shift is limited by the
-resolution of the FFT. However, the precision is also limited further by the
-ratio of FFT size to filter order, $V$. This is because we must restrict mixing
-to the frequencies whose period completes in $L=N-(P-1)$ samples. Borgerding
-provides the following equation for computing the number of FFT bins to rotate
-to shift to frequency $f$ (\cite{Borgerding1} Equation (1)):
+One more limitation occurs when attempting to rotate the FFT to frequency
+shift.  As previously mentioned, the precision of the frequency shift is
+limited by the resolution of the FFT. However, the precision is also limited
+further by $V$, the ratio of ,FFT size to filter order. This is because we must
+restrict mixing to the frequencies whose period completes in $L=N-(P-1)$
+samples. Borgerding provides the following equation for computing the number of
+FFT bins to rotate to shift to frequency $f$ (\cite{Borgerding1} Equation (1)):
 
 \begin{equation*}
     N_{rot} = \text{round}\left( \frac{Nf}{Vf_s} \right) V
@@ -634,9 +667,9 @@ for both algorithms.
 %\end{equation}
 %Where the integer multiple $\beta$ is simply the amount of oversampling. Then we can 
 
-Averaging the overlapped FFT frames together may have an effect on the accuracy
-of the SCD estimation, but analyzing this effect is beyond the scope of this
-project.
+Additionally, averaging the overlapped FFT frames together may have an effect
+on the accuracy of the SCD estimation, but analyzing this effect is beyond the
+scope of this project.
 
 \chapter{Simulation}
 \label{sec:sim}
@@ -659,6 +692,13 @@ Note that the symbol rates were all chosen as fractions of the wideband sample
 rate by design, as this allows the approximation discussed in
 Section~\ref{sec:estimating_scd} to be used.
 
+\begin{figure}[h]
+    \begin{center}
+        \includegraphics[width=0.95\textwidth]{test_signal}
+    \end{center}
+    \caption{Test signal used for each module}
+\end{figure}
+
 A simulation of a QPSK transmitter/receiver pair is used to generate the
 signals used in this signal, and to attempt to demodulate the output of the
 channelizers. This trasmitter channel encodes the data with a convolutional
@@ -673,16 +713,16 @@ outputs the demodulated bits. More detail can be found in the project report, av
 \label{sec:sim_cyclo}
 The first module is the cyclostationary detector. The detector works by
 computing estimates of the SCD at particular cyclic frequencies and searching
-for features. The first step can be performed by the MATLAB function
-\texttt{cyclic\_spectrum(...)}, which will compute an estimate of the given
-data at a specific cyclic frequency, $\alpha$.  It accepts a few additional
-parameters:
+for features. The first step, estimating the SCD, can be performed by the
+MATLAB function \texttt{cyclic\_spectrum(...)}, which will compute an estimate
+of the given data at a specific cyclic frequency, $\alpha$.  It accepts a few
+additional parameters:
 
 \begin{description}
     \item[Mode:] Set to either of the techniques described in Section
     \ref{sec:estimating_scd}: Exact time-domain frequency shifts, or a single
     FFT with frequency-domain shifts. The latter is what we are primarily concerned
-    with.
+    with, for its efficiency.
     \item[FFT Size:] Size of the FFT used to go to the frequency domain.
     \item[Averaging:] Will average N estimates together to produce a more accurate
     result.
@@ -727,24 +767,24 @@ the human eye (less easily with a computer), since they are much wider. The
 lower baud rate signals also generate features in the higher cyclic frequency
 estimates, in the form of two, much smaller peaks, straddling the actual center
 frequency. Examples of this are visible at 0 MHz in Figure
-\ref{fig:cyclo_312500} and \ref{fig:cyclo_625000}. These featuers are easily
+\ref{fig:cyclo_312500} and \ref{fig:cyclo_625000}. These features are easily
 filtered out by either a human or a computer with a simple threshold.
 
 The second portion of the cyclo detection must use these SCD estimates to 
 generate a list of detected frequencies, and the corresponding signal's
-baud rate. In order to do so the following algorithm has been devised:
+baud rate. In order to do so the following algorithm has been devised. It accepts the input wideband data, and a list of potential baud rates that are of interest.
 
 \begin{enumerate}
-    \item Initialize two empty lists \texttt{f[]} (center frequencies) and \texttt{b[]} (baud rates)
+    \item Initialize two empty lists \texttt{f[]} (center frequencies) and \texttt{b[]} (corresponding baud rate for each frequency)
     \item Sort list of potential baud rates from lowest to highest
-    \item Estimate SCD at $\alpha$ equal to the first baud rate
+    \item Estimate SCD at $\alpha$ equal to the first (lowest) baud rate
     \label{loop_ref}
     \item Detect peaks in the SCD. Use a threshold and a minimum peak separation
         to filter out false alarms.
     \item For each detected peak, check if an entry already exists in
-        \texttt{f[]} near that frequency. If so, replace it with the peak's
+        \texttt{f[]} near that frequency. If so, replace it with this peak's
         frequency and replace the corresponding entry in \texttt{b[]} with
-        $\alpha$. Otherwise append a new entry to \texttt{f[]} and
+        $\alpha$. Otherwise, append a new entry to \texttt{f[]} and
         \texttt{b[]} with the same values.
     \item Repeat from \ref{loop_ref} using the next baud rate in the list
 \end{enumerate}
@@ -761,12 +801,12 @@ estimating the SCD.
 There is a major limitation to the implementation of this approach which is
 important to note.  The SCD estimates are generated only based on the beginning
 of the input signal. This means that signals are detected based on only the
-first (FFT Size)(# Averaged FFTs) samples. This works well in this application
+first $N_{FFT}N_{Avg}$ samples. This works well in this application
 since the test signals are on at the beginning of time and continue until there
 is no more data to transmit, but in reality signals are going up and down
 all the time. In an actual application the cyclostationary detector should be
 run continuously to detect new signals as soon as they come up, and to detect
-when they do away.
+when they go away.
 
 \section{Polyphase Analysis Channelizer}
 \label{sec:sim_poly}
@@ -814,8 +854,8 @@ all requested outputs with this decimation factor, the nearest output of the
 analysis channelizer will be frequency shifted so that the desired center
 frequency is at baseband, and passed through. For every remaining output,
 a synthesis channelizer will be produced to combine the channels surrounding
-that frequency and a complex phasor will shift the desired center frequency
-down to baseband.
+that frequency (Step (2)) and a complex phasor will shift the desired center
+frequency down to baseband (Step (3)).
 
 \begin{figure}[bh!]
     \includegraphics[width=\textwidth]{polyphase_splits}%
@@ -854,7 +894,7 @@ channelizer.
 \label{fig:cyclo_poly_results}
 \end{figure}
 
-Figure~\ref{fig:cyclo_os_results} shows the output of this simulation when run
+Figure~\ref{fig:cyclo_poly_results} shows the output of this simulation when run
 on our test signal. Note the small peaks in the $2.5$ MHz signal around $\pm1$
 MHz - these are not present in the original signal, they are produced from
 aliasing in the analysis channelizer, which can be seen in the corresponding
@@ -865,13 +905,14 @@ outputs in Figure~\ref{fig:polyphase_splits}.
 \label{sec:sim_os}
 The final module is the Overlap-Save Filter Bank. The Filter Bank is
 implemented with tuning performed in the frequency domain by circular shifting
-the FFT, as shown in Figure \ref{fig:overlap_save_shift}. Note that the
+the FFT, as shown in Figure \ref{fig:overlap_save_shift}. The
 simulation cannot be configured to tune in the time domain at this time.
 
 The channelizer is fully implemented in \texttt{overlap\_save\_channelizer(...)}.
 The function accepts three important parameters which determine how it
 operates: 1) a list of center frequencies to tune, 2) a list of decimation
 factors corresponding to each frequency, and 3) an FFT size.
+% TODO: make this a definition list?
 
 The first step performed in this function is determining the value of the
 variable $P$. This corresponds to the length of the filter used, and determines
@@ -887,7 +928,7 @@ the FFT size. All the filters will be zero-padded to this length.
 Next, the FFTs (overlapped by $P-1$ samples) are computed, and they are re-used
 to tune, filter and decimate each channel.
 
-TODO: discuss that filters are just nyquist filters
+TODO: discuss that filters are same as polyphase
 
 \subsection{Adding Cyclo Detection}
 \label{sec:sim_os_cyclo}
