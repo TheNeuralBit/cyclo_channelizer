@@ -4,7 +4,7 @@ function [output] = polyphase_channelizer(data, freqs, decimations, F_S)
     output = cell(length(freqs), 1);
 
     D = max(decimations);
-    split_channels = analysis_channelizer(data, D, F_S);
+    split_channels = analysis_channelizer(data, D);
     split_f_s = F_S/D;
     if DEBUG_FIGURES
         plot_channels(split_channels, repmat(split_f_s, D, 1), 'AxisLabels', 0, 'YMin', -60, 'YMax', 20);
@@ -22,7 +22,7 @@ function [output] = polyphase_channelizer(data, freqs, decimations, F_S)
             num_bins = D/dec;
             min_bin = nearest_bin - num_bins/2;
             max_bin = nearest_bin + num_bins/2 - 1;
-            output{i} = synthesis_channelizer(split_channels(min_bin:max_bin), F_S);
+            output{i} = synthesis_channelizer(split_channels(min_bin:max_bin));
 
             % Compute offset
             nearest_freq = nearest_bin*split_f_s - F_S/2 - split_f_s/2;

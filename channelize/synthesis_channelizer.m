@@ -1,4 +1,4 @@
-function [output] = synthesis_channelizer(data, F_S)
+function [output] = synthesis_channelizer(data)
 % data: dimension 1 = channel
 %       dimension 2 = time
 configuration;

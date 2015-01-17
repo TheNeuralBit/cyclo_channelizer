@@ -27,7 +27,7 @@ plot_spectrum(tx, F_S);
 fprintf('\n');
 disp('Running Analysis Channelizer');
 disp('----------------------------');
-channels = analysis_channelizer(tx, length(bauds), F_S);
+channels = analysis_channelizer(tx, length(bauds));
 plot_channels(channels, F_S*ones(4,1));
 
 fprintf('\n');
@@ -53,7 +53,7 @@ end
 fprintf('\n');
 disp('Running Synthesis Channelizer');
 disp('-----------------------------');
-reconstruction = synthesis_channelizer(channels, output_f_s);
+reconstruction = synthesis_channelizer(channels);
 t = 0:(1/F_S):((length(reconstruction)-1)/F_S);
 reconstruction = reconstruction.*exp(1i.*2*pi.*output_f_s.*t); %Perform frequency shift 
 figure;
