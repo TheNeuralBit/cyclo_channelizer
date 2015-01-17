@@ -42,6 +42,7 @@
     citecolor=black,
     linkcolor=black
 }
+\usepackage[section]{placeins}
 % END BHH Packages
 
 
@@ -164,12 +165,12 @@ The core of my testbed for this project is a robust QPSK Transmitter/Receiver
 pair we designed together for an ECE5654 project in the Spring of 2013.
 
 I would like to thank my current employer, n~ask, inc., and all of my
-co-workers there for their support, as well as  the .
+co-workers there for their support.
 
 I would also like to thank the members of my committee, particularly Dr.
 Zaghloul, for their patience and support.
 
-Finally, I would like to thank my friends and family, particularly my girlfriend
+Finally, I would like to thank my friends and family, especially my girlfriend
 Meredith, for helping me through this years long process, and letting me use
 ``My Masters" as an excuse for nearly anything.
 
@@ -334,6 +335,7 @@ relationship:
 \begin{IEEEeqnarray}{lCl}
     \alpha = \frac{2kf_s}{N_{fft}} \text{, } k \in \mathbb{Z}
 \end{IEEEeqnarray}
+\label{eq:cyclo_freqs}
 
 If an estimate of the SCD at a cyclic frequency that does not satisfy this
 relation is required, then we must take the original approach (perform the
@@ -696,7 +698,7 @@ Section~\ref{sec:estimating_scd} to be used.
     \begin{center}
         \includegraphics[width=0.95\textwidth]{test_signal}
     \end{center}
-    \caption{Test signal used for each module}
+    \caption{Frequency spectrum of the 10 MHz test signal used for each module}
 \end{figure}
 
 A simulation of a QPSK transmitter/receiver pair is used to generate the
@@ -857,7 +859,7 @@ a synthesis channelizer will be produced to combine the channels surrounding
 that frequency (Step (2)) and a complex phasor will shift the desired center
 frequency down to baseband (Step (3)).
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
     \includegraphics[width=\textwidth]{polyphase_splits}%
     \caption{Output of a 16 channel polyphase analysis channelizer operating on
              the test signal. X Axes are frequency in Hz, Y Axes are magnitude
@@ -890,7 +892,7 @@ channelizer.
 
 \begin{figure}[bh!]
     \includegraphics[width=\textwidth]{cyclo_poly_results}%
-\caption{Output of the combined cyclostationary detector and polyphases channelizer. All three test signals sampled at four samples per symbol.}
+\caption{Output of the combined cyclostationary detector and polyphase channelizer. All three test signals sampled at four samples per symbol.}
 \label{fig:cyclo_poly_results}
 \end{figure}
 
@@ -961,10 +963,56 @@ particular test every channel was demodulated with a 0\% Bit Error Rate.
 \chapter{Conclusion}
 \label{sec:conclusion}
 \markright{Brian H. Hulette \hfill Chapter \ref{sec:conclusion}. Conclusion \hfill}
+A simulation of a cyclostationary detector and two separate channelizer
+structures, a combination polyphase analysis/synthesis channelizer and an
+overlap-save filter bank, has been presented. Both channelizer structures
+were combined with the cyclostationary detector in order to evaluate their
+performance when detecting and isolating QPSK signals at various symbol rates
+in a wideband test signal.
 
-% Future work
+Currently, this simulation only uses the beginning of the test signal for
+detection, but in an actual implementation the detector would be running
+continuously and dynamically directing the channelizer to begin processing new
+signals. It should be noted that in this descibed system, both channelizers would
+need to have knowledge of the required signal bandwidths and output sample
+rates before processing begins so that appropriate filters can be designed, and
+in the case of the polyphase analysis/synthesis channelizer, so that the size
+of the analysis channelizer can be chosen.
+
+% TODO: discuss how a real time system might work?
+
+\section{Future Work}
+This work could be extended in many different ways. In this project, the
+limitations of the various structures were taken as a given, however many of
+these limitations can actually be avoided. For example, Harris shows that it is
+in fact possible to adjust the output sample rate of the analysis channelizer
+by adjusting the input commutator \cite{Harris1}. I left that topic out of this
+simulation since it is difficult to devise a flexible version of itthat will
+work for any sample rate. Future work could focus on what output sample rates
+are possible and devise an approach for a general purpose solution.
+
 % - using single FFT to estimate cyclic spectra for non-perfect cyclic frequencies
-% - fancy polyphase channelizer
+Another limitation taken as a given is that SCD estimation with a single FFT is
+impossible for cyclic frequencies that do not satisfy
+Equation~\ref{eq:cyclo_freqs} - but this could potentially be overcome as well.
+For cyclic frequencies, where $\alpha/2$ does not correspond to a specific FFT
+bin the FFT could be interpolated before shifting. This would not be perfectly
+accurate, but it would be worth evaluating how close of an approximation this
+yields. Additionally, one could evaluate how complex of an interpolation could
+be used while still maintaining the computational advantage.
+
+% - Evaluate Pd vs. Pfa
+% - Low SNR
+My only test case was very low noise - it would also be benificial to evaluate
+how well the detector and channelizers work as a function of noise power. A Monte
+Carlo test could be performed to evaluate the detector's probability of
+detection, $P_d$, vs. noise power at a given threshold. Both channelizer's should also be evaluated by plotting the Bit Error Rate (BER) of every output channel as a function of noise power. Perhaps we will find that one of the channelizers harms the signal integrity.
+
+% - comparison of computational complexity
+Finally, it would be useful to do an in-depth analysis of the computational
+complexity of both combined detector/channelizers. The theoretical
+computational complexity could be determined in addition to an analysis of
+simulation runtime.
 
 %%%%%%%%%%%%%%%%%
 %
@@ -1020,7 +1068,7 @@ critical files are included in this appendix.
 
 \section{Polyphase Channelizer}
 \subsection{\texttt{polyphase\_channelizer.m}}
-\lstinputlisting{../channelize/analysis_channelizer.m}
+\lstinputlisting{../channelize/polyphase_channelizer.m}
 \subsection{\texttt{analysis\_channelizer.m}}
 \lstinputlisting{../channelize/analysis_channelizer.m}
 \subsection{\texttt{synthesis\_channelizer.m}}

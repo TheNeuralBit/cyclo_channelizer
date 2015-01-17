@@ -16,7 +16,6 @@ function [output_freqs, bauds] = cyclo_detect(data, bauds_to_check, threshold, p
     spec = zeros(length(bauds), 1);
     for idx = 1:length(bauds_to_check)
         spec = single_fft_cyclo(cyc_fft, bauds_to_check(idx), f_s);
-        %spec = cyclic_spectrum(data, bauds_to_check(idx), nfft, f_s, CYC_SPEC_METHOD, CYCLO_AVERAGING);
         if DEBUG_FIGURES
             figure;
             plot(linspace(-f_s/2, f_s/2, nfft), 10*log(abs(spec)));

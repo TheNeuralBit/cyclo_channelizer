@@ -13,7 +13,7 @@ freqs = freqs(1:end-2) + F_S/4;
 
 tx = gen_test_sig(input_bits, PN, bauds, freqs);
 
-plot_spectrum(tx, F_S);
+plot_spectrum(tx, F_S, 2^14);
 
 output_samps_per_sym = 4;
 bauds_to_check = sort(unique(bauds))

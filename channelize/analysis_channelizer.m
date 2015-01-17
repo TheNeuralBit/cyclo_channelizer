@@ -20,7 +20,6 @@ function [channels] = analysis_channelizer(data, num_channels)
     % put data into a matrix by rows, so we can compute filters across each row
     data_2d = flipud(reshape(data, FFT_SIZE, []));
     
-    %filt_output = conv2(data_2d, b);
     filt_output = zeros(size(data_2d));
     for i=1:FFT_SIZE
         filt_output(i, :) = filter(b(i,:), 1, data_2d(i, :));
@@ -30,8 +29,6 @@ function [channels] = analysis_channelizer(data, num_channels)
     disp('Performing FFT...')
     % compute fft of each column
     channels = flipud(fftshift(fft(filt_output, FFT_SIZE, 1), 1));
-    % f_k = 2*pi/D
-    % channels(k,:) = channel at f_k
     
     channels = num2cell(channels, 2);
 end

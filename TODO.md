@@ -46,13 +46,14 @@ Core Goals
     - cyclo and polyphase
     - Note that I need to decide how to compare - should the WB sample rate
       always be the same? Probably
+- [ ] README and document critical code
 
 Figures To Generate
 -------------------
 - [ ] Full SCD plot
 - [X] SCD estimates at specific baud rates for WB signal
 - [X] Output channels for OS filter bank
-- [ ] Output channels for polyphase channelizer
+- [X] Output channels for polyphase channelizer
 
 
 Extras
