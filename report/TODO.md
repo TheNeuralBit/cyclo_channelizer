@@ -5,17 +5,17 @@ Rough Draft Goals
 - [X] Cyclostationarity and SCD discussion
 - [X] Overlap-Save Channelizer Discussion
 - [X] fred harris Channelizer Discussion
-- [ ] Simulation
-    - [ ] Discussion of testbench (QPSK transmit/receive, gen_test_sig)
-    - [ ] SCD estimate plots
-    - [ ] Discussion of cyclo detect procedure (SCD estimates, peak detect)
-    - [ ] Discussion of overall architecture (cyclo + OS)
-    - [ ] Discussion of overall architecture (cyclo + fred harris)
-- [ ] Code details
+- [X] Simulation
+    - [X] Discussion of testbench (QPSK transmit/receive, gen_test_sig)
+    - [X] SCD estimate plots
+    - [X] Discussion of cyclo detect procedure (SCD estimates, peak detect)
+    - [X] Discussion of overall architecture (cyclo + OS)
+    - [X] Discussion of overall architecture (cyclo + fred harris)
+- [X] Code details
 
 Required tasks
 --------------
-- [ ] Polyphase synthesis final structure figure
+- [X] Polyphase synthesis final structure figure
 
 Other thoughts
 --------------

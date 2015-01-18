@@ -196,13 +196,12 @@ at a relatively high rate to acquire a wideband signal. Then it will attempt to
 detect the channels within the acquired frequency range that contain signals of
 interest, and then tune, filter, decimate, and demodulate those signals. 
 
-%TODO: links to SDR frameworks (webSDR) TODO: image of SDR plotting
-Many popular SDR applications perform this detection step with
-a ``man in the loop".  A falling raster of the wideband data is presented and
-the man in the loop will select  the frequencies that he would like to process.
-One common example of this is to acquire a wideband slice of the HAM radio
-spectrum and then select different frequencies to demodulate new FM
-Push-to-Talk signals and listen to them.
+Many popular SDR applications perform this detection step with a ``man in the
+loop".  A falling raster of the wideband data is presented and the man in the
+loop will select  the frequencies that he would like to process (\cite{WebSDR}
+is a web-based implemntation of this).  A common example of this is to acquire
+a wideband slice of the HAM radio spectrum and then select different
+frequencies to demodulate new FM Push-to-Talk signals and listen to them.
 
 This paper investigates a structure that automates this process - but rather
 than processing a single analog signal, this framework is intended to process
@@ -244,13 +243,12 @@ frequency, $\alpha$. \cite{Gardner1}.
 
 
 Of particular interest for this project is second-order cyclostationarity,
-where a signal has a periodic autocorrelation, R_{xx}(t, t+\tau):
+where a signal has a periodic autocorrelation, $R_{xx}(t, t+\tau)$:
 
 \begin{IEEEeqnarray}{lCl}
     R_{xx}(t, t+\tau) = E\{x(t)x^*(t+\tau)\} = \sum_{\alpha} R_{xx}^{\alpha}(\tau)e^{j2 \pi \alpha t}
 \end{IEEEeqnarray}
 
-% TODO more detail here based on Oner1
 The function $R_{xx}^{\alpha}(\tau)$ is the cyclic autocorrelation function (CAF), given by:
 
 \begin{IEEEeqnarray}{lCl}
@@ -258,10 +256,8 @@ The function $R_{xx}^{\alpha}(\tau)$ is the cyclic autocorrelation function (CAF
 \end{IEEEeqnarray}
 The CAF is a function of two parameters, the cyclic frequency, $\alpha$ and the
 delay, $\tau$. This function can be used for signal detection in the time
-domain. An estimate of the function versus $\alpha$ and $\tau$ is computed,
-then features within this plane can be used for detection.
-% TODO: reference papers that perform time domain detection (listed in "Energy Efficient Spectrum Sensing using Cyclostationarity")
-% "Cyclostationary Based Air Interface Recognition For Software Radio Systems" is also a time domain approach
+domain. An estimate of the two-dimensional function versus $\alpha$ and $\tau$
+is computed, then features within this plane are used for detection (e.g. \cite{Jiandong1, Oner1}).
 However, what is of interest for this project is detection in the frequency
 domain. This can be performed using the fourier transform of the CAF, called
 the Spectral Correlation Density (SCD), giveb by:
@@ -445,12 +441,10 @@ output of channel $k$. Thus we can compute all $D$ of the complex phasors with
 a D-point FFT, as shown in Figure \ref{fig:polyphase_analysis}. Figure
 \ref{fig:polyphase_synthesis} shows the complementary structure: the Polyphase
 Synthesis Channelizer. It is essentially a mirror image of the Analysis case
-- an IFFT followed by filters and a reverse commutator. It combines $D$
+- an IFFT followed by filters and a commutator. It combines $D$
 channels at an equal sample rate, $f_s$, into a single wideband signal at
 sample rate $Df_s$. The following section shows how these two structures can be
 used together to produce a very flexible channelizer.
-
-% TODO: reverse commutator? is that a thing?
 
 \begin{figure}[h!]
 \centerline{
@@ -505,19 +499,19 @@ signals of interest are detected (by some external detector).
 
 \cite{Harris2} describes a more complex take on this same concept, but this
 simplified version is sufficient for this project.
-% TODO: more detail about Harris2 if I want to bring it up
+% TODO: more detail about Harris2
 
 
 
 \subsection{Limitations}
 \label{sec:poly_limitations}
-This structure has a couple of obvious limitations if a Polyphase Analysis
-Channelizer is used by itself. Every channel must be at the same output sample
+We have already examined the limitations of a Polyphase Analysis
+Channelizer used by itself: Every channel must be at the same output sample
 rate, $f_s/D$, and they must have center frequencies which are multiples of
 that sample rate.
 
 If the combination analysis/synthesis structure is used then this limitation
-can be avoided, however there are still limitations. First, the output sample
+can be avoided, however there are still other issues, the output sample
 rate must still be a decimation of the input sample rate - arbitrary rates are
 not allowed. Second, while the output signals can be reconstructed quite well
 after they have been split by the analysis channelizer, the reconstruction is
@@ -529,8 +523,6 @@ Finally, there is no obvious way that this structure can be efficiently
 combined with SCD estimation for detection. Nothing about an analysis
 channelizer can be re-used for the detection approach used in this project.
 
-% TODO analysis of computational complexiy for polyphase vs cyclo
-
 \subsection{Advantages}
 \label{sec:poly_advantages}
 The primary advantage of a lone Polyphase Analysis Channelizer is its simplicity and efficiency, but its limitations make it an untenable solution for this project.
@@ -539,7 +531,7 @@ The combination Polyphase Analysis/Synthesis Channelizer adds a significant
 amount of complexity, but it is still quite efficient for the amount of
 flexibility that it provides.
 
-% TODO: more stuff
+% TODO: this needs to be expanded
 
 \section{Overlap-save Filter Bank}
 \label{sec:os_filter_bank}
@@ -548,7 +540,6 @@ entirely on a description by Mark Borgerding from March 2006
 \cite{Borgerding1}.  Borgerding's concept is based on the well known
 Overlap-Save fast convolution technique.
 
-% TODO cite Borgerdings [1]-[5] here for Overlap-Save?
 OS fast convolution can be used to speed up convolution with
 a filter that has a long impulse response. The concept is that rather than
 convolving in the time-domain, $O(N^2)$, it is faster to first
@@ -597,7 +588,7 @@ Fortunately, there is a still a way to re-use the forward FFT in this case.
 After taking an FFT of the non frequency-shifted signal we can shift the
 baseband filter response up to the desired frequency, then after the filtered
 signal is IFFT'd back into the time domain, we perform the frequency shift with
-a complex phasor.  This is even better than frequency shifting before the
+a complex phasor.  In addition to allowing us to re-use the forward FFT for each channel, this is more efficient than frequency shifting before the
 forward FFT since the multiplication is performed after decimation. This
 approach is shown in Figure \ref{fig:overlap_save_time_domain}.
 
@@ -822,26 +813,27 @@ The implementation of \texttt{analysis\_channelizer(...)} accepts time domain
 input data and a number of channels to produce, and outputs that number of
 channels in the time domain. No additional configuration is necessary.
 A low-pass filter with cut-off at the output's nyquist frequency is designed and
-used. The output is indexed such that the first channel above $-f_s/2$ is in
-index 1, the chanel at baseband is in index $D/2$, and the channel at $f_s/2$
-is in index $D$.  This indexing is illustrated in
-Figure~\ref{fig:polyphase_channel_indexing}.
+used. The output is indexed such that the the frequency of the channel at index
+$k$ is given by:
+%.  This indexing is illustrated in
+%Figure~\ref{fig:polyphase_channel_indexing}.
+\begin{IEEEeqnarray}{lCl}
+    f_k = -\frac{f_s}{2} + k\frac{f_s}{D} \text{, } k=1\hdots{}D
+\end{IEEEeqnarray}
+Where k follows the standard indexing for MATLAB arrays.
 
 % TODO create this figure
 
 \texttt{synthesis\_channelizer(...)} is designed to perfectly complement
-\texttt{analysis\_channelizer(...)}, so it will accept the list of channelized
-data produced by the synthesis channelizer, and it will produce a replica of
-the original input. Internally, it designs and uses a low-pass filter with
-cutoff at the input's nyquist frequency. Note that this means an analysis
-channelzier immediately followed by a synthesis channelizer of the same size
-will use the same filter internally.
-
-% TODO: mention that assumption is even number of channels
+\texttt{analysis\_channelizer(...)}, so that if it were passed the list of
+channelized data produced by the synthesis channelizer as an argument, it would
+produce a replica of the original input. Internally, it designs and uses
+a low-pass filter with cutoff at the input's nyquist frequency, so that an
+analysis and synthesis channelizer of the same size will use the same filter.
 
 Finally, \texttt{polyphase\_channelizer(...)} utilizes both of these functions to
-implement a flexible channelizer structure.  It accepts the input data its
-sample rate and two additional confiuration parameters:
+implement a flexible channelizer structure.  It accepts the input data, its
+sample rate, and two additional confiuration parameters:
 \begin{description}
     \item[Frequencies:] A list of the center frequencies of the signals of interest
     \item[Decimations:] A list of the decimation factors to be used for each
@@ -851,13 +843,14 @@ sample rate and two additional confiuration parameters:
 \end{description}
 The simulation will first create a synthesis channelizer with decimation equal
 to the highest requested decimation (Step (1) from
-Figure~\ref{fig:analysis_and_synthesis}), Figure~\ref{fig:polyphase_splits}.  For
-all requested outputs with this decimation factor, the nearest output of the
-analysis channelizer will be frequency shifted so that the desired center
-frequency is at baseband, and passed through. For every remaining output,
-a synthesis channelizer will be produced to combine the channels surrounding
-that frequency (Step (2)) and a complex phasor will shift the desired center
-frequency down to baseband (Step (3)).
+Figure~\ref{fig:analysis_and_synthesis}), an example of the output of this step
+for our test signal is shown in Figure~\ref{fig:polyphase_splits}.  For all
+requested outputs with this decimation factor, the nearest output of the
+analysis channelizer will be selected, and frequency shifted so that the
+desired center frequency is at baseband, and passed through. For every
+remaining output, a synthesis channelizer will be produced to combine the
+channels surrounding that frequency (Step (2)) and a complex phasor will shift
+the desired center frequency down to baseband (Step (3)).
 
 \begin{figure}[ht!]
     \includegraphics[width=\textwidth]{polyphase_splits}%
@@ -867,15 +860,14 @@ frequency down to baseband (Step (3)).
     \label{fig:polyphase_splits}
 \end{figure}
 
-The major limitation of this implementation is that certain frequencies
-at the highest decimation factor \emph{cannot} be produced. Any signal at the
-boundary between two outputs of the analysis channelizer will not be
-channelized correctly. A solution to this would be to force the analysis
-channelizer to use a higher decimation factor than any of the requested outputs.
-However there are certain trade-offs here: 1) it increases the computational
-complexity, since larger FFTs are required, and 2) every output is separated
-into more parts before being combined which could harm the signal integrity
-somewhat.
+The major limitation of this implementation is that certain frequencies at the
+highest decimation factor \emph{cannot} be produced. Any signal at the boundary
+between two outputs of the analysis channelizer will not be channelized
+correctly. A solution to this would be to force the analysis channelizer to use
+a higher decimation factor than any of the requested outputs.  However there
+are certain trade-offs here: 1) it increases the computational complexity,
+since a narrower filter is required, and 2) every output is separated into more
+parts before being combined which could harm the signal integrity.
 
 \subsection{Adding Cyclo Detection}
 \label{sec:sim_poly_cyclo}
@@ -883,12 +875,15 @@ As discussed in Section~\ref{sec:poly_limitations}, there is no way to
 efficiently combine this polyphase channelizer structure with wideband SCD
 estimation.  Thus, this simulation simply uses an unmodified version of the
 cyclostationary detector discussed previously to direct an unmodified polyphase
-channelizer. This function, \texttt{cyclo\_and\_polyphase(...)} accepts the input
-data and performs detection and channelization. The detector can be configured
-with all the same parameters discussed in Section~\ref{sec:sim_cyclo}. The
-detector outputs a list of center frequencies and corresponding symbol rates,
-which are converted to decimation factors and passed to the polyphase
 channelizer.
+
+This function, \texttt{cyclo\_and\_polyphase(...)} accepts the input
+data and performs detection and channelization. The detector can be configured
+with all the same parameters discussed in Section~\ref{sec:sim_cyclo}, and
+outputs a list of center frequencies and corresponding symbol rates.
+The symbol rates are converted to decimation factors based on the desired number
+of samples per symbol, specified by the user. The list of frequencies and
+corresponding decimation factors are then passed to the channelizer.
 
 \begin{figure}[bh!]
     \includegraphics[width=\textwidth]{cyclo_poly_results}%
@@ -896,11 +891,12 @@ channelizer.
 \label{fig:cyclo_poly_results}
 \end{figure}
 
-Figure~\ref{fig:cyclo_poly_results} shows the output of this simulation when run
-on our test signal. Note the small peaks in the $2.5$ MHz signal around $\pm1$
-MHz - these are not present in the original signal, they are produced from
-aliasing in the analysis channelizer, which can be seen in the corresponding
-outputs in Figure~\ref{fig:polyphase_splits}.
+Figure~\ref{fig:cyclo_poly_results} shows the output of this simulation when
+run on our test signal. In this case the channelizer was configured to output
+each signal at four samples per symbol. Note the small peaks in the $2.5$ MHz
+signal around $\pm1$ MHz - these are not present in the original signal, they
+are produced from aliasing in the analysis channelizer, which can be seen in
+the corresponding outputs in Figure~\ref{fig:polyphase_splits}.
 % 0.9375 MHz, to be exact
 
 \section{Overlap-Save Filter Bank}
@@ -911,26 +907,25 @@ the FFT, as shown in Figure \ref{fig:overlap_save_shift}. The
 simulation cannot be configured to tune in the time domain at this time.
 
 The channelizer is fully implemented in \texttt{overlap\_save\_channelizer(...)}.
-The function accepts three important parameters which determine how it
-operates: 1) a list of center frequencies to tune, 2) a list of decimation
-factors corresponding to each frequency, and 3) an FFT size.
-% TODO: make this a definition list?
+The function accepts a list of center frequencies and a list of corresponding decimation factors, just like the polyphase channelizer, but it also allows the user to specify the FFT size to be used internally.
 
 The first step performed in this function is determining the value of the
 variable $P$. This corresponds to the length of the filter used, and determines
 the amount of overlap in each FFT. $P$ must be greater than or equal to the
 length of the longest filter and $P-1$ must be a factor of the FFT size.
-A different filter must be generated for each unique decimation factor, and the
-function assumes that the longest filter response will be for the narrowest
-filter - the filter for the largest decimation factor. So in order to determine
-$P$, the function first determines the length of the nyquist filter for the
-largest decimation factor, then rounds up until $P-1$ is the nearest factor of
-the FFT size. All the filters will be zero-padded to this length.
+A different filter must be generated for each unique decimation
+factor\footnote{The filters used by the overlap-save filter bank are designed
+    in the same manner as the polyphase channelizer - with a cutoff at the
+nyquist frequency of the output sample rate.}, and the function assumes that
+the longest filter response will be for the narrowest filter - the filter for
+the largest decimation factor. So in order to determine $P$, the function first
+determines the length of the filter for the largest decimation factor, then
+rounds up until $P-1$ is the nearest factor of the FFT size. Every other filter
+will be zero-padded to this length.
 
-Next, the FFTs (overlapped by $P-1$ samples) are computed, and they are re-used
-to tune, filter and decimate each channel.
-
-TODO: discuss that filters are same as polyphase
+Next, the FFTs are computed (overlapped by $P-1$ samples), and they are re-used
+to tune, filter and decimate each channel, as described in
+Section~\ref{sec:os_filter_bank}
 
 \subsection{Adding Cyclo Detection}
 \label{sec:sim_os_cyclo}
@@ -979,8 +974,6 @@ rates before processing begins so that appropriate filters can be designed, and
 in the case of the polyphase analysis/synthesis channelizer, so that the size
 of the analysis channelizer can be chosen.
 
-% TODO: discuss how a real time system might work?
-
 \section{Future Work}
 This work could be extended in many different ways. In this project, the
 limitations of the various structures were taken as a given, however many of
@@ -1013,6 +1006,8 @@ Finally, it would be useful to do an in-depth analysis of the computational
 complexity of both combined detector/channelizers. The theoretical
 computational complexity could be determined in addition to an analysis of
 simulation runtime.
+
+% - Filter Design (TODO)
 
 %%%%%%%%%%%%%%%%%
 %
@@ -1051,7 +1046,6 @@ simulation runtime.
 \chapter{Project Source}
 \label{sec:source}
 \markright{Brian H. Hulette \hfill Appendix \ref{sec:source}. Project Source \hfill}
-% TODO: make sure this is a link - and make the project public!
 The full source is hosted on GitHub
 (\url{https://github.com/TheNeuralBit/cyclo\_channelizer}). Some of the
 critical files are included in this appendix.
