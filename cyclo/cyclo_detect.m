@@ -1,4 +1,13 @@
 function [output_freqs, bauds] = cyclo_detect(data, bauds_to_check, threshold, peak_distance, nfft, f_s)
+% cyclo_detect - Perform cyclostationary detection on input data vector
+%       data           - 1D vector of time domain data. Wideband signal to
+%                        perform detection on.
+%       bauds_to_check - 1D vector of floats. List of baud rates to search for
+%       threshold      - Threshold, in dB, for peak search
+%       peak_distance  - Minimum peak separation, in Hz
+%       nfft           - FFT size
+%       f_s            - sample rate of data
+
     configuration;
     DEBUG_FIGURES = 1;
     
