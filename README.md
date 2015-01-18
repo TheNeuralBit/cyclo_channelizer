@@ -5,9 +5,9 @@ analysis/synthesis channelizer and overlap-save filter bank), directed by
 a cyclostationary detector. Simple QPSK signals are used for tessting, but the
 concepts and software should be applicable to many other signal types.
 
-This is based on my Master of Engineering work at Virginia Tech. The copy of my
+This is based on my Master of Engineering work at Virginia Tech. A copy of my
 report, "Simulation of Various Channelizer Structures Directed by
-Cyclostationary Detector" can be found by following the link below:
+Cyclostationary Detector," can be found by following the link below:
 
 [![PDF Status](https://www.sharelatex.com/github/repos/TheNeuralBit/cyclo_channelizer/builds/latest/badge.svg)](https://www.sharelatex.com/github/repos/TheNeuralBit/cyclo_channelizer/builds/latest/output.pdf)
 
