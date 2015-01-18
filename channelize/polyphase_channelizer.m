@@ -11,7 +11,6 @@ function [output] = polyphase_channelizer(data, freqs, decimations, F_S)
                       'AxisLabels', 0, 'YMin', -60, 'YMax', 20);
     end
 
-    % TODO: correct freq offset
     for i=1:length(freqs)
         freq = freqs(i)
         dec = decimations(i)
