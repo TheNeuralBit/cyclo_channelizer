@@ -1,4 +1,15 @@
 function [channels output_f_s freqs] = cyclo_and_polyphase(data, bauds_to_check, samps_per_sym)
+% cyclo_and_polyphase - Combined cyclostationary detector and Polyphase
+%                       Analysis/Synthesis Channelizer
+% Input: data           - 1D vector of time domain data. Wideband signal to
+%                         perform detection on and filter.
+%        bauds_to_check - 1D vector of floats. List of baud rates to search for.
+%        samps_per_sym  - Desired number of samples per sybol in each output
+%                         channel
+% Output: output        - 1xD cell array of time domain data for each channel.
+%                         item at index k has center frequency -fs/2 + kfs/D
+%         output_f_S    - array of sample rates for each output
+%         freqs         - list of center frequencies for each output
     configuration;
     threshold = CYCLO_PEAK_THRESH;
     min_spacing = CYCLO_PEAK_MIN_SPACING;

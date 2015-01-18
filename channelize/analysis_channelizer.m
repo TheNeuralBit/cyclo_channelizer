@@ -1,4 +1,12 @@
 function [channels] = analysis_channelizer(data, num_channels)
+% analysis_channelizer - Split a wideband signal into D channels each samples
+%                        at fs/D
+% Input:  data         - 1D vector of time domain data. Wideband signal to
+%                        be filtered.
+%         num_channels - Number of channels to produce, D
+%
+% Output: channels     - 1xD cell array of time domain data for each channel.
+%                        item at index k has center frequency -fs/2 + kfs/D
     FFT_SIZE = num_channels;
     
     channels = cell(num_channels, 1);

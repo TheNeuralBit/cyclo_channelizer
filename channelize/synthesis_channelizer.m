@@ -1,6 +1,10 @@
 function [output] = synthesis_channelizer(data)
-% data: dimension 1 = channel
-%       dimension 2 = time
+% synthesis_channelizer - Combine D channels into a single wideband signal at
+%                         sample rate Dfs
+% Input:  data         - 1xD cell array of time domain data for each channel.
+%                        item at index k will be placed at center frequency
+%                        -fs/2 + kfs/D
+% Output: data         - 1D vector of wideband time domain data
     configuration;
     
     num_channels = length(data);

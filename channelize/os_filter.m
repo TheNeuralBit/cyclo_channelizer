@@ -1,4 +1,15 @@
 function [output] = os_filter(data_fft, freqs, decimations, F_S, fft_size, P, V)
+% os_filter - Second stage of Overlap-Save Filter Bank
+% Input:  data_fft    - Overlapped FFT data. From os_fft.
+%         freqs       - List of output center frequencies
+%         decimations - List of corresponding decimation factors
+%         fft_size    - FFT size
+%         P           - Filter length. Equal to the length of the filter for
+%                       the largest decimation factor, rounded up to the
+%                       closest divisor of FFT size. From os_fft.
+%         V           - Ratio of FFT size to P-1. From os_fft.
+% Output: output      - 1xD cell array of time domain data for each channel.
+%                       item at index k has center frequency -fs/2 + kfs/D
     for idx = 1:length(freqs)
         freq = freqs(idx);
         decimation = decimations(idx);

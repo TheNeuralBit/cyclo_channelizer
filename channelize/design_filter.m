@@ -1,11 +1,17 @@
-function b = design_filter(num_channels)
-    filename = sprintf('filt_%d.mat', num_channels);
+function b = design_filter(D)
+% design_filter - Design filter with cutoff at nyquist frequency
+% Input:  D - Decimation factor. Filter cutoff will be at fs/D/2
+%
+% Output: b - filter impulse response
+%
+% Filters are cached in filt_<D>.mat so they only have to be generated once
+    filename = sprintf('filt_%d.mat', D);
     if exist(filename)
         load(filename, 'b');
         return
     end
     
-    cutoff = 1/num_channels/2;
+    cutoff = 1/D/2;
     rp = 3;           % Passband ripple
     rs = 50;          % Stopband ripple
     f = [0.8*cutoff 1.2*cutoff];    % Cutoff frequencies
@@ -17,7 +23,7 @@ function b = design_filter(num_channels)
     c = firpmord( f, a, dev, 1, 'cell');
     b = firpm(c{:});
     
-    D = fdesign.lowpass('Fp,Fst',0.9/num_channels, 1.2/num_channels);
+    D = fdesign.lowpass('Fp,Fst',0.9/D, 1.2/D);
     Hd = design(D, 'equiripple');
     
     s = coeffs(Hd);

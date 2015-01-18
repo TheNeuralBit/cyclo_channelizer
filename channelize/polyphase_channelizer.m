@@ -1,4 +1,13 @@
 function [output] = polyphase_channelizer(data, freqs, decimations, F_S)
+% polyphase_channelizer - Use combined polyphase analysis/synthesis channelizer
+%                         to output channels at each desired center frequency
+% Input:  data        - 1D vector of time domain data. Wideband signal to
+%                       be filtered.
+%         freqs       - List of output center frequencies
+%         decimations - List of corresponding decimation factors
+%         F_S         - input sample rate
+% Output: output      - 1xD cell array of time domain data for each channel.
+%                       item at index k has center frequency -fs/2 + kfs/D
     configuration;
 
     output = cell(length(freqs), 1);
