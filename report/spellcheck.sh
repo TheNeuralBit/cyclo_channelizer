@@ -1,3 +1,3 @@
 #! /usr/bin/env sh
 
-aspell --mode=tex -c report.tex
+aspell --mode=tex --add-tex-command="IEEEeqnarray op" --add-tex-command="hypersetup o" -c report.tex
