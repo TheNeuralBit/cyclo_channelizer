@@ -16,6 +16,7 @@ Rough Draft Goals
 Required tasks
 --------------
 - [X] Polyphase synthesis final structure figure
+- [ ] Change certain S_xx(\alpha, f) references to S_xx^\alpha(f)
 
 Other thoughts
 --------------
