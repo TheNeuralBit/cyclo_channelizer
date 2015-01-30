@@ -114,19 +114,19 @@ Brian H. Hulette
 
 \end{center}
 
-One common problem in Software-Defined Radio (SDR) systems is the problem of
+One common problem in Software-Defined Radio (SDR) systems is that of
 detecting and then isolating narrow signals of interest in wideband sampled
 data. This involves using some means to detect the frequency of one or more
 signals of interest and then tuning, filtering, and decimating them. This
 problem is particularly challenging due to the high sample rate of this
 wideband data, so efficient algorithms are very desirable. Solutions to this
-problem have applications in many areas, including both Cognitive Radio and
+have applications in many areas, including both Cognitive Radio and
 Electronic Warfare.
 
 A MATLAB simulation of an SDR framework for detecting and sub-band tuning
 channelized signals is presented, with a focus on finding an efficient means to
 combine the two algorithms. Detection is performed using the
-spectral-correlation density function which exploits the cyclostationary
+Spectral Correlation Density (SCD) function which exploits the cyclostationary
 property of digital signals \cite{Gardner1}.  These detections are then used to
 direct a channelizer which will tune, filter, and decimate all of the detected
 signals. Two different channelizer structures are examined: a polyphase
@@ -134,17 +134,16 @@ analysis/synthesis channelizer \cite{Harris1} and an overlap-save filter bank
 \cite{Borgerding1}.
 
 A summary of relevant background information is provided.  This includes
-a discussion of cyclostationarity and the spectral-correlation density function
-as well as background on both channelizer structures. For the overlap-save
-filter bank it will be shown that in many cases computation can be saved by
-using the same FFT computation for both the cyclostationary detector and the
-channelizer.
+a discussion of cyclostationarity and the SCD as well as background on both
+channelizer structures. For the overlap-save filter bank it will be shown that
+in many cases computation can be saved by using the same FFT computation for
+both the cyclostationary detector and the channelizer.
 
 In this simulation, simple QPSK signals are used to model the signals of
 interest, but the framework is applicable to any modulation or signal type that
 has cyclostationary features. While other means of signal detection may be more
 reliable for specific signals, a cyclostationary detector's primary strength is
-its ability to function for many different types of digital signals.
+its ability to function for a wide variety of digital signals.
 
 
 \vfill
@@ -163,9 +162,6 @@ its ability to function for many different types of digital signals.
 First I must acknowledge the work of both Craig Carlson and Ruth Stoehr.
 The core of my testbed for this project is a robust QPSK Transmitter/Receiver
 pair we designed together for an ECE5654 project in the Spring of 2013.
-
-I would like to thank my current employer, n~ask, inc., and all of my
-co-workers there for their support.
 
 I would also like to thank the members of my committee, particularly Dr.
 Zaghloul, for their patience and support.
@@ -201,7 +197,7 @@ loop".  A falling raster of the wideband data is presented and the man in the
 loop will select  the frequencies that he would like to process (\cite{WebSDR}
 is a web-based implementation of this).  A common example of this is to acquire
 a wideband slice of the HAM radio spectrum and then select different
-frequencies to demodulate new FM Push-to-Talk signals and listen to them.
+frequencies to demodulate new FM push-to-talk signals and listen to them.
 
 This paper investigates a structure that automates this process - but rather
 than processing a single analog signal, this framework is intended to process
@@ -218,12 +214,11 @@ computational efficiency when combined with a cyclostationary detector.
 % TODO: list papers that discuss SCD for various protocols
 
 Chapter~\ref{sec:background} provides background information on cyclostationary
-properties and the Spectral Correlation Density (SCD) function upon which the
-detector relies, as well as  both of the channelizer structures that are
-simulated. Chapter~\ref{sec:sim}  discusses the MATLAB simulation that was
-created and the results of it. Finally, Appendix~\ref{sec:source} provides
-annotated source code for key parts of the simulation, as well as locations
-where the entire source code can be found.
+properties and the SCD upon which the detector relies, as well as  both of the
+channelizer structures that are simulated. Chapter~\ref{sec:sim}  discusses the
+MATLAB simulation that was created and the results of it. Finally,
+Appendix~\ref{sec:source} provides annotated source code for key parts of the
+simulation, as well as locations where the entire source code can be found.
 
 \chapter{Background Information}
 \label{sec:background}
@@ -238,7 +233,7 @@ Often signals are modeled as stochastic random processes with properties such as
 mean and variance, but many man-made signals, particularly digital communications,
 can be modeled with another statistical property called
 \emph{cyclostationarity}, which implies the signal has some parameter which
-varies with time. The frequency of this variation is called the cyclic
+varies periodically with time. The frequency of this variation is called the cyclic
 frequency, $\alpha$. \cite{Gardner1}.
 
 
@@ -323,11 +318,10 @@ a simple forward FFT of the acquired data $X(f)$ is useful for other
 operations, such as channelization, as we will see in 
 Section~\ref{sec:os_filter_bank}.
 
-Of course there is a caveat. In order to perform this shift accurately using a
-single FFT we need to circular shift the FFT by an integer number of bins.  This
-means we can only accurately perform this frequency shift when $\alpha/2$ is
-a multiple of the FFT resolution.  Thus $\alpha$ must satisfy the following
-relationship:
+In order to perform this shift accurately using a single FFT we need to
+circular shift the FFT by an integer number of bins.  This means we can only
+accurately perform this frequency shift when $\alpha/2$ is a multiple of the
+FFT resolution.  Thus $\alpha$ must satisfy the following relationship:
 \begin{IEEEeqnarray}{lCl}
     \alpha = \frac{2kf_s}{N_{fft}} \text{, } k \in \mathbb{Z}
 \end{IEEEeqnarray}
@@ -435,7 +429,7 @@ replaced with a commutator.
 
 The final structure has one more modification. The outputs are multiplied by
 complex phasors which select the individual channel, $k$, centered at $f_k$.
-For more info on why this works refer to \cite{Harris1}. When all of the
+A detailed description of this can be found in \cite{Harris1}. When all of the
 channels are combined to form the full channelizer these complex phasors all
 represent a DFT.  The set of phasors that are multiplied and then summed
 together for channel $k$ correspond to the $k$th output of a DFT:
@@ -470,13 +464,14 @@ used together to produce a very flexible channelizer.
 
 \subsection{Combining Analysis and Synthesis Channelizers}
 \label{sec:combine_analysis_synthesis}
-The primary limitations of an Analysis Channelizer alone are that 1) it is limited
-to a single output sample rate, and 2) the channel center frequencies must be
-a multiple of that output sample rate. This is perfectly acceptable when every
-signal being processed is at the same bandwidth and symbol rate, and they are
-channelized with a known spacing, but in many SDR applications this is not the
-case. One solution to this problem is to use analysis and synthesis structures
-\emph{together} to create one very flexible structure.
+The primary limitations of an Analysis Channelizer alone are that it is limited
+to a single output sample rate, and the channel center frequencies must be
+a multiple of that output sample rate. These limitations are perfectly
+acceptable when every signal being processed is at the same bandwidth and
+symbol rate, and they are channelized with a known spacing, but in many SDR
+applications this is not the case. One solution to this problem is to use
+analysis and synthesis structures \emph{together} to create one very flexible
+structure.
 
 Figure \ref{fig:analysis_and_synthesis} illustrates one simple way that this
 might be implemented. The first step of this process uses an Analysis
@@ -519,7 +514,7 @@ rate, $f_s/D$, and they must have center frequencies which are multiples of
 that sample rate.
 
 If the combination analysis/synthesis structure is used then this limitation
-can be avoided, however there are still other issues, the output sample
+can be avoided, however there are still other issues. First, the output sample
 rate must still be a decimation of the input sample rate - arbitrary rates are
 not allowed. Second, while the output signals can be reconstructed quite well
 after they have been split by the analysis channelizer, the reconstruction is
@@ -537,14 +532,14 @@ The primary advantage of a lone Polyphase Analysis Channelizer is its
 simplicity and efficiency, but its limitations make it an untenable solution
 for this project.
 
-The combination Polyphase Analysis/Synthesis Channelizer adds a significant
-amount of complexity, but it is still quite efficient for the amount of
-flexibility that it provides. Another major benefit of both Analysis and
-Synthesis Channelizers is that they can be implemented in hardware relatively
-easily. That means the Combination Analysis/Synthesis structure could be
-implemented in hardware. One can imagine a hardware implementation of this
-structure where an Analysis Channelizer is always running, and a bank of
-Synthesis Channelizers are dynamically connected and disconnected as signals
+The combination Polyphase Analysis/Synthesis Channelizer adds some complexity,
+but it is still quite efficient for the amount of flexibility that it provides.
+Another major benefit of both Analysis and Synthesis Channelizers is that they
+can be implemented in hardware relatively easily. That means the Combination
+Analysis/Synthesis structure could be implemented in hardware. One can imagine
+a hardware implementation of this structure where an Analysis Channelizer is
+always running, and a bank of Synthesis Channelizers are dynamically connected
+and disconnected as signals
 are detected.
 
 % TODO: this needs to be expanded
@@ -559,8 +554,8 @@ Overlap-Save (OS) fast convolution technique.
 OS fast convolution can be used to speed up convolution with
 a filter that has a long impulse response. The concept is that rather than
 convolving in the time-domain, $O(N^2)$, it is faster to first
-perform an FFT of both the signal and the filter and multiply in the frequency
-domain, then IFFT to go back to the time domain, $O(N\log_2N)$.
+perform an FFT of both the signal and the filter and conjugate multiply in the
+frequency domain, then IFFT to go back to the time domain, $O(N\log_2N)$.
 There is nothing new about this idea, but Borgerding's innovation is that he
 shows how to extend this concept to tune, filter and decimate any number of
 channels with arbitrary center frequencies and bandwidths.
@@ -661,19 +656,19 @@ FFT bins to rotate to shift to frequency $f$ (\cite{Borgerding1} Equation (1)):
     N_{rot} = \text{round}\left( \frac{Nf}{Vf_s} \right) V
 \end{equation}
 
-Where $f_s$ is the wideband sample rate. This equation simply adjusts $N_{rot}$ to
-the nearest multiple of $V$ bins. It is worth noting that my solution for
-making $P-1$ an integer multiple of $D$ is only making this problem worse by
-making $V$ larger - but there's nothing to be done about that other than opting
-for a shorter filter.
+Where $f_s$ is the wideband sample rate. This equation simply adjusts $N_{rot}$
+to the nearest multiple of $V$ bins. It is worth noting that the solution
+presented for making $P-1$ an integer multiple of $D$ is only making this
+problem worse by making $V$ larger - but there's nothing to be done about that
+other than opting for a shorter filter.
 
 \subsection{Advantages}
 \label{sec:os_advantages}
 
-The greatest benefit of the Overlap-Save Filter Bank for my application is
-the ease with which it can be combined with SCD Estimation for cyclostationary
-detection. Obviously, the first step for both algorithms is a forward FFT of the
-wideband input. If we were to design a joint cyclostationary
+The greatest benefit of the Overlap-Save Filter Bank for this project is the
+ease with which it can be combined with SCD Estimation for cyclostationary
+detection. Since the first step for both algorithms is a forward FFT of the
+wideband input, if we were to design a joint cyclostationary
 detector/Overlap-Save Filter Bank we could re-use the same forward FFT for both
 algorithms.
 
@@ -733,7 +728,7 @@ each packet. The receiver uses a squared spectrum to correct any major
 frequency offsets, then uses the synchronization sequence to correct timing and
 phase offsets. on a per packet basis. Finally, it performs channel decoding and
 outputs the demodulated bits\footnote{This transmitter/receiver pair is based
-on a project I completed for ECE5654 along with Craig Carlson and Ruth Stoehr.
+on a project the author completed for ECE5654 along with Craig Carlson and Ruth Stoehr.
 The original report for this project is available at
 \url{https://github.com/TheNeuralBit/cyclo_channelizer/raw/master/reference/ECE5654_Project_Report.pdf}.}.
 
@@ -901,8 +896,8 @@ output sample rate with center frequency at the boundary between two outputs of
 the analysis channelizer will not be channelized correctly. A solution to this
 would be to force the analysis channelizer to use a higher decimation factor
 than any of the requested outputs.  However there are certain trade-offs here:
-1) it increases the computational complexity, since a narrower filter is
-required, and 2) every output is separated into more parts before being
+it increases the computational complexity, since a narrower filter is
+required, and every output is separated into more parts before being
 combined which could harm the signal integrity.
 
 \subsection{Adding Cyclostationary Detection}
@@ -932,7 +927,7 @@ run on our test signal. In this case the channelizer was configured to output
 each signal at four samples per symbol. Note the small peaks in the $2.5$ MHz
 signal around $\pm1$ MHz - these are not present in the original signal, they
 are produced from aliasing in the analysis channelizer, which can be seen in
-the corresponding outputs in Figure~\ref{fig:polyphase_splits}. In any case, the
+the corresponding outputs in Figure~\ref{fig:polyphase_splits}. Regardless, the
 high SNR of these outputs allowed every channel to be demodulated with a 0\%
 BER.
 % 0.9375 MHz, to be exact
@@ -999,16 +994,16 @@ BER.
 \chapter{Conclusion}
 \label{sec:conclusion}
 \markright{Brian H. Hulette \hfill Chapter \ref{sec:conclusion}. Conclusion \hfill}
-A simulation of a cyclostationary detector and two separate channelizer
+Simulations of a cyclostationary detector and two separate channelizer
 structures, a combination polyphase analysis/synthesis channelizer and an
-overlap-save filter bank, has been presented. Both channelizer structures
+overlap-save filter bank, have been presented. Both channelizer structures
 were combined with the cyclostationary detector in order to evaluate their
 performance when detecting and isolating QPSK signals at various symbol rates
 in a wideband test signal. Both structures proved effective at accurately
 detecting and isolating these signals, but only the Overlap-Save Filter Bank
 was able to be combined with detection to improve computational efficiency.
 
-Currently, this simulation only uses the beginning of the test signal for
+Currently these simulations only uses the beginning of the test signal for
 detection, but in an actual implementation the detector would be running
 continuously and dynamically directing the channelizer to begin processing new
 signals. It should be noted that in this described system, both channelizers would
@@ -1022,7 +1017,7 @@ This work could be extended in many different ways. In this project, the
 limitations of the various structures were taken as a given, however many of
 these limitations can actually be avoided. For example, Harris shows that it is
 in fact possible to adjust the output sample rate of the analysis channelizer
-by adjusting the input commutator \cite{Harris1}. I left that topic out of this
+by adjusting the input commutator \cite{Harris1}. That topic was left out of this
 simulation since it is difficult to devise a flexible version of it that will
 work for any sample rate. Future work could focus on what output sample rates
 are possible and devise an approach for a general purpose solution.
@@ -1039,10 +1034,13 @@ be used while still maintaining the computational advantage of using a single FF
 
 % - Evaluate Pd vs. Pfa
 % - Low SNR
-My only test case was very low noise - it would be beneficial to evaluate
-how well the detector and channelizers work as a function of noise power. A Monte
-Carlo test could be performed to evaluate the detector's probability of
-detection, $P_d$, vs. noise power at a given threshold. Both channelizers should also be evaluated by plotting the Bit Error Rate (BER) of every output channel as a function of noise power. Perhaps we will find that one of the channelizers harms the signal integrity.
+The only presented test case was very low noise - it would be beneficial to
+evaluate how well the detector and channelizers work as a function of noise
+power. A Monte Carlo test could be performed to evaluate the detector's
+probability of detection, $P_d$, vs. noise power at a given threshold. Both
+channelizers should also be evaluated by plotting the Bit Error Rate (BER) of
+every output channel as a function of noise power. Perhaps we will find that
+one of the channelizers harms the signal integrity.
 
 % - comparison of computational complexity
 Finally, it would be useful to do an in-depth analysis of the computational
