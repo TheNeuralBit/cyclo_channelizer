@@ -13,5 +13,5 @@ function [cyc_spec] = single_fft_cyclo(f_data, alpha, F_S)
     end
     s_right = circshift(f_data, [num_bins, 0]);
     s_left = circshift(f_data, [-num_bins, 0]);
-    cyc_spec = mean(s_right.*conj(s_left), 2);
+    cyc_spec = s_right.*conj(s_left);
 end
