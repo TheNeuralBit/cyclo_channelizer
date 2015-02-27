@@ -1,3 +1,14 @@
+Simulation Results
+------------------
+- [ ] Comparison of runtime vs num channels with the folllowing three things:
+    - cyclo and OS (without combined FFT)
+    - cyclo and OS (with combined FFT)
+    - cyclo and polyphase
+    - Note that I need to decide how to compare - should the WB sample rate
+      always be the same? Probably
+    - [ ] Modify so SCD estimate is computed for the entire spectrum
+
+
 Core Goals
 ----------
 - [ ] ~~Try to use cyclo detect FFT for channelizer~~
@@ -40,13 +51,7 @@ Core Goals
     - [ ] Allow analysis channelizer to operate at a higher rate so there are
           no disallowed frequencies
 - [X] Combine OS and cyclo_detect
-- [ ] Comparison of runtime vs num channels with the folllowing three things:
-    - cyclo and OS (without combined FFT)
-    - cyclo and OS (with combined FFT)
-    - cyclo and polyphase
-    - Note that I need to decide how to compare - should the WB sample rate
-      always be the same? Probably
-- [ ] README and document critical code
+- [X] README and document critical code
 
 Figures To Generate
 -------------------
