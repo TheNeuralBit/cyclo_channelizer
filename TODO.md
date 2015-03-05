@@ -6,7 +6,11 @@ Simulation Results
     - cyclo and polyphase
     - Note that I need to decide how to compare - should the WB sample rate
       always be the same? Probably
-    - [ ] Modify so SCD estimate is computed for the entire spectrum
+    - [X] Modify so SCD estimate is computed for the entire spectrum
+- [ ] Allow analysis channelizer to operate at a higher rate so there are
+      no disallowed frequencies
+- [ ] Function for running with arbitrary number of channels
+
 
 
 Core Goals
