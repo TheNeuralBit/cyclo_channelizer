@@ -23,10 +23,10 @@ plot_spectrum(tx, F_S);
 num_splits = 8;
 channels = analysis_channelizer(tx, num_splits);
 split_f_s = F_S/num_splits;
-plot_channels(channels, repmat([split_f_s], num_splits, 'AxisLabels', 1));
+plot_channels(channels, repmat([split_f_s], num_splits), 'AxisLabels', 1);
 
 
-output = synthesis_channelizer(channels(1:2));
+output = synthesis_channelizer(channels(1:4));
 out_f_s = split_f_s*2;
 
 t = 0:(1/out_f_s):((length(output)-1)/out_f_s);
