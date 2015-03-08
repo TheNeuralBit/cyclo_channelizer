@@ -4,8 +4,6 @@ function plot_channels(channels, f_s, varargin)
     ymin = 'dynamic';
     ymax = 'dynamic';
 
-    varargin
-
     for i = 1:2:length(varargin)
         if length(varargin) < i + 1
             break;
