@@ -21,10 +21,14 @@ function [channels] = analysis_channelizer(data, num_channels)
     fvtool(b, 1);
     
     % zero pad
-    b = [b zeros(1, 2*FFT_SIZE - (mod(length(b) - 1, 2*FFT_SIZE) + 1))];
-    b = reshape(b, FFT_SIZE, [])
-    b_upper = b(1:M/2,1:2:end)
-    b_lower = b(M/2+1:end,2:2:end)
+    partition_b = cell(M, 1);
+    for i = 1:M/2
+        partition_b{i} = upsample(b(i:M:end), 2);
+    end
+    for i = M/2+1:M
+        partition_b{i} = [0 upsample(b(i:M:end), 2)];
+    end
+    partition_b{1}
     
     %% FILTER THE DATA
     disp('Performing polyphase filtering...')
@@ -32,23 +36,20 @@ function [channels] = analysis_channelizer(data, num_channels)
     data = [data zeros(1, FFT_SIZE - (mod(length(data) - 1, FFT_SIZE) + 1))];
     % put data into a matrix by rows, so we can compute filters across each row
     data_2d = flipud(reshape(data, M/2, []));
-    
+
     filt_output = zeros(M, length(data)/D);
-    for i=1:M/2
-        filt_output(i, :) = filter(b_upper(i,:), 1, data_2d(i, :));
-    end
-    for i=1:M/2
-        filt_output(i + M/2, :) = filter(b_lower(i,:), 1, data_2d(i, :));
+    for i=1:M
+        filt_output(i, :) = filter(partition_b{i}, 1, data_2d(mod(i - 1, M/2) + 1, :));
     end
 
     for j=2:2:size(filt_output, 2)
         filt_output(:, j) = circshift(filt_output(:, j), M/2);
     end
-    
+
     %% FFT
     disp('Performing FFT...')
     % compute fft of each column
-    channels = flipud(fftshift(ifft(filt_output, FFT_SIZE, 1), 1));
+    channels = flipud(ifft(filt_output, FFT_SIZE, 1));
     
     channels = num2cell(channels, 2);
 end
