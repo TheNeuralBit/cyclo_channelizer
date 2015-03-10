@@ -21,15 +21,8 @@ function [channels] = analysis_channelizer(data, num_channels)
     fvtool(b, 1);
     
     % zero pad
-    partition_b = cell(M, 1);
-    for i = 1:M/2
-        partition_b{i} = upsample(b(i:M:end), 2);
-    end
-    for i = M/2+1:M
-        partition_b{i} = [0 upsample(b(i:M:end), 2)];
-    end
-    partition_b{1}
-    
+    partition_b = partition_filter(b, M, D);
+
     %% FILTER THE DATA
     disp('Performing polyphase filtering...')
     %zero pad
@@ -49,7 +42,7 @@ function [channels] = analysis_channelizer(data, num_channels)
     %% FFT
     disp('Performing FFT...')
     % compute fft of each column
-    channels = flipud(ifft(filt_output, FFT_SIZE, 1));
+    channels = circshift(ifft(filt_output, FFT_SIZE, 1), M/2 - 1, 1);
     
     channels = num2cell(channels, 2);
 end

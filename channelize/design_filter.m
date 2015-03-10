@@ -11,20 +11,20 @@ function b = design_filter(D)
         return
     end
     
-    cutoff = 1/D/2;
-    rp = 3;           % Passband ripple
-    rs = 50;          % Stopband ripple
-    f = [0.8*cutoff 1.2*cutoff];    % Cutoff frequencies
-    a = [1 0];        % Desired amplitudes
+    %cutoff = 1/D/2;
+    %rp = 3;           % Passband ripple
+    %rs = 50;          % Stopband ripple
+    %f = [1.0*cutoff 1.2*cutoff];    % Cutoff frequencies
+    %a = [1 0];        % Desired amplitudes
+    %
+    %% Compute deviations
+    %dev = [(10^(rp/20)-1)/(10^(rp/20)+1)  10^(-rs/20)]; 
+    %
+    %c = firpmord( f, a, dev, 1, 'cell');
+    %b = firpm(c{:});
     
-    % Compute deviations
-    dev = [(10^(rp/20)-1)/(10^(rp/20)+1)  10^(-rs/20)]; 
-    
-    c = firpmord( f, a, dev, 1, 'cell');
-    b = firpm(c{:});
-    
-    D = fdesign.lowpass('Fp,Fst',0.9/D, 1.2/D);
-    Hd = design(D, 'equiripple');
+    D = fdesign.lowpass('Fp,Fst,Ap,Ast',1.0/D,1.5/D,3,50);
+    Hd = design(D, 'kaiserwin');
     
     s = coeffs(Hd);
     b = s.Numerator;

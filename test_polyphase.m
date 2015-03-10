@@ -5,7 +5,7 @@ numbits = 2048*10;
 input_bits = text_file_to_binary('tale_of_two_cities.txt');
 input_bits = input_bits(1:numbits);
 PN = 10;
-bauds = [1/4 1/8 1/8 1/8].*F_S/4;
+bauds = [1/4 1/8 1/16 1/2].*F_S/4;
 UP = length(bauds);
 output_f_s = F_S/UP;
 
@@ -14,7 +14,7 @@ freqs = freqs(1:end-1) + output_f_s/2;
 
 disp('Generating Test Signal');
 disp('----------------------');
-tx = gen_test_sig(input_bits, PN, bauds, freqs);
+tx = gen_test_sig(input_bits, PN, bauds, freqs).*1E3;
 figure;
 plot_spectrum(tx, F_S);
 t = 0:(1/F_S):((length(tx)-1)/F_S);
@@ -27,28 +27,29 @@ plot_spectrum(tx, F_S);
 fprintf('\n');
 disp('Running Analysis Channelizer');
 disp('----------------------------');
-channels = analysis_channelizer(tx, length(bauds));
-plot_channels(channels, F_S*ones(4,1));
+%channels = analysis_channelizer(tx, length(bauds));
+channels = analysis_channelizer(tx, 4);
+plot_channels(channels, F_S*ones(4, 1));
 
 fprintf('\n');
 disp('Demodulating Each Channel');
 disp('-------------------------');
 %% Plot results
 %disp('Plotting results...')
-for i=1:length(bauds)
-    fprintf('CHANNEL %d\n', i);
-    SAMPLES_PER_SYMBOL = output_f_s/bauds(i);
-    recompute_configuration;
-    bits = MyReceiver(channels{i});
-    fname = sprintf('channel_%d.bits', i);
-    fprintf('Writing %s...\n', fname);
-    % Trim down to numbits, because we know anything after that is garbage
-    % in the higher baud rate signals
-    if length(bits) > numbits
-        bits = bits(1:numbits);
-    end
-    binary_to_text_file(bits, fname);
-end
+%for i=1:length(bauds)
+%    fprintf('CHANNEL %d\n', i);
+%    SAMPLES_PER_SYMBOL = output_f_s/bauds(i)*2;
+%    recompute_configuration;
+%    bits = MyReceiver(channels{i});
+%    fname = sprintf('channel_%d.bits', i);
+%    fprintf('Writing %s...\n', fname);
+%    % Trim down to numbits, because we know anything after that is garbage
+%    % in the higher baud rate signals
+%    if length(bits) > numbits
+%        bits = bits(1:numbits);
+%    end
+%    binary_to_text_file(bits, fname);
+%end
 
 fprintf('\n');
 disp('Running Synthesis Channelizer');
