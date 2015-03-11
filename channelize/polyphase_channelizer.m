@@ -12,7 +12,7 @@ function [output] = polyphase_channelizer(data, freqs, decimations, F_S)
 
     output = cell(length(freqs), 1);
 
-    D = max(decimations);
+    D = max(decimations)*2;
     split_channels = analysis_channelizer(data, D);
     split_f_s = F_S/D;
     if DEBUG_FIGURES
@@ -39,7 +39,7 @@ function [output] = polyphase_channelizer(data, freqs, decimations, F_S)
 
             % Perform frequency shift 
             t = 0:(1/out_f_s):((length(output{i})-1)/out_f_s);
-            output{i} = output{i}.*exp(1i.*2.*pi.*(-f_off + split_f_s/2).*t);
+            output{i} = output{i}.*exp(1i.*2.*pi.*(-f_off - split_f_s/2).*t);
         end
     end
 end

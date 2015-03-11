@@ -13,7 +13,8 @@ Simulation Results
 - [ ] NMDFB
     - [X] Get it working!!
     - [X] Match input/outputs for synthesis/analysis for any size
-    - [ ] Get entire polyphase channelizer working end-to-end
+    - [X] Get entire polyphase channelizer working end-to-end
+    - [ ] Figure out magnitude difference
 
 
 
