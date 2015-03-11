@@ -12,8 +12,8 @@ function [output] = synthesis_channelizer(data)
     FFT_SIZE = num_channels;
 
     decimation = num_channels/2;
-    M = num_channels
-    D = decimation
+    M = num_channels;
+    D = decimation;
     
     %% DESIGN THE FILTER
     disp('Designing the filter...');
@@ -28,21 +28,13 @@ function [output] = synthesis_channelizer(data)
     partition_b = partition_filter(b, M, D);
     
     %% FFT
-    size(data)
-    %data(4,:) = zeros(1, size(data, 2));
-    %data(3,:) = zeros(1, size(data, 2));
-    %data(2,:) = zeros(1, size(data, 2));
-    %data(1,:) = zeros(1, size(data, 2));
-    
     disp('Performing FFT...')
     % compute fft of each column
-    fft_out = ifft(circshift(data, M/2, 1), FFT_SIZE, 1);
+    fft_out = ifft(circshift(data, M/2+1, 1), FFT_SIZE, 1);
     
-    fft_out(:,1:4)
     for j=2:2:size(fft_out, 2)
         fft_out(:, j) = circshift(fft_out(:, j), M/2);
     end
-    fft_out(:,1:4)
     
     %% FILTER THE DATA
     disp('Performing polyphase filtering...')
