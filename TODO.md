@@ -12,7 +12,8 @@ Simulation Results
 - [ ] Function for running with arbitrary number of channels
 - [ ] NMDFB
     - [X] Get it working!!
-    - [ ] Match input/outputs for synthesis/analysis for any size
+    - [X] Match input/outputs for synthesis/analysis for any size
+    - [ ] Get entire polyphase channelizer working end-to-end
 
 
 
