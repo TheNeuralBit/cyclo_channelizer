@@ -24,7 +24,9 @@ paritySize = 3;
 dataSizeHeader = headerSize - paritySize;
 maxDataSize = size(in_bits,1)-headerSize;
 out_bits = [];
+configuration;
 
+packet_error = 0;
 for a = 1:numPackets
     dataSizeBits = in_bits(1:dataSizeHeader,a);
     parity = mod(sum(dataSizeBits),2);
@@ -33,13 +35,20 @@ for a = 1:numPackets
     dataSize = sum(dataSizeBits'.*2.^(numel(dataSizeBits)-1:-1:0));
     if (dataSize > maxDataSize) || (unmatchingParity > 1)
         dataSize = maxDataSize;
-        if a == numPackets
-            fprintf('Warning: Possible error in header of last packet. Using full packet size, but may end up with too many bits.\n')
-        else
-            fprintf('Warning: Possible error in header of middle packet #%d. Using full packet size.\n', a)
-        end    
+        packet_error = packet_error + 1;
+        if PACKETIZE_WARN_ALL
+            if a == numPackets
+                fprintf('Warning: Possible error in header of last packet. Using full packet size, but may end up with too many bits.\n')
+            else
+                fprintf('Warning: Possible error in header of middle packet #%d. Using full packet size.\n', a)
+            end    
+        end
     end
     out_bits = [out_bits; in_bits(headerSize+1:headerSize+dataSize,a)];
+end
+if ~PACKETIZE_WARN_ALL && packet_error
+    fprintf('Warning: %d of %d packets contained a header error.\n', ...
+            packet_error, numPackets);
 end
 out_bits = out_bits';
 

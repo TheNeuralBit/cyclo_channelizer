@@ -10,6 +10,9 @@ CODING = 0;
 MODULATION = 'QPSK';        % 16QAM or QPSK
 PACKET_SIZE_BITS = 2048;    % Packet size including header bits
 HEADER_SIZE_BITS = 16;
+PACKETIZE_WARN_ALL = 0;     % When set, unpacketizer will display a warning
+                            % for *every* packet header that appears to be in
+                            % error
 GENERATING_POLYS = [15 17];
 CONSTRAINT_LENGTH = 4;      % Must be set to the appropriate value based on polys
 RC_ROLLOFF = 0.25;          % Adjusts alpha of the RRC pulse shape
