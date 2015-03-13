@@ -16,7 +16,7 @@ tx = gen_test_sig(input_bits, PN, bauds, freqs);
 plot_spectrum(tx, F_S);
 
 output_samps_per_sym = 4;
-bauds_to_check = sort(unique(bauds))
+bauds_to_check = sort(unique(bauds));
 CYCLO_PEAK_MIN_SPACING = F_S/4/2;
 [channels output_f_s freqs] = cyclo_and_overlap_save(tx, bauds_to_check, output_samps_per_sym);
 titles = cell(size(freqs));

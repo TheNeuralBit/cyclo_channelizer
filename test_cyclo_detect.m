@@ -16,4 +16,4 @@ min_spacing = F_S/length(bauds)/2;
 nfft = 1024;
 
 bauds_to_check = sort(unique(bauds));
-[freqs, bauds] = cyclo_detect(tx, bauds_to_check, threshold, min_spacing, nfft, F_S)
+[freqs, bauds] = cyclo_detect(tx, bauds_to_check, threshold, min_spacing, nfft, F_S);

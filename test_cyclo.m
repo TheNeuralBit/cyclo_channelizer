@@ -6,11 +6,11 @@ input_bits = randn(1, numbits)<0;
 PN = 40;
 num_chans = 4;
 output_f_s = F_S/4;
-bauds = [1/8, 1/16, 1/4].*F_S./num_chans
+bauds = [1/8, 1/16, 1/4].*F_S./num_chans;
 UP = length(bauds);
 
 freqs = -F_S/2:output_f_s:F_S/2;
-freqs = freqs(1:end-2) + output_f_s
+freqs = freqs(1:end-2) + output_f_s;
 
 tx = gen_test_sig(input_bits, PN, bauds, freqs);
 

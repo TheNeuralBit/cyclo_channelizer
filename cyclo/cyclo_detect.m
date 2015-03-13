@@ -23,7 +23,6 @@ function [output_freqs, bauds] = cyclo_detect(data, bauds_to_check, threshold, p
     % Truncate to a multiple of the averaging factor
     num_ffts = floor(size(cyc_fft, 2)/CYCLO_AVERAGING)*CYCLO_AVERAGING;
     cyc_fft = cyc_fft(:, 1:num_ffts);
-    size(cyc_fft)
 
     % Perform averaging
     cyc_fft = squeeze(mean(reshape(cyc_fft, nfft, CYCLO_AVERAGING, []), 2));
