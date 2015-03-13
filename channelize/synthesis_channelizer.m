@@ -30,7 +30,8 @@ function [output] = synthesis_channelizer(data)
     %% FFT
     disp('Performing FFT...')
     % compute fft of each column
-    fft_out = ifft(circshift(data, M/2+1, 1), FFT_SIZE, 1);
+    % Multiply by FFT_SIZE to reverse (1/N) factor in IFFT computation
+    fft_out = ifft(circshift(data, M/2+1, 1), FFT_SIZE, 1).*FFT_SIZE;
     
     for j=2:2:size(fft_out, 2)
         fft_out(:, j) = circshift(fft_out(:, j), M/2);

@@ -42,7 +42,8 @@ function [channels] = analysis_channelizer(data, num_channels)
     %% FFT
     disp('Performing FFT...')
     % compute fft of each column
-    channels = circshift(ifft(filt_output, FFT_SIZE, 1), M/2 - 1, 1);
+    % Multiply by FFT_SIZE to reverse (1/N) factor in IFFT computation
+    channels = circshift(ifft(filt_output, FFT_SIZE, 1), M/2 - 1, 1).*(FFT_SIZE);
     
     channels = num2cell(channels, 2);
 end
