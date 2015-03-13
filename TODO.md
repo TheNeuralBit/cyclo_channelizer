@@ -9,7 +9,9 @@ Simulation Results
     - [X] Modify so SCD estimate is computed for the entire spectrum
 - [ ] Allow analysis channelizer to operate at a higher rate so there are
       no disallowed frequencies
-- [ ] Function for running with arbitrary number of channels
+- [ ] Runtime analysis
+    - [ ] Function for running with arbitrary number of radnomly placed channels
+    - [ ] Function for monte carlo test of channelizers
 - [ ] NMDFB
     - [X] Get it working!!
     - [X] Match input/outputs for synthesis/analysis for any size
