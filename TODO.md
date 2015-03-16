@@ -13,6 +13,8 @@ Simulation Results
     - [ ] Function for running with arbitrary number of radnomly placed channels
     - [X] Function for monte carlo test of channelizers
     - [ ] Use MATLAB profiler on channelizers
+        - [X] Polyphase
+        - [ ] Overlap-save
     - [ ] Run tests on a range of numbers of signals - generate plots of runtime vs channel number
 - [ ] NMDFB
     - [X] Get it working!!
