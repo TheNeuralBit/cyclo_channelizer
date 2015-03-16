@@ -11,7 +11,9 @@ Simulation Results
       no disallowed frequencies
 - [ ] Runtime analysis
     - [ ] Function for running with arbitrary number of radnomly placed channels
-    - [ ] Function for monte carlo test of channelizers
+    - [X] Function for monte carlo test of channelizers
+    - [ ] Use MATLAB profiler on channelizers
+    - [ ] Run tests on a range of numbers of signals - generate plots of runtime vs channel number
 - [ ] NMDFB
     - [X] Get it working!!
     - [X] Match input/outputs for synthesis/analysis for any size
