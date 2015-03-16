@@ -7,6 +7,7 @@ function [channels] = analysis_channelizer(data, num_channels)
 %
 % Output: channels     - 1xD cell array of time domain data for each channel.
 %                        item at index k has center frequency -fs/2 + kfs/D
+    configuration
     FFT_SIZE = num_channels;
     
     decimation = num_channels/2;
@@ -18,7 +19,9 @@ function [channels] = analysis_channelizer(data, num_channels)
     disp('Designing the filter...')
     b = design_filter(num_channels);
    
-    fvtool(b, 1);
+    if DEBUG_FIGURES
+        fvtool(b, 1);
+    end
     
     % zero pad
     partition_b = partition_filter(b, M, D);

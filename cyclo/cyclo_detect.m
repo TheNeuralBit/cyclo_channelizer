@@ -9,7 +9,6 @@ function [output_freqs, bauds] = cyclo_detect(data, bauds_to_check, threshold, p
 %       f_s            - sample rate of data
 
     configuration;
-    DEBUG_FIGURES = 1;
     
     output_freqs = [];
     bauds = [];
