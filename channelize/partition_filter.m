@@ -1,9 +1,9 @@
 function [partition_b] = partition_filter(b, M, D)
-    partition_b = cell(M, 1);
-    for i = 1:M/2
-        partition_b{i} = upsample(b(i:M:end), 2);
-    end
-    for i = M/2+1:M
-        partition_b{i} = [0 upsample(b(i:M:end), 2)];
-    end
+
+    b = [b zeros(1, M - (mod(length(b) - 1, M) + 1))];
+    b = reshape(b, M, []);
+    b = upsample(b.', 2).';
+
+    lower_b = [zeros(M/2, 1) b(M/2+1:M, :)];
+    partition_b = vertcat(num2cell(b(1:M/2,:), 2), num2cell(lower_b, 2));
 end
