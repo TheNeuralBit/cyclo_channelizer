@@ -10,4 +10,5 @@ function setup_path()
     path([pwd '/file_utils'], path)
     path([pwd '/cyclo'], path)
     path([pwd '/channelize'], path)
+    path([pwd '/runtime'], path)
 end
