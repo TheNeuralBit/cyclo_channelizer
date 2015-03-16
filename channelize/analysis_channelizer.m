@@ -38,9 +38,7 @@ function [channels] = analysis_channelizer(data, num_channels)
         filt_output(i, :) = filter(partition_b{i}, 1, data_2d(mod(i - 1, M/2) + 1, :));
     end
 
-    for j=2:2:size(filt_output, 2)
-        filt_output(:, j) = circshift(filt_output(:, j), M/2);
-    end
+    filt_output(:, 2:2:end) = circshift(filt_output(:, 2:2:end), M/2);
 
     %% FFT
     disp('Performing FFT...')
