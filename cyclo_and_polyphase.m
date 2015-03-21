@@ -13,7 +13,7 @@ function [channels output_f_s freqs] = cyclo_and_polyphase(data, bauds_to_check,
     configuration;
     threshold = CYCLO_PEAK_THRESH;
     min_spacing = CYCLO_PEAK_MIN_SPACING;
-    fft_size = 1024;
+    fft_size = 1024*2;
 
     potential_decimations = F_S./bauds_to_check./samps_per_sym;
     [freqs, bauds] = cyclo_detect(data, bauds_to_check, threshold, min_spacing, fft_size, F_S);

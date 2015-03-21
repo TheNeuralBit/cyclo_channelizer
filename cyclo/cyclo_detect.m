@@ -29,16 +29,17 @@ function [output_freqs, bauds] = cyclo_detect(data, bauds_to_check, threshold, p
     freqs = linspace(-f_s/2, f_s/2, nfft);
     spec = zeros(length(bauds), 1);
     for idx = 1:length(bauds_to_check)
-        spec = single_fft_cyclo(cyc_fft, bauds_to_check(idx), f_s);
+        baud = bauds_to_check(idx);
+        spec = single_fft_cyclo(cyc_fft, baud, f_s);
         % Only used the first averaged SCD estimate for detection
         spec = spec(:,1);
         if DEBUG_FIGURES
             figure;
             plot(linspace(-f_s/2, f_s/2, nfft), 10*log(abs(spec)));
-            title(sprintf('SCD at \\alpha = %d', bauds_to_check(idx)));
+            title(sprintf('SCD at \\alpha = %d', baud));
         end
         [pks, locs] = findpeaks(abs(spec), 'MinPeakHeight', threshold, ...
-                                           'MinPeakDistance', round(peak_distance/(f_s/nfft)));
+                                           'MinPeakDistance', round(peak_distance*baud/(f_s/nfft)));
         % Iterate through the peaks
         % If one of them is close to a peak we already found, overwrite that one
         % with the new frequency and baud rate

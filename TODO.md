@@ -16,6 +16,8 @@ Simulation Results
         - [X] Polyphase
         - [ ] Overlap-save
     - [ ] Run tests on a range of numbers of signals - generate plots of runtime vs channel number
+    - [ ] Run in parallel on server
+    - [ ] Make FFT size a config parameter
 - [ ] NMDFB
     - [X] Get it working!!
     - [X] Match input/outputs for synthesis/analysis for any size
