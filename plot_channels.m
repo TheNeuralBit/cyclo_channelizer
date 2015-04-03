@@ -4,8 +4,6 @@ function plot_channels(channels, f_s, varargin)
     ymin = 'dynamic';
     ymax = 'dynamic';
 
-    varargin
-
     for i = 1:2:length(varargin)
         if length(varargin) < i + 1
             break;
@@ -48,7 +46,7 @@ function plot_channels(channels, f_s, varargin)
     for i=1:num_channels
         subplot(factors(1), factors(2), i);
         plot_spectrum(channels{i}, f_s(i), 1024, show_axis_labels);
-        this_limit = ylim
+        this_limit = ylim;
         if this_limit(1) < plot_min
             plot_min = this_limit(1);
         end

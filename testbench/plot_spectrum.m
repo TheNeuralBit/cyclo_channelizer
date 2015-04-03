@@ -8,9 +8,7 @@ end
 
 samples = [samples zeros(1, nfft - (mod(length(samples) - 1, nfft) + 1))];
 samples = reshape(samples, nfft, []);
-size(samples)
 f = fftshift(mean(fft(samples, [], 1), 2), 1);
-size(f)
 plot(linspace(-fs/2, fs/2, length(f)), 10*log(abs(f)))
 if show_axis_labels
     xlabel('Frequency (Hz)');

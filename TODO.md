@@ -10,6 +10,11 @@ Simulation Results
 - [ ] Allow analysis channelizer to operate at a higher rate so there are
       no disallowed frequencies
 - [ ] Function for running with arbitrary number of channels
+- [ ] NMDFB
+    - [X] Get it working!!
+    - [X] Match input/outputs for synthesis/analysis for any size
+    - [X] Get entire polyphase channelizer working end-to-end
+    - [ ] Figure out magnitude difference
 
 
 
