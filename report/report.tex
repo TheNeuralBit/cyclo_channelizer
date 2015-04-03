@@ -57,36 +57,12 @@
 \begin{center}
 
 % TITLE
-{\large
-Simulation of Various Channelizer Structures 
-Directed by Cyclostationary Detector}
+{\large Efficient Simultaneous Detection and Isolation of
+Many Linear Modulated Signals}
 
 \vfill
 
-Brian H. Hulette
-
-\vfill
-
-Project Report submitted to the Faculty of the \\
-Virginia Polytechnic Institute and State University \\
-in partial fulfillment of the requirements for the degree of
-
-\vfill
-
-Master of Engineering \\
-in \\
-Electrical Engineering
-
-\vfill
-
-Amir I. Zaghloul, Co-Chair \\
-Jeffrey H. Reed, Co-Chair \\
-T. Charles Clancy
-
-\vfill
-
-February 18, 2015 \\
-Falls Church, Virginia
+Brian H. Hulette, Amir I. Zaghloul
 
 \vfill
 
@@ -101,8 +77,8 @@ Copyright 2015, Brian H. Hulette
 \thispagestyle{empty}
 \begin{center}
 
-{\large Simulation of Various Channelizer Structures 
-Directed by Cyclostationary Detector}
+{\large Efficient Simultaneous Detection and Isolation of
+Many Linear Modulated Signals}
 
 \vfill
 
@@ -125,27 +101,19 @@ wideband data, so efficient algorithms are very desirable. Solutions to this
 have applications in many areas, including both Cognitive Radio and
 Electronic Warfare.
 
-A MATLAB simulation of an SDR framework for detecting and sub-band tuning
-channelized signals is presented, with a focus on finding an efficient means to
-combine the two algorithms. Detection is performed using the
-Spectral Correlation Density (SCD) function which exploits the cyclostationary
-property of digital signals \cite{Gardner1}.  These detections are then used to
-direct a channelizer which will tune, filter, and decimate all of the detected
-signals. Two different channelizer structures are examined: a polyphase
-analysis/synthesis channelizer \cite{Harris1} and an overlap-save filter bank
-\cite{Borgerding1}.
+A framework for detecting and sub-band tuning channelized signals is presented,
+with a focus on finding an efficient means to combine the two algorithms.
+Detection is performed using the Spectral Correlation Density (SCD) function
+which exploits the cyclostationary property of digital signals \cite{Gardner1}.
+These detections are then used to direct a channelizer which will tune, filter,
+and decimate all of the detected signals. Two different channelizer structures
+are examined: a polyphase analysis/synthesis channelizer \cite{Harris1} and an
+overlap-save filter bank \cite{Borgerding1}.
 
-A summary of relevant background information is provided.  This includes
-a discussion of cyclostationarity and the SCD as well as background on both
-channelizer structures. For the overlap-save filter bank it will be shown that
-in many cases computation can be saved by using the same FFT computation for
-both the cyclostationary detector and the channelizer.
-
-In this simulation, simple QPSK signals are used to model the signals of
-interest, but the framework is applicable to any modulation or signal type that
-has cyclostationary features. While other means of signal detection may be more
-reliable for specific signals, a cyclostationary detector's primary strength is
-its ability to function for a wide variety of digital signals.
+MATLAB simulations of this framework using both channelizers have been created,
+and used to evaluate their performance. Measures of average runtime for both
+channelizers are presented as a proxy for each algorithm's efficiency for
+various numbers of narrowband signals.
 
 
 \vfill
