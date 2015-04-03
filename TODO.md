@@ -9,7 +9,15 @@ Simulation Results
     - [X] Modify so SCD estimate is computed for the entire spectrum
 - [ ] Allow analysis channelizer to operate at a higher rate so there are
       no disallowed frequencies
-- [ ] Function for running with arbitrary number of channels
+- [ ] Runtime analysis
+    - [ ] Function for running with arbitrary number of radnomly placed channels
+    - [X] Function for monte carlo test of channelizers
+    - [ ] Use MATLAB profiler on channelizers
+        - [X] Polyphase
+        - [ ] Overlap-save
+    - [ ] Run tests on a range of numbers of signals - generate plots of runtime vs channel number
+    - [ ] Run in parallel on server
+    - [ ] Make FFT size a config parameter
 - [ ] NMDFB
     - [X] Get it working!!
     - [X] Match input/outputs for synthesis/analysis for any size

@@ -10,6 +10,9 @@ CODING = 0;
 MODULATION = 'QPSK';        % 16QAM or QPSK
 PACKET_SIZE_BITS = 2048;    % Packet size including header bits
 HEADER_SIZE_BITS = 16;
+PACKETIZE_WARN_ALL = 0;     % When set, unpacketizer will display a warning
+                            % for *every* packet header that appears to be in
+                            % error
 GENERATING_POLYS = [15 17];
 CONSTRAINT_LENGTH = 4;      % Must be set to the appropriate value based on polys
 RC_ROLLOFF = 0.25;          % Adjusts alpha of the RRC pulse shape
@@ -22,8 +25,8 @@ F_S = 1e7;   % given, sample rate = 10 Msps
 SAMPLES_PER_SYMBOL = 4;  % given, samp/symbol >= 4
 
 %% Cyclo Detect Parameters
-CYCLO_PEAK_THRESH = 80;
-CYCLO_PEAK_MIN_SPACING = 2E6;
+CYCLO_PEAK_THRESH = 20;
+CYCLO_PEAK_MIN_SPACING = 1;
 
 DEBUG_FIGURES = 0; % To enable some debug figures, set this to 1
 

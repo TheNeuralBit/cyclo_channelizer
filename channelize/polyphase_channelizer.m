@@ -21,11 +21,11 @@ function [output] = polyphase_channelizer(data, freqs, decimations, F_S)
     end
 
     for i=1:length(freqs)
-        freq = freqs(i)
-        dec = decimations(i)
+        freq = freqs(i);
+        dec = decimations(i);
         out_f_s = F_S/dec;
         if dec == D
-            output{i} = split_channels{round(D*(freq/F_S + 0.5))}
+            output{i} = split_channels{round(D*(freq/F_S + 0.5))};
         else
             nearest_bin = round(D*(freq/F_S + 1.0/2 + 1.0/2/D));
             num_bins = D/dec;

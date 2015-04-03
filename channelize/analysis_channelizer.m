@@ -7,6 +7,7 @@ function [channels] = analysis_channelizer(data, num_channels)
 %
 % Output: channels     - 1xD cell array of time domain data for each channel.
 %                        item at index k has center frequency -fs/2 + kfs/D
+    configuration
     FFT_SIZE = num_channels;
     
     decimation = num_channels/2;
@@ -18,7 +19,9 @@ function [channels] = analysis_channelizer(data, num_channels)
     disp('Designing the filter...')
     b = design_filter(num_channels);
    
-    fvtool(b, 1);
+    if DEBUG_FIGURES
+        fvtool(b, 1);
+    end
     
     % zero pad
     partition_b = partition_filter(b, M, D);
@@ -35,14 +38,13 @@ function [channels] = analysis_channelizer(data, num_channels)
         filt_output(i, :) = filter(partition_b{i}, 1, data_2d(mod(i - 1, M/2) + 1, :));
     end
 
-    for j=2:2:size(filt_output, 2)
-        filt_output(:, j) = circshift(filt_output(:, j), M/2);
-    end
+    filt_output(:, 2:2:end) = circshift(filt_output(:, 2:2:end), M/2);
 
     %% FFT
     disp('Performing FFT...')
     % compute fft of each column
-    channels = circshift(ifft(filt_output, FFT_SIZE, 1), M/2 - 1, 1);
+    % Multiply by FFT_SIZE to reverse (1/N) factor in IFFT computation
+    channels = circshift(ifft(filt_output, FFT_SIZE, 1), M/2 - 1, 1).*(FFT_SIZE);
     
     channels = num2cell(channels, 2);
 end
