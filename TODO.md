@@ -15,9 +15,13 @@ Simulation Results
     - [ ] Use MATLAB profiler on channelizers
         - [X] Polyphase
         - [ ] Overlap-save
-    - [ ] Run tests on a range of numbers of signals - generate plots of runtime vs channel number
+    - Run tests on a range of numbers of signals
+        - [ ] generate plots of runtime vs number of channels
+        - [ ] generate plots for various output baud rates, choose sample rate 
+              so that decimation is not a nice FFT size (not multiple of 2 or 5)
+              for comparison
     - [ ] Run in parallel on server
-    - [ ] Make FFT size a config parameter
+    - [ ] Make cyclo/overlap-save FFT size a config parameter
 - [ ] NMDFB
     - [X] Get it working!!
     - [X] Match input/outputs for synthesis/analysis for any size
