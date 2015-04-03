@@ -169,18 +169,6 @@ is a web-based implementation of this).  A common example of this is to acquire
 a wideband slice of the HAM radio spectrum and then select different
 frequencies to demodulate new FM push-to-talk signals and listen to them.
 
-\begin{figure}[h!]
-    \begin{center}
-    \includegraphics[width=0.8\textwidth]{block_diagram}%
-    \end{center}
-    \caption{High-level block diagram of our system. An analog front-end and
-        ADC are used to bring wideband data into our Software-Defined Radio.
-        There, a detector directs a channelizer to isolate $N$ signals of interest,
-        which are then demodulated. The highlighted detector and channelizer are the
-        components examined in this review.}
-    \label{fig:block_diagram}
-\end{figure}
-
 This paper investigates a structure that automates this process - but rather
 than processing a single analog signal, this framework is intended to process
 an arbitrary number of digital signals at once. Detection is performed by
@@ -194,6 +182,29 @@ filter bank. These structures are evaluated on two important criteria:
 1) Their ability to accurately reproduce every detected signal, and 2) Their
 computational efficiency when combined with a cyclostationary detector.
 % TODO: list papers that discuss SCD for various protocols
+
+\begin{figure}[h!]
+    \begin{center}
+    \includegraphics[width=0.8\textwidth]{block_diagram}%
+    \end{center}
+    \caption{High-level block diagram of our system. An analog front-end and
+        ADC are used to bring wideband data into our Software-Defined Radio.
+        There, a detector directs a channelizer to isolate $N$ signals of interest,
+        which are then demodulated. The highlighted detector and channelizer are the
+        components examined in this review.}
+    \label{fig:block_diagram}
+\end{figure}
+
+The block diagram shown in Figure~\ref{fig:block_diagram} illustrates this 
+system. A front-end consisting of analog/RF components and an analog-to-digital
+converter (ADC) bring wideband sampled data into our SDR. There it is fed into
+a cyclostationary detector and a channelizer. The frequencies identified by the 
+detector are fed to the channelizer which will configure itself to isolate
+those signals. As new signals become active and go in-active the detector will
+update the channelizer so it can re-configure as needed.
+
+Each of the outputs of the channelizer are sent to a demodulator and/or various
+other follow-on processors to extract the signal internals in real-time.
 
 Chapter~\ref{sec:background} provides background information on cyclostationary
 properties and the SCD upon which the detector relies, as well as  both of the
