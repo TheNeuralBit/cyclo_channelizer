@@ -169,6 +169,18 @@ is a web-based implementation of this).  A common example of this is to acquire
 a wideband slice of the HAM radio spectrum and then select different
 frequencies to demodulate new FM push-to-talk signals and listen to them.
 
+\begin{figure}[h!]
+    \begin{center}
+    \includegraphics[width=0.8\textwidth]{block_diagram}%
+    \end{center}
+    \caption{High-level block diagram of our system. An analog front-end and
+        ADC are used to bring wideband data into our Software-Defined Radio.
+        There, a detector directs a channelizer to isolate $N$ signals of interest,
+        which are then demodulated. The highlighted detector and channelizer are the
+        components examined in this review.}
+    \label{fig:block_diagram}
+\end{figure}
+
 This paper investigates a structure that automates this process - but rather
 than processing a single analog signal, this framework is intended to process
 an arbitrary number of digital signals at once. Detection is performed by
@@ -186,9 +198,7 @@ computational efficiency when combined with a cyclostationary detector.
 Chapter~\ref{sec:background} provides background information on cyclostationary
 properties and the SCD upon which the detector relies, as well as  both of the
 channelizer structures that are simulated. Chapter~\ref{sec:sim}  discusses the
-MATLAB simulation that was created and the results of it. Finally,
-Appendix~\ref{sec:source} provides annotated source code for key parts of the
-simulation, as well as locations where the entire source code can be found.
+MATLAB simulation that was created and the results of it.
 
 \chapter{Background Information}
 \label{sec:background}
@@ -661,8 +671,7 @@ scope of this project.
 \chapter{Simulation}
 \label{sec:sim}
 \markright{Brian H. Hulette \hfill Chapter \ref{sec:sim}. Simulation \hfill}
-A MATLAB simulation of these structures has been written. Directions to find
-all of the source code can be found in Appendix \ref{sec:source}. Each module
+A MATLAB simulation of these structures has been written. Each module
 - testbed, cyclostationary detector, polyphase analysis/synthesis channelizer,
 and overlap-save filter bank - was developed and tested separately. The
 detector was then combined with each channelizer and their performance was
