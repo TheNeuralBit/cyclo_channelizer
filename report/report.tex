@@ -11,7 +11,7 @@
 % appear on the Web site listed above.
 
 %\documentclass[12pt,dvips]{report}
-\documentclass[12pt]{report}
+\documentclass[12pt]{article}
 
 \setlength{\textwidth}{6.5in}
 \setlength{\textheight}{8.5in}
@@ -128,17 +128,17 @@ various numbers of narrowband signals.
 
 % Dedication and Acknowledgments are both optional
 % \chapter*{Dedication}
-\chapter*{Acknowledgments}
-First I must acknowledge the work of both Craig Carlson and Ruth Stoehr.
-The core of my testbed for this project is a robust QPSK Transmitter/Receiver
-pair we designed together for an ECE5654 project in the Spring of 2013.
-
-I would also like to thank the members of my committee, particularly Dr.
-Zaghloul, for their patience and support.
-
-Finally, I would like to thank my friends and family, especially my girlfriend
-Meredith, for helping me through this years long process, and letting me use
-``My Masters" as an excuse for nearly anything.
+%\chapter*{Acknowledgments}
+%First I must acknowledge the work of both Craig Carlson and Ruth Stoehr.
+%The core of my testbed for this project is a robust QPSK Transmitter/Receiver
+%pair we designed together for an ECE5654 project in the Spring of 2013.
+%
+%I would also like to thank the members of my committee, particularly Dr.
+%Zaghloul, for their patience and support.
+%
+%Finally, I would like to thank my friends and family, especially my girlfriend
+%Meredith, for helping me through this years long process, and letting me use
+%``My Masters" as an excuse for nearly anything.
 
 \tableofcontents
 \pagebreak
@@ -152,9 +152,9 @@ Meredith, for helping me through this years long process, and letting me use
 \pagenumbering{arabic}
 \pagestyle{myheadings}
 
-\chapter{Introduction}
+\section{Introduction}
 \label{sec:intro}
-\markright{Brian H. Hulette \hfill Chapter \ref{sec:intro}. Introduction \hfill}
+\markright{Brian H. Hulette \hfill Section \ref{sec:intro}. Introduction \hfill}
 
 A common problem when designing a Software-Defined Radio (SDR) system is the
 problem of detecting and tuning signals of interest. A typical SDR will sample
@@ -206,14 +206,10 @@ update the channelizer so it can re-configure as needed.
 Each of the outputs of the channelizer are sent to a demodulator and/or various
 other follow-on processors to extract the signal internals in real-time.
 
-Chapter~\ref{sec:background} provides background information on cyclostationary
+Section~\ref{sec:background} provides background information on cyclostationary
 properties and the SCD upon which the detector relies, as well as  both of the
-channelizer structures that are simulated. Chapter~\ref{sec:sim}  discusses the
+channelizer structures that are simulated. Section~\ref{sec:sim}  discusses the
 MATLAB simulation that was created and the results of it.
-
-\chapter{Background Information}
-\label{sec:background}
-\markright{Brian H. Hulette \hfill Chapter \ref{sec:background}. Background Information \hfill}
 
 \section{Cyclostationary Detection}
 \label{sec:cyclo}
@@ -679,9 +675,9 @@ Additionally, averaging the overlapped FFT frames together may have an effect
 on the accuracy of the SCD estimation, but analyzing this effect is beyond the
 scope of this project.
 
-\chapter{Simulation}
+\section{Simulation}
 \label{sec:sim}
-\markright{Brian H. Hulette \hfill Chapter \ref{sec:sim}. Simulation \hfill}
+\markright{Brian H. Hulette \hfill Section \ref{sec:sim}. Simulation \hfill}
 A MATLAB simulation of these structures has been written. Each module
 - testbed, cyclostationary detector, polyphase analysis/synthesis channelizer,
 and overlap-save filter bank - was developed and tested separately. The
@@ -689,7 +685,7 @@ detector was then combined with each channelizer and their performance was
 evaluated.  The same logical flow is followed in this Chapter as the modules
 are presented.
 
-\section{Testbed}
+\subsection{Testbed}
 Each Module is tested with the same wideband signal, shown in
 Figure~\ref{fig:test_signal}. It is a waveform sampled at 10 MHz with three
 QPSK signals at different symbol rates and center frequencies:
@@ -722,7 +718,7 @@ on a project the author completed for ECE5654 along with Craig Carlson and Ruth 
 The original report for this project is available at
 \url{https://github.com/TheNeuralBit/cyclo_channelizer/raw/master/reference/ECE5654_Project_Report.pdf}.}.
 
-\section{Cyclostationary Detector}
+\subsection{Cyclostationary Detector}
 \label{sec:sim_cyclo}
 The next module is the cyclostationary detector. It works by computing
 estimates of the SCD at particular cyclic frequencies and searching for
@@ -822,7 +818,7 @@ is no more data to transmit, but in reality signals are going up and down
 all the time. In an actual application the cyclostationary detector should be
 run continuously to detect when signals come up and go down.
 
-\section{Polyphase Analysis/Synthesis Channelizer}
+\subsection{Polyphase Analysis/Synthesis Channelizer}
 \label{sec:sim_poly}
 The simulation of the polyphase analysis channelizer is broken up into three
 major parts: \texttt{analysis\_channelizer(...)},
@@ -890,7 +886,7 @@ it increases the computational complexity, since a narrower filter is
 required, and every output is separated into more parts before being
 combined which could harm the signal integrity.
 
-\subsection{Adding Cyclostationary Detection}
+\subsubsection{Adding Cyclostationary Detection}
 \label{sec:sim_poly_cyclo}
 As discussed in Section~\ref{sec:poly_limitations}, there is no way to
 efficiently combine this polyphase channelizer structure with wideband SCD
@@ -922,7 +918,7 @@ high SNR of these outputs allowed every channel to be demodulated with a 0\%
 BER.
 % 0.9375 MHz, to be exact
 
-\section{Overlap-Save Filter Bank}
+\subsection{Overlap-Save Filter Bank}
 \label{sec:sim_os}
 The final module is the Overlap-Save Filter Bank. The Filter Bank is
 implemented with tuning performed in the frequency domain by circular shifting
@@ -950,7 +946,7 @@ Next, the FFTs are computed (overlapped by $P-1$ samples), and they are re-used
 to tune, filter and decimate each channel, as described in
 Section~\ref{sec:os_filter_bank}
 
-\subsection{Adding Cyclostationary Detection}
+\subsubsection{Adding Cyclostationary Detection}
 \label{sec:sim_os_cyclo}
 As discussed in Section \ref{sec:os_advantages} a major advantage to the
 Overlap-Save Filter Bank is that the Forward FFTs can be re-used to estimate
@@ -981,9 +977,9 @@ BER.
     \label{fig:cyclo_os_results}
 \end{figure}
 
-\chapter{Conclusion}
+\section{Conclusion}
 \label{sec:conclusion}
-\markright{Brian H. Hulette \hfill Chapter \ref{sec:conclusion}. Conclusion \hfill}
+\markright{Brian H. Hulette \hfill Section \ref{sec:conclusion}. Conclusion \hfill}
 Simulations of a cyclostationary detector and two separate channelizer
 structures, a combination polyphase analysis/synthesis channelizer and an
 overlap-save filter bank, have been presented. Both channelizer structures
@@ -1002,7 +998,7 @@ rates before processing begins, so that appropriate filters can be designed, and
 in the case of the polyphase analysis/synthesis channelizer, so that the size
 of the analysis channelizer can be chosen.
 
-\section{Future Work}
+\subsection{Future Work}
 This work could be extended in many different ways. In this project, the
 limitations of the various structures were taken as a given, however many of
 these limitations can actually be avoided. For example, Harris shows that it is
