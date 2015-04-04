@@ -1,2 +1,10 @@
-*.mat
 *.bits
+*.bbl
+*.blg
+*.mat
+report/report.pdf
+report/report.aux
+report/report.lof
+report/report.log
+report/report.out
+report/report.toc
