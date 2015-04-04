@@ -1,4 +1,4 @@
-%t PROJECT: <ETD> Electronic Thesis and Dissertation Initiative
+% PROJECT: <ETD> Electronic Thesis and Dissertation Initiative
 %   TITLE: LaTeX report template for ETDs in LaTeX
 %  AUTHOR: Neill Kipp, nkipp@vt.edu
 %     URL: http://etd.vt.edu/latex/
@@ -158,30 +158,25 @@ various numbers of narrowband signals.
 
 A common problem when designing a Software-Defined Radio (SDR) system is the
 problem of detecting and tuning signals of interest. A typical SDR will sample
-at a relatively high rate to acquire a wideband signal. Then it will attempt to
-detect the channels within the acquired frequency range that contain signals of
+at a high rate to acquire a large section of the frequency spectrum (referred
+to as a wideband acquisition throughout this paper). Then it will attempt to
+detect the frequencies within the acquired range that contain signals of
 interest, and then tune, filter, decimate, and demodulate those signals. 
 
 Many popular SDR applications perform this detection step with a ``man in the
 loop".  A falling raster of the wideband data is presented and the man in the
 loop will select  the frequencies that he would like to process (\cite{WebSDR}
-is a web-based implementation of this).  A common example of this is to acquire
-a wideband slice of the HAM radio spectrum and then select different
+is a web-based implementation of this concept).  A common example of this is to
+acquire a wideband slice of the HAM radio spectrum and then select different
 frequencies to demodulate new FM push-to-talk signals and listen to them.
 
 This paper investigates a structure that automates this process - but rather
 than processing a single analog signal, this framework is intended to process
 an arbitrary number of digital signals at once. Detection is performed by
-a cyclostationary detector rather than by a man in the loop. This exploits the
-cyclostationary properties exhibited by most digital signals with a fixed
-symbol rate.  Tuning, filtering, and decimating is performed by a channelizer,
-so that many signals can be processed at once.  Two different channelizer
-structures are examined: a polyphase channelizer composed of an analysis
-channelizer followed by several synthesis channelizer, and an overlap-save
-filter bank. These structures are evaluated on two important criteria:
-1) Their ability to accurately reproduce every detected signal, and 2) Their
-computational efficiency when combined with a cyclostationary detector.
-% TODO: list papers that discuss SCD for various protocols
+a cyclostationary detector rather than by a man in the loop. This technique
+exploits the cyclostationary properties exhibited by most digital signals with
+a fixed symbol rate.  Tuning, filtering, and decimating are performed by
+a channelizer, so that many signals can be isolated simultaneously.  
 
 \begin{figure}[h!]
     \begin{center}
@@ -189,29 +184,43 @@ computational efficiency when combined with a cyclostationary detector.
     \end{center}
     \caption{High-level block diagram of our system. An analog front-end and
         ADC are used to bring wideband data into our Software-Defined Radio.
-        There, a detector directs a channelizer to isolate $N$ signals of interest,
-        which are then demodulated. The highlighted detector and channelizer are the
-        components examined in this review.}
+        There, a detector directs a channelizer to isolate $N$ signals of
+        interest, which are then demodulated. The highlighted detector and
+        channelizer are the components examined in this paper.}
     \label{fig:block_diagram}
 \end{figure}
 
-The block diagram shown in Figure~\ref{fig:block_diagram} illustrates this 
+The block diagram shown in Figure~\ref{fig:block_diagram} illustrates this
 system. A front-end consisting of analog/RF components and an analog-to-digital
-converter (ADC) bring wideband sampled data into our SDR. There it is fed into
-a cyclostationary detector and a channelizer. The frequencies identified by the 
-detector are fed to the channelizer which will configure itself to isolate
-those signals. As new signals become active and go in-active the detector will
-update the channelizer so it can re-configure as needed.
+converter (ADC) isolate and sample a large section of the frequency spectrum.
+This wideband sampled data is then brought into our SDR, where it is processed
+by a cyclostationary detector and a channelizer. The frequencies identified by
+the detector are fed to the channelizer which will configure itself to isolate
+those signals. As the environment changes, with new signals of interest coming
+up and current signals going down, the detector will update the channelizer so
+it can re-configure itself as needed.
 
 Each of the outputs of the channelizer are sent to a demodulator and/or various
-other follow-on processors to extract the signal internals in real-time.
+other follow-on processors to extract the signal internals in real-time. These
+demodulators must be allocated dynamically as the signal environment changes.
 
-Section~\ref{sec:background} provides background information on cyclostationary
-properties and the SCD upon which the detector relies, as well as  both of the
-channelizer structures that are simulated. Section~\ref{sec:sim}  discusses the
-MATLAB simulation that was created and the results of it.
+In this paper, we are primarily concerned with the cyclostationary detector and
+the channelizer.  Two different channelizer structures are examined: an
+overlap-save filter bank, and what we call a ``polyphase channelizer", composed
+of a polyphase analysis channelizer followed by several polyphase synthesis
+channelizers. These structures are evaluated on two important criteria:
+1) Their ability to accurately reproduce every detected signal, and 2) Their
+   computational efficiency when combined with a cyclostationary detector.
+% TODO: list papers that discuss SCD for various protocols
+
+Section~\ref{sec:cyclo} provides background information on cyclostationary
+properties and the SCD function upon which the detector relies,
+Sections~\ref{sec:os_filter_bank} and \ref{sec:poly_chan} describe the
+Overlap-Save Filter Bank and the Polyphase Channelizer, respectively. Finally,
+Section~\ref{sec:sim} describes the simulation and its results.
 
 \section{Cyclostationary Detection}
+\markright{Brian H. Hulette \hfill Section \ref{sec:cyclo}. Cyclotationary Detection \hfill}
 \label{sec:cyclo}
 
 \subsection{Cyclostationarity}
@@ -320,8 +329,154 @@ frequency shift in the time domain) to be perfectly accurate. Alternatively, we
 can still use a single forward FFT and approximate the shift by interpolating
 between bins, but this is only an approximation.
 
+\section{Overlap-Save Filter Bank}
+\markright{Brian H. Hulette \hfill Section \ref{sec:os_filter_bank}. Overlap-Save Filter Bank \hfill}
+\label{sec:os_filter_bank}
+The Overlap-Save Filter Bank structure used in this simulation is based
+entirely on a description by Mark Borgerding from March 2006
+\cite{Borgerding1}.  Borgerding's concept is based on the well known
+Overlap-Save (OS) fast convolution technique.
+
+OS fast convolution can be used to speed up convolution with
+a filter that has a long impulse response. The concept is that rather than
+convolving in the time-domain, $O(N^2)$, it is faster to first
+perform an FFT of both the signal and the filter and conjugate multiply in the
+frequency domain, then IFFT to go back to the time domain, $O(N\log_2N)$.
+There is nothing new about this idea, but Borgerding's innovation is that he
+shows how to extend this concept to tune, filter and decimate any number of
+channels with arbitrary center frequencies and bandwidths.
+
+We will now see how the OS Filter Bank performs Tuning, Filtering, and
+Decimation. The same terms that Borgerding defines will be used in this
+description:
+
+\begin{center}
+\begin{tabular}{ll}
+    $x(n)$        & Input data \\
+    $h(n)$        & Baseband filter response \\
+    $y(n)$        & Tuned, filtered and decimated output data \\
+    $P$           & Length of $h(n)$ \\
+    $N$           & FFT size \\
+    $D$           & Decimation factor \\
+    $V = N/(P-1)$ & Ratio of FFT size to filter order \\
+\end{tabular}
+\end{center}
+
+\emph{Tuning:} If the frequency of the signal of interest corresponds to one of
+the FFT bins then we can simply circular shift the FFT output to place that bin
+at the center. Then filtering can be performed at baseband.  If all channels
+satisfy this criterion then we can re-use a single forward FFT for every
+channel, simply by circular shifting it to the appropriate bin in every case. 
+This approach is shown in Figure \ref{fig:overlap_save_shift}.
+
+However, if this condition is not satisfied then we will need to perform the
+frequency shift in the time domain by multiplying by a complex phasor.
+Fortunately, there is a still a way to re-use the forward FFT in this case.
+After taking an FFT of the non frequency-shifted signal we can shift the
+baseband filter response up to the desired frequency, then after the filtered
+signal is returned to the time domain with an IFFT, we perform the frequency
+shift with a complex phasor.  In addition to allowing us to re-use the forward
+FFT for each channel, this is more efficient than frequency shifting before the
+forward FFT since the multiplication is performed after decimation. This
+approach is shown in Figure \ref{fig:overlap_save_time_domain}.
+
+\begin{figure}[bh!]
+\centerline{
+    \subfloat[Performing frequency shift by circular shifting the FFT output]
+    {\includegraphics[width=0.48\textwidth]{overlap_save_shift}%
+    \label{fig:overlap_save_shift}}
+    \hfill
+    \subfloat[Performing precise frequency shift in the time-domain]
+    {\includegraphics[width=0.48\textwidth]{overlap_save_time_domain}%
+    \label{fig:overlap_save_time_domain}}
+}
+\caption{Overlap-Save Filter Bank Structures}
+\label{fig:overlap_save_filter_banks}
+\end{figure}
+
+\emph{Filtering:} As discussed earlier, this structure relies on OS fast
+convolution for filtering. The low-pass filter impulse response for each
+channel is Fourier Transformed and then conjugate multiplied with the FFT of
+the input data after the signal of interest has been tuned to baseband.
+Alternatively, if tuning is being performed in the time domain, the filter
+impulse response must be tuned up to the signal frequency before being Fourier
+transformed.
+
+\emph{Decimation:} Following the frequency domain filtering we have two
+different options for decimation. The first option is to perform a full size
+inverse FFT of the output, and then decimate in the time domain. The issue with
+this approach is that we are computing a larger inverse FFT than we really need
+to. Borgerding suggests decimating in the frequency domain as a solution to this.
+The approach (called ``Wrap/Sum" in Figure
+\ref{fig:overlap_save_filter_banks}) is simple: coherently add together the
+components of the frequency spectrum that would be aliased upon time domain
+decimation. For example, if the FFT size is 1024 and we need to decimate by
+a factor of 4, then coherently sum FFT samples 0 to 255, 256 to 511, 512 to 
+767 and 768 to 1024.  The result is a 256 sample frequency
+spectrum which we can now inverse FFT to produce the decimated output. The
+only trick with this approach is that we must discard just $(P-1)/D$
+samples rather than $P-1$ to account for the overlap.  This reveals one
+restriction of this structure: the filter order $P-1$ must be an integer
+multiple of the decimation, $D$.
+
+\subsection{Limitations}
+\label{sec:os_limitations}
+There are a few limitations of this structure that are worth mentioning. First,
+as mentioned earlier, the filter order $P-1$ must be an integer multiple of the
+decimation factor $D$. This problem is pretty easy to solve though - simply
+zero-pad the filter to achieve an appropriate length. Another limitation that
+is potentially challenging is that the FFT size, $N$, must be an integer
+multiple of the decimation rate, $D$. So decimation rates whose prime factors
+are larger than 2 or 5 (or others, depending on the FFT implementation) could
+lead to FFT inefficiency for this structure.
+
+One more limitation occurs when attempting to rotate the FFT to frequency
+shift.  As previously mentioned, the precision of the frequency shift is
+limited by the resolution of the FFT. However, the precision is also limited
+further by $V$, the ratio of FFT size to filter order. This is because we must
+restrict mixing to the frequencies whose period completes in $L=N-(P-1)$
+samples. Borgerding provides the following equation for computing the number of
+FFT bins to rotate to shift to frequency $f$ (\cite{Borgerding1} Equation (1)):
+
+\begin{equation}
+    N_{rot} = \text{round}\left( \frac{Nf}{Vf_s} \right) V
+\end{equation}
+
+Where $f_s$ is the wideband sample rate. This equation simply adjusts $N_{rot}$
+to the nearest multiple of $V$ bins. It is worth noting that the solution
+presented for making $P-1$ an integer multiple of $D$ is only making this
+problem worse by making $V$ larger - but there's nothing to be done about that
+other than opting for a shorter filter.
+
+\subsection{Advantages}
+\label{sec:os_advantages}
+
+The greatest benefit of the Overlap-Save Filter Bank for this project is the
+ease with which it can be combined with SCD Estimation for cyclostationary
+detection. Since the first step for both algorithms is a forward FFT of the
+wideband input, if we were to design a joint cyclostationary
+detector/Overlap-Save Filter Bank we could re-use the same forward FFT for both
+algorithms.
+
+The only design challenge is finding a combination of FFT size, sample rate,
+and decimation factor that will work for both algorithms.
+
+% TODO: Analysis of this problem. Decimation factor is related to alpha by the amount of oversampling.
+% Started this analysis a bit in lab notebook pg. 23
+
+%We can say that the output sample rate is some integer multiple of the symbol rate:
+%\begin{equation}
+%    f_s' = \beta \alpha \text{, } \beta = 1,2,\hdots
+%\end{equation}
+%Where the integer multiple $\beta$ is simply the amount of oversampling. Then we can 
+
+Additionally, averaging the overlapped FFT frames together may have an effect
+on the accuracy of the SCD estimation, but analyzing this effect is beyond the
+scope of this project.
+
 
 \section{Polyphase Analysis/Synthesis Channelizer}
+\markright{Brian H. Hulette \hfill Section \ref{sec:poly_chan}. Polyphase Analysis/Synthesis Channelizer \hfill}
 \label{sec:poly_chan}
 The first channelizer structure we will examine relies on the Analysis and
 Synthesis Polyphase Channelizers described by Fred Harris \cite{Harris1}.
@@ -531,149 +686,6 @@ are detected.
 
 % TODO: this needs to be expanded
 
-\section{Overlap-save Filter Bank}
-\label{sec:os_filter_bank}
-The Overlap-Save Filter Bank structure used in this simulation is based
-entirely on a description by Mark Borgerding from March 2006
-\cite{Borgerding1}.  Borgerding's concept is based on the well known
-Overlap-Save (OS) fast convolution technique.
-
-OS fast convolution can be used to speed up convolution with
-a filter that has a long impulse response. The concept is that rather than
-convolving in the time-domain, $O(N^2)$, it is faster to first
-perform an FFT of both the signal and the filter and conjugate multiply in the
-frequency domain, then IFFT to go back to the time domain, $O(N\log_2N)$.
-There is nothing new about this idea, but Borgerding's innovation is that he
-shows how to extend this concept to tune, filter and decimate any number of
-channels with arbitrary center frequencies and bandwidths.
-
-We will now see how the OS Filter Bank performs Tuning, Filtering, and
-Decimation. The same terms that Borgerding defines will be used in this
-description:
-
-\begin{center}
-\begin{tabular}{ll}
-    $x(n)$        & Input data \\
-    $h(n)$        & Baseband filter response \\
-    $y(n)$        & Tuned, filtered and decimated output data \\
-    $P$           & Length of $h(n)$ \\
-    $N$           & FFT size \\
-    $D$           & Decimation factor \\
-    $V = N/(P-1)$ & Ratio of FFT size to filter order \\
-\end{tabular}
-\end{center}
-
-\emph{Tuning:} If the frequency of the signal of interest corresponds to one of
-the FFT bins then we can simply circular shift the FFT output to place that bin
-at the center. Then filtering can be performed at baseband.  If all channels
-satisfy this criterion then we can re-use a single forward FFT for every
-channel, simply by circular shifting it to the appropriate bin in every case. 
-This approach is shown in Figure \ref{fig:overlap_save_shift}.
-
-However, if this condition is not satisfied then we will need to perform the
-frequency shift in the time domain by multiplying by a complex phasor.
-Fortunately, there is a still a way to re-use the forward FFT in this case.
-After taking an FFT of the non frequency-shifted signal we can shift the
-baseband filter response up to the desired frequency, then after the filtered
-signal is returned to the time domain with an IFFT, we perform the frequency
-shift with a complex phasor.  In addition to allowing us to re-use the forward
-FFT for each channel, this is more efficient than frequency shifting before the
-forward FFT since the multiplication is performed after decimation. This
-approach is shown in Figure \ref{fig:overlap_save_time_domain}.
-
-\begin{figure}[bh!]
-\centerline{
-    \subfloat[Performing frequency shift by circular shifting the FFT output]
-    {\includegraphics[width=0.48\textwidth]{overlap_save_shift}%
-    \label{fig:overlap_save_shift}}
-    \hfill
-    \subfloat[Performing precise frequency shift in the time-domain]
-    {\includegraphics[width=0.48\textwidth]{overlap_save_time_domain}%
-    \label{fig:overlap_save_time_domain}}
-}
-\caption{Overlap-Save Filter Bank Structures}
-\label{fig:overlap_save_filter_banks}
-\end{figure}
-
-\emph{Filtering:} As discussed earlier, this structure relies on OS fast
-convolution for filtering. The low-pass filter impulse response for each
-channel is Fourier Transformed and then conjugate multiplied with the FFT of
-the input data after the signal of interest has been tuned to baseband.
-Alternatively, if tuning is being performed in the time domain, the filter
-impulse response must be tuned up to the signal frequency before being Fourier
-transformed.
-
-\emph{Decimation:} Following the frequency domain filtering we have two
-different options for decimation. The first option is to perform a full size
-inverse FFT of the output, and then decimate in the time domain. The issue with
-this approach is that we are computing a larger inverse FFT than we really need
-to. Borgerding suggests decimating in the frequency domain as a solution to this.
-The approach (called ``Wrap/Sum" in Figure
-\ref{fig:overlap_save_filter_banks}) is simple: coherently add together the
-components of the frequency spectrum that would be aliased upon time domain
-decimation. For example, if the FFT size is 1024 and we need to decimate by
-a factor of 4, then coherently sum FFT samples 0 to 255, 256 to 511, 512 to 
-767 and 768 to 1024.  The result is a 256 sample frequency
-spectrum which we can now inverse FFT to produce the decimated output. The
-only trick with this approach is that we must discard just $(P-1)/D$
-samples rather than $P-1$ to account for the overlap.  This reveals one
-restriction of this structure: the filter order $P-1$ must be an integer
-multiple of the decimation, $D$.
-
-\subsection{Limitations}
-\label{sec:os_limitations}
-There are a few limitations of this structure that are worth mentioning. First,
-as mentioned earlier, the filter order $P-1$ must be an integer multiple of the
-decimation factor $D$. This problem is pretty easy to solve though - simply
-zero-pad the filter to achieve an appropriate length. Another limitation that
-is potentially challenging is that the FFT size, $N$, must be an integer
-multiple of the decimation rate, $D$. So decimation rates whose prime factors
-are larger than 2 or 5 (or others, depending on the FFT implementation) could
-lead to FFT inefficiency for this structure.
-
-One more limitation occurs when attempting to rotate the FFT to frequency
-shift.  As previously mentioned, the precision of the frequency shift is
-limited by the resolution of the FFT. However, the precision is also limited
-further by $V$, the ratio of FFT size to filter order. This is because we must
-restrict mixing to the frequencies whose period completes in $L=N-(P-1)$
-samples. Borgerding provides the following equation for computing the number of
-FFT bins to rotate to shift to frequency $f$ (\cite{Borgerding1} Equation (1)):
-
-\begin{equation}
-    N_{rot} = \text{round}\left( \frac{Nf}{Vf_s} \right) V
-\end{equation}
-
-Where $f_s$ is the wideband sample rate. This equation simply adjusts $N_{rot}$
-to the nearest multiple of $V$ bins. It is worth noting that the solution
-presented for making $P-1$ an integer multiple of $D$ is only making this
-problem worse by making $V$ larger - but there's nothing to be done about that
-other than opting for a shorter filter.
-
-\subsection{Advantages}
-\label{sec:os_advantages}
-
-The greatest benefit of the Overlap-Save Filter Bank for this project is the
-ease with which it can be combined with SCD Estimation for cyclostationary
-detection. Since the first step for both algorithms is a forward FFT of the
-wideband input, if we were to design a joint cyclostationary
-detector/Overlap-Save Filter Bank we could re-use the same forward FFT for both
-algorithms.
-
-The only design challenge is finding a combination of FFT size, sample rate,
-and decimation factor that will work for both algorithms.
-
-% TODO: Analysis of this problem. Decimation factor is related to alpha by the amount of oversampling.
-% Started this analysis a bit in lab notebook pg. 23
-
-%We can say that the output sample rate is some integer multiple of the symbol rate:
-%\begin{equation}
-%    f_s' = \beta \alpha \text{, } \beta = 1,2,\hdots
-%\end{equation}
-%Where the integer multiple $\beta$ is simply the amount of oversampling. Then we can 
-
-Additionally, averaging the overlapped FFT frames together may have an effect
-on the accuracy of the SCD estimation, but analyzing this effect is beyond the
-scope of this project.
 
 \section{Simulation}
 \label{sec:sim}
