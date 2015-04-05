@@ -24,7 +24,15 @@ function [cyc_spec] = cyclic_spectrum(data, alpha, fft_size, F_S, method, averag
         cyc_spec = mean(fftshift(fft(d_left, [], 1), 1).*...
                         conj(fftshift(fft(d_right, [], 1), 1)), 2);
     elseif strcmp(method, 'one_fft')
-        cyc_fft = compute_cyclo_fft(data, fft_size, averaging);
+        cyc_fft = compute_cyclo_fft(data, fft_size);
+        
+        % Truncate to a multiple of the averaging factor
+        num_ffts = floor(size(cyc_fft, 2)/averaging)*averaging;
+        cyc_fft = cyc_fft(:, 1:num_ffts);
+
+        % Perform averaging
+        cyc_fft = squeeze(mean(reshape(cyc_fft, fft_size, averaging, []), 2));
+
         cyc_spec = single_fft_cyclo(cyc_fft, alpha, F_S);
     else
         cyc_spec = 0;
