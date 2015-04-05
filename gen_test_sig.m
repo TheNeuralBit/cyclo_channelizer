@@ -17,7 +17,11 @@ samps_per_sym =  F_S./channel_bauds;
 tx = [];
 for idx=1:num_sigs
     % Generate
-    sig = gen_sig(bits, samps_per_sym(idx), MODULATION);
+    sig = gen_sig(bits, ceil(samps_per_sym(idx)), MODULATION);
+
+    if ceil(samps_per_sym(idx)) ~= samps_per_sym(idx)
+        sig = resample(sig, 1/ceil(samps_per_sym(idx)), 1/samps_per_sym(idx));
+    end
 
     % Frequency Shift
     t = 0:1/F_S:(length(sig) - 1)/F_S;
