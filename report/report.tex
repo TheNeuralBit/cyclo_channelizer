@@ -329,6 +329,87 @@ frequency shift in the time domain) to be perfectly accurate. Alternatively, we
 can still use a single forward FFT and approximate the shift by interpolating
 between bins, but this is only an approximation.
 
+\subsection{Using the SCD for Detection}
+Figure~\ref{fig:cyclo_estimates} shows some examples of estimates of the SCD
+that could be used for signal detection. These plots were generated using our
+MATLAB simulation, described in Section~\ref{sec:sim}. As you can see, the SCD
+at a particular cyclic frequency contains a sharp peak at any frequency that
+contains a digital signal at that baud rate
+
+According to \cite{Gardner2}, QPSK signals generate a large peak in the SCD at
+the signal's center frequency when $\alpha$ is equal to the signal baud rate.
+So for this application estimates are generated at cyclic frequencies
+corresponding to baud rates of interest. Figure \ref{fig:cyclo_estimates} shows
+examples of these estimates for our test signal.
+
+In each of these estimates it easy to detect the large, narrow peak at the
+center frequency of the signal with the corresponding baud rate. However, there
+are also other features, which agree with the theoretical SCD from
+\cite{Gardner2}.  The higher baud rate signals generate wide peaks in the lower
+cyclic frequency estimates, like the peak at 2.5 MHz in Figure
+\ref{fig:cyclo_156250}. These are easy to distinguish from the main peak with
+the human eye since they are much wider, but distinguishing them computationally
+is more challenging. The lower baud rate signals also generate features in the
+higher cyclic frequency estimates, in the form of two, much smaller peaks,
+straddling the actual center frequency. Examples of this are visible at 0 MHz
+in Figure \ref{fig:cyclo_312500} and \ref{fig:cyclo_625000}. These features are
+easily filtered out by either a human or a computer with a simple threshold.
+
+%The second portion of the cyclostationary detection must use these SCD estimates to 
+%generate a list of detected frequencies, and the corresponding signal's
+%baud rate. In order to do so the following algorithm has been devised. It accepts the input wideband data, and a list of potential baud rates that are of interest.
+%
+%\begin{enumerate}
+%    \item Initialize two empty lists \texttt{f[]} (center frequencies) and \texttt{b[]} (corresponding baud rate for each frequency)
+%    \item Sort list of potential baud rates from lowest to highest
+%    \item Estimate SCD at $\alpha$ equal to the first (lowest) baud rate
+%    \label{loop_ref}
+%    \item Detect peaks in the SCD. Use a threshold and a minimum peak separation
+%        to filter out false alarms.
+%    \item For each detected peak, check if an entry already exists in
+%        \texttt{f[]} near that frequency. If so, replace it with this peak's
+%        frequency and replace the corresponding entry in \texttt{b[]} with
+%        $\alpha$. Otherwise, append a new entry to \texttt{f[]} and
+%        \texttt{b[]} with the same values.
+%    \item Repeat from \ref{loop_ref} using the next baud rate in the list
+%\end{enumerate}
+%
+%This is a very simple algorithm, but it works well for this test. It is
+%fully implemented in the \texttt{cyclostationary\_detect(...)} function. This approach will essentially select the highest symbol rate that appears to be active at a given center frequency.
+%
+%In an actual application a more robust approach should be used. One possibility
+%which could be investigated but is beyond the scope of this project would be to
+%use a morphological filter to isolate only very narrow peaks. Between that and
+%the thresholding, other features would be easily ignored. For this project the
+%simple approach was taken, because the primary focus is on efficiently
+%estimating the SCD.
+
+\label{sec:scd_detection}
+\begin{figure}[bh!]
+\centerline{
+    \subfloat[SCD at $\alpha = 0$, Equivalent to a PSD]
+    {\includegraphics[width=0.45\textwidth]{cyclo_0}%
+    \label{fig:cyclo_0}}
+    \hfill
+    \subfloat[SCD at $\alpha = 156.25$ kHz, baud rate of signal at 0 MHz]
+    {\includegraphics[width=0.45\textwidth]{cyclo_156250}%
+    \label{fig:cyclo_156250}}
+}
+\centerline{
+    \subfloat[SCD at $\alpha = 312.5$ kHz, baud rate of signal at -2.5 MHz]
+    {\includegraphics[width=0.45\textwidth]{cyclo_312500}%
+    \label{fig:cyclo_312500}}
+    \hfill
+    \subfloat[SCD at $\alpha = 625$ kHz, baud rate of signal at 2.5 MHz]
+    {\includegraphics[width=0.45\textwidth]{cyclo_625000}%
+    \label{fig:cyclo_625000}}
+}
+\caption{Estimates of the SCD at various cyclic frequencies for a simulated 
+         acquisition with signals at -2.5, 0, and 2.5 MHz.}
+\label{fig:cyclo_estimates}
+\end{figure}
+
+
 \section{Overlap-Save Filter Bank}
 \markright{Brian H. Hulette \hfill Section \ref{sec:os_filter_bank}. Overlap-Save Filter Bank \hfill}
 \label{sec:os_filter_bank}
