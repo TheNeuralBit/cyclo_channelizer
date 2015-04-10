@@ -794,7 +794,22 @@ created\footnote{The entire source code for this simulation is available at
 simple QPSK carriers as test signals, but the cyclostationary detection
 and channelization software are applicable to many types of signals.
 
-\section{Runtime Comparison}
+\subsection{Runtime Comparison}
+\label{sec:sim_runtime}
+
+The simulation was used to compare the efficiency of the two channelizer
+structures. It is important to note that, while the runtime for both structures
+can clearly be improved with parallelization, this simulation is completely
+single-threaded. This approach allows us to get an analog for the total CPU
+time required for each approach. Of course, a practical implementation should
+run as much in parallel as possible.
+
+A comparison of runtimes for the Overlap-Save structure and the Polyphase
+structure can be seen in Figure~\ref{fig:block_diagram}. The plot shows the
+runtime for using both structures to simultaneously detect and tune various
+numbers of signals. For each number of signals, a 10 MHz wide simulated
+wideband acquisiton is created. This acquisition contains 78.125 ksymbol/s QPSK
+signals distributed evenly throughout the spectrum.
 
 \begin{figure}[h!]
     \begin{center}
@@ -804,6 +819,24 @@ and channelization software are applicable to many types of signals.
              Filter Bank and with the Polyphase Analysis/Synthesis Channelizer}
     \label{fig:block_diagram}
 \end{figure}
+
+From this runtime comparison, we see a clear trend: for a very small number of
+signals the Polyphase structure is less efficient, because it is very 
+expensive to perform the large Polyphase Analysis Channelizer just to recombine
+two or three signals. However, each addiditional signal costs more time for the 
+Overlap-Save Filter Bank to process than the Polyphase Channelizer. When 
+isolating more than six signals, the Polyphase structure is more efficient.
+
+This trend is easy to predict by examining the two structures. For each
+additional signal, the polyphase channelizer just needs to perform one
+additional small IFFT and a couple more filters at a low data rate, while the
+Overlap-Save Filter Bank must perform an additional multiplication in the
+frequency domain at the wideband data rate.
+
+Note that the situation simulated in this scenario represents the best case 
+Worse cases:
+- Bad FFT size
+- Requires larger analysis channelizers
 
 
 
