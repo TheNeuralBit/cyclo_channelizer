@@ -1,4 +1,4 @@
-function [ runtime ] = runtime_test(type, num_trials, num_signals)
+function [ runtime ] = runtime_test(type, num_trials, num_signals, baud)
     close all
     default_config;
     
@@ -6,7 +6,7 @@ function [ runtime ] = runtime_test(type, num_trials, num_signals)
     input_bits = text_file_to_binary('tale_of_two_cities.txt');
     input_bits = input_bits(1:numbits);
     PN = 40;
-    bauds = repmat([1/32].*F_S./4, 1, num_signals)
+    bauds = repmat([baud], 1, num_signals)
     UP = length(bauds);
 
     offset = F_S/num_signals/2;
