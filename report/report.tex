@@ -681,53 +681,44 @@ used together to produce a very flexible channelizer.
     {\includegraphics[height=4cm]{polyphase_synthesis}%
     \label{fig:polyphase_synthesis}}
 }
-\caption{Full Polyphase Analysis/Synthesis Channelizer Structures}
+\caption{Full Polyphase Analysis/Synthesis Filter Bank Structures}
 \label{fig:poly_analysis_synthesis_structs}
 \end{figure}
 
 
-\subsection{Non-maximally Decimated Filter Banks}
-\begin{figure}[h!]
-\centerline{
-    \subfloat[Analysis]
-    {\includegraphics[height=3cm]{polyphase_analysis_nmdfb}%
-    \label{fig:polyphase_analysis}}
-    \hfill
-    \subfloat[Synthesis]
-    {\includegraphics[height=3cm]{polyphase_synthesis_nmdfb}%
-    \label{fig:polyphase_synthesis}}
-}
-\caption{Full Polyphase Analysis/Synthesis Channelizer Structures}
-\label{fig:poly_analysis_synthesis_nmdfb}
-\end{figure}
-
-\subsection{Combining Analysis and Synthesis Channelizers}
+\subsection{Combining Analysis and Synthesis Filter Banks}
 \label{sec:combine_analysis_synthesis}
-The primary limitations of an Analysis Channelizer alone are that it is limited
+The primary limitations of an Analysis Filter Banks alone are that it is limited
 to a single output sample rate, and the channel center frequencies must be
 a multiple of that output sample rate. These limitations are perfectly
 acceptable when every signal being processed is at the same bandwidth and
 symbol rate, and they are channelized with a known spacing, but in many SDR
-applications this is not the case. One solution to this problem is to use
-analysis and synthesis structures \emph{together} to create one very flexible
-structure.
+applications this is not the case.
 
-Figure \ref{fig:analysis_and_synthesis} illustrates one simple way that this
-might be implemented. The first step of this process uses an Analysis
-Channelizer to break up the wideband into small equal parts (1). Then,
-Synthesis Channelizers are used to re-combine the parts of the signal that
-correspond to signals of interest (2). Finally, complex phasors are used to
-remove the frequency offset created by the Synthesis Channelizers, as well as
-any residual offset based on the desired center frequency (3).
+However, there is a clever way to continue to take advantage of these efficient
+structures, while getting around the limitations: use Analysis and Synthesis
+Filter Banks together. The basic idea is to completely ``deconstruct" the
+spectrum with a large Analysis Filter Bank and then allocate Synthesis
+Filter Banks for each target signal to recombine the sections of the spectrum
+which contain that signal. This approach, described by fred harris in
+\cite{Harris2}, can isolate multple signal bandwidths at arbitrary center
+frequencies.
+
+Figure \ref{fig:analysis_and_synthesis} illustrates the concept.
+The first step of this process uses an Analysis
+Filter Bank to break up the wideband into small equal parts (1). Then,
+Synthesis Filter Banks are used to re-combine the parts of the signal that
+correspond to signals of interest (2). Finally, complex rotators are used to
+center the signal (3). 
 
 \begin{figure}[h!]
     \begin{center}
     \includegraphics[width=0.8\textwidth]{polyphase}%
     \end{center}
     \caption{
-Using Polyphase Analysis/Synthesis Channelizer Structures in concert. Step (1)
-is an Analysis Channelizer that breaks the signal into 16 channels, Step (2) is
-a set of Synthesis Channelizers for each signal of interest, and Step (3) is
+Using Polyphase Analysis/Synthesis Filter Bank structures in concert. Step (1)
+is an Analysis Filter Bank that breaks the signal into 16 channels, Step (2) is
+a set of Synthesis Filter Banks for each signal of interest, and Step (3) is
 a complex phasor that corrects the frequency offset. Note that this figure
 depicts the signal in the frequency domain, simply for ease of illustration -
 all inputs and outputs are time-domain signals.
@@ -739,16 +730,62 @@ The analysis channelizer can be running all the time, while the synthesis
 channelizers and phasors in steps (2) and (3) can be dynamically allocated as
 signals of interest are detected (by some external detector).
 
-\cite{Harris2} describes a more complex take on this same concept, but this
-simplified version is sufficient for this project.
-% TODO: more detail about Harris2
+Unfortunately, there is an issue with this approach, as we have described it so
+far. Since the analysis channelizer is maximally decimated, meaning the filter
+cutoff is equal to the nyquist frequency of the output signals, the filter
+rolloff aliases into the output. Then when these outputs are re-combined by 
+synthesis channelizers to reconstruct a signal of interest that aliasing is left
+in the middle of the signal bandwidth.  For this reason, \cite{Harris2} utilizes
+Non-Maximally Decimated Filter Banks (NMDFBs), described in the next section.
 
+\subsection{Non-Maximally Decimated Analysis/Synthesis Filter Banks}
+NMDFBs are much like the Analysis/Synthesis Filter Banks we have already
+discussed, but modified to use a lower decimation factor. An excellent overview
+of these strucutres can be found in \cite{Chen1}. It starts with a general
+structure that can be used for arbitrary decimation rates (where $D$ is
+a factor of $M$), and a realization of this general structure when $D=M/2$.
+This realization, which is used in our simulation, can be seen in
+Figure~\ref{fig:poly_analysis_synthesis_nmdfb}.
+
+\begin{figure}[h!]
+\centerline{
+    \subfloat[Analysis]
+    {\includegraphics[height=3cm]{polyphase_analysis_nmdfb}%
+    \label{fig:polyphase_analysis_nmdfb}}
+    \hfill
+    \subfloat[Synthesis]
+    {\includegraphics[height=3cm]{polyphase_synthesis_nmdfb}%
+    \label{fig:polyphase_synthesis_nmdfb}}
+}
+
+\caption{Non-Maximally Decimated Polyphase Analysis/Synthesis Filter Bank Structures}
+\label{fig:poly_analysis_synthesis_nmdfb}
+\end{figure}
+
+Clearly, these structures are very similar to the standard analysis and
+synthesis filter banks. Let's examine the differences in the analysis filter
+bank (Figure~\ref{fig:polyphase_analysis_nmdfb}), from left to right. The first
+difference is that the input commutator has been replaced with a double input
+commutator. This makes intuitive sense - with a double input commutator the
+structure will accept half as many input samples for each output sample
+compared to the standard analysis channelizer, leading to a decimation factor
+of $M/2$ rather than $M$. The second difference is the filter partitions: each
+partition has been downsampled by a factor of 2, and the filters on the bottom
+half have been delayed by one sample.  Again, the downsampling makes intuitive
+sense given the change to $D=M/2$. The next difference is the conditional
+circular buffer after the filter partitions. This circular buffer simply swaps
+the upper and lower halves - but it only does it for \emph{every other} set of
+samples. This swapping is required to absorb a phase offset. The final
+difference is the use of an M-point IFFT rather than an FFT\cite{Chen1}.
+
+Using these NMDFBs in the Combined Analysis/Synthesis Filter Bank allows the
+Synthesis Filter Banks to perfectly reconstruct the received signal.
 
 
 \subsection{Limitations}
 \label{sec:poly_limitations}
 We have already examined the limitations of a Polyphase Analysis
-Channelizer used alone: every channel must be at the same output sample
+Filter Bank used alone: every channel must be at the same output sample
 rate, $f_s/D$, and they must have center frequencies which are multiples of
 that sample rate.
 
