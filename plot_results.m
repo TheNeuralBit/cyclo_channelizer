@@ -26,7 +26,7 @@ function plot_results(glob)
     hold on;
     legend(legend_data);
     title('Runtime')
-    xlabel('Number of Channels')
+    xlabel('Number of Signals')
     ylabel('Average Runtime (s)')
     hold off;
 end
