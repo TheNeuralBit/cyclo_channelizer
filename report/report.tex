@@ -66,7 +66,7 @@ Brian H. Hulette, Amir I. Zaghloul
 
 \vfill
 
-Keywords: SDR, Cyclostationarity, Detection, Channelizer
+Keywords: SDR, Cyclostationarity, Detection, Filter Banks
 \\
 Copyright 2015, Brian H. Hulette
 
@@ -216,7 +216,7 @@ channelizers. These structures are evaluated on two important criteria:
 Section~\ref{sec:cyclo} provides background information on cyclostationary
 properties and the SCD function upon which the detector relies,
 Sections~\ref{sec:os_filter_bank} and \ref{sec:poly_chan} describe the
-Overlap-Save Filter Bank and the Polyphase Channelizer, respectively. Finally,
+Overlap-Save Filter Bank and the Polyphase Filter Bank, respectively. Finally,
 Section~\ref{sec:sim} describes the simulation and its results.
 
 \section{Cyclostationary Detection}
@@ -556,14 +556,14 @@ on the accuracy of the SCD estimation, but analyzing this effect is beyond the
 scope of this project.
 
 
-\section{Polyphase Analysis/Synthesis Channelizer}
-\markright{Brian H. Hulette \hfill Section \ref{sec:poly_chan}. Polyphase Analysis/Synthesis Channelizer \hfill}
+\section{Polyphase Analysis/Synthesis Filter Bank}
+\markright{Brian H. Hulette \hfill Section \ref{sec:poly_chan}. Polyphase Analysis/Synthesis Filter Banks \hfill}
 \label{sec:poly_chan}
 The first channelizer structure we will examine relies on the Analysis and
-Synthesis Polyphase Channelizers described by Fred Harris \cite{Harris1}.
+Synthesis Polyphase Filter Banks described by Fred Harris \cite{Harris1}.
 A Polyphase Analysis channelizer can be used to break up a wideband signal into
 $D$ distinct channels, each decimated by a factor of $D$ from the wideband
-sample rate.  While a Polyphase Synthesis Channelizer performs the reverse
+sample rate.  While a Polyphase Synthesis Filter Bank performs the reverse
 operation, combining $D$ channels into one wideband signal. The channel
 frequencies used in both structures are integer multiples of the output sample
 rate:
@@ -573,7 +573,7 @@ rate:
 \end{IEEEeqnarray}
 
 where $f_k$ is the center frequency of channel $k$ and $f_s$ is the input sample
-rate. A Polyphase Synthesis Channelizer performs the reverse operation - it
+rate. A Polyphase Synthesis Filter Bank performs the reverse operation - it
 combines $D$ distinct channels with equal sample rate into a single wideband
 signal.
 
@@ -582,9 +582,9 @@ can tune channels with arbitrary center frequencies and various bandwidths
 \cite{Harris2} - a simplified version of this structure is discussed in
 Section~\ref{sec:combine_analysis_synthesis}.
 
-In \cite{Harris1}, Harris shows how the Polyphase Analysis Channelizer works by
+In \cite{Harris1}, Harris shows how the Polyphase Analysis Filter Bank works by
 starting with a basic filter/decimator and making incremental modifications
-until it becomes an Analysis Channelizer as shown in Figure
+until it becomes an Analysis Filter Bank as shown in Figure
 \ref{fig:polyphase_analysis}. A brief summary of this description is provided here, which follows Figure~\ref{fig:polyphase_proof}.
 
 \begin{figure}[h!]
@@ -665,7 +665,7 @@ Where $y_r(n)$ represents the output of filter $H_r(z)$, and $y_k(n)$ is the
 output of channel $k$. Thus we can compute all $D$ of the complex phasors with
 a $D$ point FFT, as shown in Figure \ref{fig:polyphase_analysis}. Figure
 \ref{fig:polyphase_synthesis} shows the complementary structure: the Polyphase
-Synthesis Channelizer. It is essentially a mirror image of the Analysis case
+Synthesis Filter Bank. It is essentially a mirror image of the Analysis case
 - an IFFT followed by filters and a commutator. It combines $D$
 channels at an equal sample rate, $f_s$, into a single wideband signal at
 sample rate $Df_s$. The following section shows how these two structures can be
@@ -767,17 +767,17 @@ channelizer can be re-used for the detection approach used in this project.
 
 \subsection{Advantages}
 \label{sec:poly_advantages}
-The primary advantage of a lone Polyphase Analysis Channelizer is its
+The primary advantage of a lone Polyphase Analysis Filter Bank is its
 simplicity and efficiency, but its limitations make it an untenable solution
 for this project.
 
-The combination Polyphase Analysis/Synthesis Channelizer adds some complexity,
+The combination Polyphase Analysis/Synthesis Filter Bank adds some complexity,
 but it is still quite efficient for the amount of flexibility that it provides.
-Another major benefit of both Analysis and Synthesis Channelizers is that they
+Another major benefit of both Analysis and Synthesis Filter Banks is that they
 can be implemented in hardware relatively easily. That means the Combination
 Analysis/Synthesis structure could be implemented in hardware. One can imagine
-a hardware implementation of this structure where an Analysis Channelizer is
-always running, and a bank of Synthesis Channelizers are dynamically connected
+a hardware implementation of this structure where an Analysis Filter Bank is
+always running, and a bank of Synthesis Filter Banks are dynamically connected
 and disconnected as signals
 are detected.
 
@@ -806,7 +806,7 @@ run as much in parallel as possible.
 
 A comparison of runtimes for the Overlap-Save structure and the Polyphase
 structure can be seen in Figure~\ref{fig:block_diagram}. The plot shows the
-runtime for using both structures to simultaneously detect and tune various
+runtime when both structures are used to simultaneously detect and tune various
 numbers of signals. For each number of signals, a 10 MHz wide simulated
 wideband acquisiton is created. This acquisition contains 78.125 ksymbol/s QPSK
 signals distributed evenly throughout the spectrum.
@@ -816,15 +816,15 @@ signals distributed evenly throughout the spectrum.
     \includegraphics[width=0.7\textwidth]{runtime_comparison_250}%
     \end{center}
     \caption{Runtime comparison of detector combined with the Overlap-Save
-             Filter Bank and with the Polyphase Analysis/Synthesis Channelizer}
+             Filter Bank and with the Polyphase Analysis/Synthesis Filter Bank}
     \label{fig:block_diagram}
 \end{figure}
 
 From this runtime comparison, we see a clear trend: for a very small number of
 signals the Polyphase structure is less efficient, because it is very 
-expensive to perform the large Polyphase Analysis Channelizer just to recombine
+expensive to perform the large Polyphase Analysis Filter Bank just to recombine
 two or three signals. However, each addiditional signal costs more time for the 
-Overlap-Save Filter Bank to process than the Polyphase Channelizer. When 
+Overlap-Save Filter Bank to process than the Polyphase Filter Bank. When 
 isolating more than six signals, the Polyphase structure is more efficient.
 
 This trend is easy to predict by examining the two structures. For each
