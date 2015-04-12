@@ -846,7 +846,8 @@ structure can be seen in Figure~\ref{fig:block_diagram}. The plot shows the
 runtime when both structures are used to simultaneously detect and tune various
 numbers of signals. For each number of signals, a 10 MHz wide simulated
 wideband acquisiton is created. This acquisition contains 78.125 ksymbol/s QPSK
-signals distributed evenly throughout the spectrum.
+signals distributed evenly throughout the spectrum. Each filter bank is
+configured to decimate every signal down to two samples per symbol.
 
 \begin{figure}[h!]
     \begin{center}
@@ -870,10 +871,20 @@ additional small IFFT and a couple more filters at a low data rate, while the
 Overlap-Save Filter Bank must perform an additional multiplication in the
 frequency domain at the wideband data rate.
 
-Note that the situation simulated in this scenario represents the best case 
-Worse cases:
-- Bad FFT size
-- Requires larger analysis channelizers
+Note that the situation simulated in this scenario represents a best-case 
+scenario for the Polyphase Filter Bank. The baud rate of the test signals 
+was chosen so that the decimation factor would be a power of two. This
+means the Polyphase analysis filter bank can use a very efficient power of two 
+FFT size. In addition, since all the signals are the same bandwidth, the filter
+bank can be designed so that only $M=2$ synthesis filter banks are required.
+One can imagine a worst-case scenario where there is one low bandwidth signal
+and many high bandwidth signals. In this scenario, a large analysis filter bank 
+is required to isolate the low bandwidth signal, but then very large synthesis 
+filter banks must be used to reconstruct each of the high bandwidth signals.
+
+% TODO plot for bad FFT size
+Note that, as long as a decimation factor that only has small prime factors
+(2, 3, 5...) is used, this problem can be avoided. 
 
 
 
