@@ -867,6 +867,17 @@ additional small IFFT and a couple more filters at a low data rate, while the
 Overlap-Save Filter Bank must perform an additional multiplication in the
 frequency domain at the wideband data rate.
 
+\begin{figure}[h!]
+    \begin{center}
+    \includegraphics[width=0.7\textwidth]{fft_runtime_comparison}%
+    \end{center}
+    \caption{Runtime comparison of detector combined with the polyphase filter
+             bank. The 24.75248 kbaud signal requires a 202 point IFFT, while 
+             the 25 kbaud signal can use a 200 point IFFT. The former has a
+             large prime factor, 101, leading to a much longer runtime.}
+    \label{fig:block_diagram}
+\end{figure}
+
 Note that the situation simulated in this scenario represents a best-case 
 scenario for the Polyphase Filter Bank. The baud rate of the test signals 
 was chosen so that the decimation factor would be a power of two. This
