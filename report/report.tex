@@ -834,8 +834,8 @@ The simulation was used to compare the efficiency of the two filter bank
 structures. It is important to note that, while the runtime for both structures
 can clearly be improved with parallelization, this simulation is completely
 single-threaded. This approach allows us to get an analog for the total CPU
-time required for each approach. Of course, a practical implementation should
-run as much in parallel as possible.
+time required for each approach. Of course, a practical implementation of
+either structure should run as much in parallel as possible.
 
 A comparison of runtimes for the overlap-save structure and the polyphase
 structure can be seen in Figure~\ref{fig:block_diagram}. The plot shows the
@@ -855,16 +855,16 @@ configured to decimate every signal down to two samples per symbol.
 \end{figure}
 
 From this runtime comparison, we see a clear trend: for a very small number of
-signals the Polyphase structure is less efficient, because it is very 
-expensive to perform the large Polyphase Analysis Filter Bank just to recombine
+signals the polyphase structure is less efficient, because it is very 
+expensive to perform the large polyphase analysis filter bank just to recombine
 two or three signals. However, each addiditional signal costs more time for the 
-Overlap-Save Filter Bank to process than the Polyphase Filter Bank. When 
-isolating more than six signals, the Polyphase structure is more efficient.
+overlap-save filter bank to process than the polyphase filter bank. When 
+isolating more than six signals, the polyphase structure is more efficient.
 
 This trend is easy to predict by examining the two structures. For each
-additional signal, the polyphase channelizer just needs to perform one
+additional signal, the polyphase fiter bank just needs to perform one
 additional small IFFT and a couple more filters at a low data rate, while the
-Overlap-Save Filter Bank must perform an additional multiplication in the
+overlap-save filter bank must perform an additional multiplication in the
 frequency domain at the wideband data rate.
 
 \begin{figure}[h!]
@@ -878,21 +878,27 @@ frequency domain at the wideband data rate.
     \label{fig:block_diagram}
 \end{figure}
 
-Note that the situation simulated in this scenario represents a best-case 
-scenario for the Polyphase Filter Bank. The baud rate of the test signals 
-was chosen so that the decimation factor would be a power of two. This
-means the Polyphase analysis filter bank can use a very efficient power of two 
-FFT size. In addition, since all the signals are the same bandwidth, the filter
-bank can be designed so that only $M=2$ synthesis filter banks are required.
-One can imagine a worst-case scenario where there is one low bandwidth signal
-and many high bandwidth signals. In this scenario, a large analysis filter bank 
-is required to isolate the low bandwidth signal, but then very large synthesis 
-filter banks must be used to reconstruct each of the high bandwidth signals.
+Note that the situation simulated in this scenario represents a best-case
+scenario for both structures. The baud rate of the test signals was chosen so
+that the decimation factor would be a power of two. This means that polyphase
+analysis filter bank and the large FFT in the overlap-save filter bank can use
+a very efficient power of two FFT size. Figure~\ref{fig:block_diagram}
+illustrates this effect for the polyphase filter bank. In general it is easy to
+avoid this pitfall for both structures by decimating with a good FFT size. If
+another narrowband sample rate is required, the outputs can be resampled after
+the fact.
 
-% TODO plot for bad FFT size
-Note that, as long as a decimation factor that only has small prime factors
-(2, 3, 5...) is used, this problem can be avoided. 
+In both of these test cases, since all of the signals are the same bandwidth,
+the polyphase filter bank can be designed so that only $M=2$ synthesis filter
+banks are required.  One can imagine a worst-case scenario for the polyphase
+filter bank where there is one low bandwidth signal and many high
+bandwidth signals.  In this scenario, a large analysis filter bank is required
+to isolate the low bandwidth signal, but then very large synthesis filter banks
+must be used to reconstruct each of the high bandwidth signals.
 
+Clearly, it is difficult to say definitively that either structure is much more
+efficient than the other. For any given application, each structure should be
+evaluated to determine which is better suited for it.
 
 
 \section{Conclusion}
