@@ -441,7 +441,7 @@ to one of the FFT bins then we can simply circular shift the FFT output to
 place that bin at the center. Then filtering can be performed at baseband.  If
 all channels satisfy this criterion then we can re-use a single forward FFT for
 every channel, simply by circular shifting it to the appropriate bin in every
-case.  This approach is shown in Figure \ref{fig:overlap_save_shift}.
+case.  This approach is shown in Figure \ref{fig:overlap_save_freq_domain}.
 
 However, if this condition is not satisfied then we will need to perform the
 frequency shift in the time domain by multiplying by a complex rotator.
@@ -458,8 +458,8 @@ decimation. This approach is shown in Figure
 \begin{figure}[bh!]
 \centerline{
     \subfloat[Performing frequency shift by circular shifting the FFT output]
-    {\includegraphics[width=0.48\textwidth]{overlap_save_shift}%
-    \label{fig:overlap_save_shift}}
+    {\includegraphics[width=0.48\textwidth]{overlap_save_freq_domain}%
+    \label{fig:overlap_save_freq_domain}}
     \hfill
     \subfloat[Performing precise frequency shift in the time-domain]
     {\includegraphics[width=0.48\textwidth]{overlap_save_time_domain}%
