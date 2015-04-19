@@ -51,6 +51,7 @@
 \begin{document}
 
 \newcommand{\fourier}{\mathcal{F}}
+\newcommand{\at}{{\fontfamily{ptm}\selectfont @}}
 
 
 % TITLE
@@ -63,7 +64,10 @@ Many Linearly Modulated Signals}
 
 \vfill
 
-Brian H. Hulette, Amir I. Zaghloul
+Brian H. Hulette, Amir I. Zaghloul \\
+\{hulettbh, amirz\}\at vt.edu \\
+Virginia Polytechnic Institute and State University \\
+Dept. of Electrical Engineering
 
 \vfill
 
@@ -99,7 +103,7 @@ various numbers of signals of interest.
 \vfill
 
 \begin{center}
-Keywords: SDR, Cyclostationarity, Detection, Filter Banks
+Keywords: Software-Defined Radio, SDR, Cyclostationarity, Spectral Correlation Density, SCD, Detection, Filter Banks
 \\
 Copyright 2015, Brian H. Hulette
 \end{center}
@@ -206,7 +210,7 @@ These structures are evaluated on two important criteria:
 Section~\ref{sec:cyclo} provides background information on cyclostationary
 properties and the SCD function upon which the detector relies,
 Sections~\ref{sec:os_filter_bank} and \ref{sec:poly_chan} describe the
-Overlap-Save Filter Bank and the Polyphase Filter Bank, respectively. Finally,
+overlap-save filter bank and the polyphase filter bank, respectively. Finally,
 Section~\ref{sec:sim} describes the simulation and its results.
 
 \section{Cyclostationary Detection}
@@ -341,11 +345,12 @@ easily filtered out by either a human or a computer with a simple threshold.
 
 % TODO: more citations with approaches
 There are many potential approaches for identifying signals of interest in
-these SCD estimates (e.g. \cite{Thai1,Yoo1}). In this paper we are primarily concerned
-with efficiently estimating the SCD, so we choose to use a relatively na{\"i}ve
-approach: a thresholded peak detection that favors the higher cyclic frequency
-SCDs. In the example in Figure~\ref{fig:cyclo_estimates}, favoring the higher
-cyclic frequencies allows us to correctly identify the 625 ksymbol/s signal at
+these SCD estimates (e.g. \cite{Thai1,Yoo1}). However, in this paper we are
+primarily concerned with efficiently estimating the SCD, so we choose to use
+a relatively na{\"i}ve approach: a thresholded peak detection that favors the
+higher cyclic frequency SCDs. In the example in
+Figure~\ref{fig:cyclo_estimates}, favoring the higher cyclic frequencies allows
+us to correctly identify the 625 ksymbol/s signal at
 2.5 MHz rather than mistakenly detecting the 156.25 or 312.5 ksymbol/s peaks.
 
 %The second portion of the cyclostationary detection must use these SCD estimates to 
@@ -406,8 +411,8 @@ cyclic frequencies allows us to correctly identify the 625 ksymbol/s signal at
 \section{Overlap-Save Filter Bank}
 \markright{Brian H. Hulette \hfill Section \ref{sec:os_filter_bank}. Overlap-Save Filter Bank \hfill}
 \label{sec:os_filter_bank}
-The Overlap-Save Filter Bank structure used in this simulation is based
-entirely on a description by Mark Borgerding from March 2006
+The overlap-save filter bank structure used in this simulation is based
+on a description by Mark Borgerding from March 2006
 \cite{Borgerding1}.  Borgerding's concept is based on the well known
 Overlap-Save (OS) fast convolution technique.
 
@@ -420,8 +425,8 @@ There is nothing new about this idea, but Borgerding's innovation is that he
 shows how to extend this concept to tune, filter and decimate any number of
 channels with arbitrary center frequencies and bandwidths.
 
-We will now see how the OS Filter Bank performs Tuning, Filtering, and
-Decimation. The same terms that Borgerding defines will be used in this
+We will now see how the OS filter bank performs tuning, filtering, and
+decimation. The same terms that Borgerding defines will be used in this
 description:
 
 \begin{center}
@@ -465,7 +470,7 @@ decimation. This approach is shown in Figure
     {\includegraphics[width=0.48\textwidth]{overlap_save_time_domain}%
     \label{fig:overlap_save_time_domain}}
 }
-\caption{Overlap-Save Filter Bank Structures}
+\caption{Overlap-save filter bank structures}
 \label{fig:overlap_save_filter_banks}
 \end{figure}
 
@@ -505,13 +510,14 @@ multiple of the decimation rate, $D$. So decimation rates whose prime factors
 are larger than 2 or 5 (or others, depending on the FFT implementation) could
 lead to FFT inefficiency for this structure.
 
-One more limitation occurs when attempting to rotate the FFT to frequency
-shift.  As previously mentioned, the precision of the frequency shift is
-limited by the resolution of the FFT. However, the precision is also limited
-further by $V$, the ratio of FFT size to filter order. This is because we must
-restrict mixing to the frequencies whose period completes in $L=N-(P-1)$
-samples. Borgerding provides the following equation for computing the number of
-FFT bins to rotate to shift to frequency $f$ (\cite{Borgerding1} Equation (1)):
+One more limitation arises when attempting to tune by rotating the FFT, as in
+Figure~\ref{fig:overlap_save_freq_domain}.  As previously mentioned, the
+precision of the frequency shift is limited by the resolution of the FFT.
+However, the precision is also limited further by $V$, the ratio of FFT size to
+filter order. This is because we must restrict mixing to the frequencies whose
+period completes in $L=N-(P-1)$ samples. Borgerding provides the following
+equation for computing the number of FFT bins to rotate to shift to frequency
+$f$ (\cite{Borgerding1} Equation (1)):
 
 \begin{equation}
     N_{rot} = \text{round}\left( \frac{Nf}{Vf_s} \right) V
@@ -523,10 +529,16 @@ presented for making $P-1$ an integer multiple of $D$ is only making this
 problem worse by making $V$ larger - but there's nothing to be done about that
 other than opting for a shorter filter.
 
+The easiest solution to this issue is to simply use the time-domain tuning
+approach illustrated in Figure~\ref{fig:overlap_save_time_domain}. It is
+slightly more complicated since a new band-pass filter must be generated from
+a low-pass prototype for each signal, and a complex rotator is required at the
+output, but it can easily select arbitrary frequencies.
+
 \subsection{Advantages}
 \label{sec:os_advantages}
 
-The greatest benefit of the Overlap-Save Filter Bank for our application is the
+The greatest benefit of the overlap-save filter bank for our application is the
 ease with which it can be combined with SCD Estimation for cyclostationary
 detection. Since the first step for both algorithms is a forward FFT of the
 wideband input, when designing a joint cyclostationary detector/overlap-save
@@ -661,8 +673,8 @@ output of channel $k$. Thus we can compute all $D$ of the complex rotators with
 a $D$ point FFT, as shown in Figure \ref{fig:polyphase_analysis}. 
 
 Figure \ref{fig:polyphase_synthesis} shows the complementary structure: the
-Polyphase Synthesis Filter Bank. It is essentially a mirror image of the
-Analysis case - an IFFT followed by filters and a commutator. It combines $M$
+polyphase synthesis filter bank. It is essentially a mirror image of the
+analysis case - an IFFT followed by filters and a commutator. It combines $M$
 channels at an equal sample rate, $f_s$, into a single wideband signal at
 sample rate $Mf_s$.  The following section shows how these two structures can
 be used together to produce a very flexible filter bank.
@@ -677,7 +689,7 @@ be used together to produce a very flexible filter bank.
     {\includegraphics[height=4cm]{polyphase_synthesis}%
     \label{fig:polyphase_synthesis}}
 }
-\caption{Full Polyphase Analysis/Synthesis Filter Bank Structures}
+\caption{Full polyphase analysis/synthesis filter bank structures}
 \label{fig:poly_analysis_synthesis_structs}
 \end{figure}
 
@@ -701,9 +713,9 @@ which contain thos signals. This approach, described by fred harris in
 frequencies.
 
 Figure~\ref{fig:analysis_and_synthesis} illustrates the concept.
-The first step of this process uses an Analysis
-Filter Bank to break up the wideband into small equal parts (1). Then,
-Synthesis Filter Banks are used to re-combine the parts of the signal that
+The first step of this process uses an analysis
+filter bank to break up the wideband into small equal parts (1). Then,
+synthesis filter banks are used to re-combine the parts of the signal that
 correspond to signals of interest (2). Finally, complex rotators are used to
 center the signal (3). 
 
@@ -712,9 +724,9 @@ center the signal (3).
     \includegraphics[width=0.8\textwidth]{polyphase}%
     \end{center}
     \caption{
-Using Polyphase Analysis/Synthesis Filter Bank structures in concert. Step (1)
-is an Analysis Filter Bank that breaks the signal into 16 channels, Step (2) is
-a set of Synthesis Filter Banks for each signal of interest, and Step (3) is
+Using polyphase analysis/synthesis filter bank structures in concert. Step (1)
+is an analysis filter bank that breaks the signal into 16 channels, Step (2) is
+a set of synthesis filter banks for each signal of interest, and Step (3) is
 a complex rotators that corrects the frequency offset. Note that this figure
 depicts the signal in the frequency domain, simply for ease of illustration -
 all inputs and outputs are time-domain signals.
@@ -732,7 +744,7 @@ cutoff is equal to the nyquist frequency of the output signals, the filter
 rolloff aliases into the output. Then when these outputs are re-combined by 
 synthesis filter banks to reconstruct a signal of interest, that aliasing is left
 in the middle of the signal bandwidth.  For this reason, \cite{Harris2} utilizes
-a modified version of these structure that is non-maximally decimated.
+a modified version of these structures: non-maximally decimated filter banks.
 
 \subsection{Non-Maximally Decimated Analysis/Synthesis Filter Banks}
 Non-maximally decimated analysis and synthesis filter banks are much like the
@@ -754,7 +766,7 @@ simulation, can be seen in Figure~\ref{fig:poly_analysis_synthesis_nmdfb}.
     \label{fig:polyphase_synthesis_nmdfb}}
 }
 
-\caption{Non-Maximally Decimated Polyphase Analysis/Synthesis Filter Bank Structures}
+\caption{Non-maximally decimated polyphase analysis/synthesis filter bank structures}
 \label{fig:poly_analysis_synthesis_nmdfb}
 \end{figure}
 
@@ -770,9 +782,10 @@ partition has been downsampled by a factor of 2, and the filters on the bottom
 half have been delayed by one sample.  Again, the downsampling makes intuitive
 sense given the change to $D=M/2$. The next difference is the conditional
 circular buffer after the filter partitions. This circular buffer simply swaps
-the upper and lower halves - but it only does it for \emph{every other} set of
-samples. This swapping is required to absorb a phase offset. The final
-difference is the use of an M-point IFFT rather than an FFT\cite{Chen1}.
+the upper and lower halves - but it only does it for every \emph{odd} set of
+samples - the even sets are simply passed through. This swapping is required to
+absorb a phase offset. The final difference is the use of an M-point IFFT
+rather than an FFT \cite{Chen1}.
 
 Using these non-maximally decimated filter banks (NMDFBs) in the combined
 analysis/synthesis filter bank allows the synthesis filter banks to perfectly
@@ -780,24 +793,24 @@ reconstruct the received signal.
 
 \subsection{Limitations}
 \label{sec:poly_limitations}
-We have already examined the limitations of a Polyphase Analysis
-Filter Bank used alone: every channel must be at the same output sample
+We have already examined the limitations of a polyphase analysis
+filter bank used alone: every channel must be at the same output sample
 rate, $f_s/D$, and they must have center frequencies which are multiples of
 that sample rate.
 
 If the combination analysis/synthesis structure is used then this limitation
 can be avoided, however there are still other issues. First, the output sample
 rate must still be a decimation of the input sample rate - arbitrary rates are
-not allowed. 
+not allowed.  Also, like the overlap-save filter bank, this structure relies on
+the efficiency of the FFT to save computation, and the size of the IFFT in the
+analysis filter bank is directly related to the decimation factor used. If
+a decimation factor with large prime factors is required then the analysis
+filter bank's IFFT will be inefficient.
 
 Finally, there is no obvious way that this structure can be efficiently
-combined with SCD estimation for detection. Nothing about an analysis
-channelizer can be re-used for the detection approach used in this project.
+combined with SCD estimation for detection. Nothing about an polyphase filter
+bank can be re-used for the detection approach discussed in this paper.
 
-Like the overlap-save filter bank, this structure relies on the efficiency of
-the FFT to save computation, and the size of the FFT is direclty related to
-the decimation factor used. If a decimation factor with large prime factors is 
-required then the analysis filter bank's IFFT will be inefficient.
 
 \subsection{Advantages}
 \label{sec:poly_advantages}
@@ -807,7 +820,7 @@ for this project.
 
 The combination polyphase analysis/synthesis filter bank adds some complexity,
 but it is still quite efficient for the amount of flexibility that it provides.
-Another major benefit of both analysis and synthesis filter Banks is that they
+Another major benefit of both analysis and synthesis filter banks is that they
 can be implemented in hardware relatively easily. One can imagine a hardware
 implementation of this structure where an analysis filter bank is always
 running, and a bank of synthesis filter banks are dynamically connected and
@@ -833,9 +846,10 @@ signals.
 The simulation was used to compare the efficiency of the two filter bank
 structures. It is important to note that, while the runtime for both structures
 can clearly be improved with parallelization, this simulation is completely
-single-threaded. This approach allows us to get an analog for the total CPU
-time required for each approach. Of course, a practical implementation of
-either structure should run as much in parallel as possible.
+single-threaded. This approach allows us to use overall runtime measurements as
+an analog for the total CPU time required for each approach. Of course,
+a practical implementation of either structure should run as much in parallel
+as possible.
 
 A comparison of runtimes for the overlap-save structure and the polyphase
 structure can be seen in Figure~\ref{fig:block_diagram}. The plot shows the
@@ -849,19 +863,25 @@ configured to decimate every signal down to two samples per symbol.
     \begin{center}
     \includegraphics[width=0.7\textwidth]{runtime_comparison_250}%
     \end{center}
-    \caption{Runtime comparison of detector combined with the Overlap-Save
-             Filter Bank and with the Polyphase Analysis/Synthesis Filter Bank}
+    \caption{Runtime comparison of detector combined with the overlap-save
+             filter bank and with the polyphase analysis/synthesis filter bank}
     \label{fig:block_diagram}
 \end{figure}
 
 From this runtime comparison, we see a clear trend: for a very small number of
-signals the polyphase structure is less efficient, because it is very 
-expensive to perform the large polyphase analysis filter bank just to recombine
-two or three signals. However, each addiditional signal costs more time for the 
-overlap-save filter bank to process than the polyphase filter bank. When 
-isolating more than six signals, the polyphase structure is more efficient.
+signals the polyphase structure is less efficient.  However, each addiditional
+signal costs more time for the overlap-save filter bank to process than the
+polyphase filter bank. When isolating more than six signals, the polyphase
+structure is more efficient. There are two clear takeaways from this result: 1)
+there is a larger cost up-front when using a polyphase filter bank, but 2) the
+marginal cost for each additional signal being isolated is lower for the
+polyphase filter bank. 
 
-This trend is easy to predict by examining the two structures. For each
+These takeaways are actually easy to predict just by examining the structures.
+The polyphase filter bank has a large up-front cost because it must run a large
+analysis channelizer no matter the number of signals being processed. In
+addition, the overlap-save filter bank saves some time up-front by using
+a single FFT for detection and filtering. On the other hand, for each
 additional signal, the polyphase fiter bank just needs to perform one
 additional small IFFT and a couple more filters at a low data rate, while the
 overlap-save filter bank must perform an additional multiplication in the
@@ -872,26 +892,28 @@ frequency domain at the wideband data rate.
     \includegraphics[width=0.7\textwidth]{fft_runtime_comparison}%
     \end{center}
     \caption{Runtime comparison of detector combined with the polyphase filter
-             bank. The 24.75248 kbaud signal requires a 202 point IFFT, while 
-             the 25 kbaud signal can use a 200 point IFFT. The former has a
-             large prime factor, 101, leading to a much longer runtime.}
+             bank. The 24.75248 kbaud signal requires a 202 point IFFT, while the 25
+             kbaud signal can use a 200 point IFFT. The former has a large prime factor,
+             101, leading to a much longer runtime. A similar effect can be seen in the
+             overlap-save structure.}
     \label{fig:block_diagram}
 \end{figure}
 
-Note that the situation simulated in this scenario represents a best-case
-scenario for both structures. The baud rate of the test signals was chosen so
-that the decimation factor would be a power of two. This means that polyphase
-analysis filter bank and the large FFT in the overlap-save filter bank can use
-a very efficient power of two FFT size. Figure~\ref{fig:block_diagram}
-illustrates this effect for the polyphase filter bank. In general it is easy to
-avoid this pitfall for both structures by decimating with a good FFT size. If
-another narrowband sample rate is required, the outputs can be resampled after
-the fact.
+The situation simulated in this scenario represents a best-case scenario for
+both structures. The baud rate of the test signals was chosen so that the
+decimation factor would be a power of two. This means that polyphase analysis
+filter bank and the large FFT in the overlap-save filter bank can use a very
+efficient power of two FFT size. Figure~\ref{fig:block_diagram} illustrates the
+effect of a poor decimation factor on the polyphase filter bank - just changing
+the decimation factor from 200 to 202 severely harms performance. It should be
+noted that, in general, it is easy to avoid this pitfall for both structures by
+decimating with a good FFT size. If a different narrowband sample rate is
+required, the outputs can be resampled after the filter bank.
 
 In both of these test cases, since all of the signals are the same bandwidth,
-the polyphase filter bank can be designed so that only $M=2$ synthesis filter
-banks are required.  One can imagine a worst-case scenario for the polyphase
-filter bank where there is one low bandwidth signal and many high
+the polyphase filter bank can be designed so that only size $M=2$ synthesis
+filter banks are required.  One can imagine a worst-case scenario for the
+polyphase filter bank where there is one low bandwidth signal and many high
 bandwidth signals.  In this scenario, a large analysis filter bank is required
 to isolate the low bandwidth signal, but then very large synthesis filter banks
 must be used to reconstruct each of the high bandwidth signals.
@@ -906,12 +928,14 @@ evaluated to determine which is better suited for it.
 \markright{Brian H. Hulette \hfill Section \ref{sec:conclusion}. Conclusion \hfill}
 Simulations of a cyclostationary detector and two separate configurable filter
 bank structures, an overlap-save filter bank and a combination polyphase
-analysis/synthesis channelizer, have been presented. Both filter bank
+analysis/synthesis filter bank, have been presented. Both filter bank
 structures were combined with the cyclostationary detector in order to evaluate
 their performance when detecting and isolating QPSK signals at various symbol
-rates in a wideband test signal. Both structures proved effective at accurately
-detecting and isolating these signals, but only the Overlap-Save Filter Bank
-was able to be combined with detection to improve computational efficiency.
+rates in various wideband test signals. Both structures proved effective at accurately
+detecting and isolating these signals, but the runtime performance of each
+varied greatly depending on the number of signals being isolated. In general,
+the overlap-save filter bank is a better choice for a smaller number of signals,
+and the polyphase filter bank is better for a large number of signals.
 
 Currently these simulations only uses the beginning of the test signal for
 detection, but in an actual implementation the detector would be running
@@ -926,7 +950,7 @@ of the analysis filter bank can be chosen.
 This work could be extended in many different ways. In this project, the
 limitations of the various structures were taken as a given, however many of
 these limitations can actually be avoided. For example, Harris shows that it is
-in fact possible to adjust the output sample rate of the analysis channelizer
+in fact possible to adjust the output sample rate of the analysis filter bank
 by adjusting the input commutator \cite{Harris1}. That topic was left out of this
 simulation since it is difficult to devise a flexible version of it that will
 work for any sample rate. Future work could focus on what output sample rates
