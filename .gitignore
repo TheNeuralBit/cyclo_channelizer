@@ -3,10 +3,10 @@
 *.blg
 *.mat
 .*.swp
-report/report.pdf
-report/report.aux
-report/report.lof
-report/report.log
-report/report.out
-report/report.toc
-report/texput.log
+latex/paper.pdf
+latex/paper.aux
+latex/paper.lof
+latex/paper.log
+latex/paper.out
+latex/paper.toc
+latex/paper.log
