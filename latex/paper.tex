@@ -852,7 +852,7 @@ a practical implementation of either structure should run as much in parallel
 as possible.
 
 A comparison of runtimes for the overlap-save structure and the polyphase
-structure can be seen in Figure~\ref{fig:block_diagram}. The plot shows the
+structure can be seen in Figure~\ref{fig:runtime_comparison_250}. The plot shows the
 runtime when both structures are used to simultaneously detect and tune various
 numbers of signals. For each number of signals, a 10 MHz wide simulated
 wideband acquisiton is created. This acquisition contains 78.125 ksymbol/s QPSK
@@ -869,7 +869,7 @@ configured to decimate every signal down to two samples per symbol.
 \end{figure}
 
 From this runtime comparison, we see a clear trend: for a very small number of
-signals the polyphase structure is less efficient.  However, each addiditional
+signals the polyphase structure is less efficient.  However, each additional
 signal costs more time for the overlap-save filter bank to process than the
 polyphase filter bank. When isolating more than six signals, the polyphase
 structure is more efficient. There are two clear takeaways from this result: 1)
@@ -896,14 +896,14 @@ frequency domain at the wideband data rate.
              kbaud signal can use a 200 point IFFT. The former has a large prime factor,
              101, leading to a much longer runtime. A similar effect can be seen in the
              overlap-save structure.}
-    \label{fig:block_diagram}
+    \label{fig:fft_runtime}
 \end{figure}
 
 The situation simulated in this scenario represents a best-case scenario for
 both structures. The baud rate of the test signals was chosen so that the
 decimation factor would be a power of two. This means that polyphase analysis
 filter bank and the large FFT in the overlap-save filter bank can use a very
-efficient power of two FFT size. Figure~\ref{fig:block_diagram} illustrates the
+efficient power of two FFT size. Figure~\ref{fig:fft_runtime} illustrates the
 effect of a poor decimation factor on the polyphase filter bank - just changing
 the decimation factor from 200 to 202 severely harms performance. It should be
 noted that, in general, it is easy to avoid this pitfall for both structures by
