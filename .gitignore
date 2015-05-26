@@ -3,7 +3,6 @@
 *.blg
 *.mat
 .*.swp
-latex/*.pdf
 latex/*.aux
 latex/*.lof
 latex/*.log
