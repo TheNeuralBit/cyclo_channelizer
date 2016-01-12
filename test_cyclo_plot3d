@@ -1,0 +1,25 @@
+close all;
+clear all;
+
+a = 1;b = 1;
+f = 20e6;
+Fs = 204.8e6;
+
+t = 0:(1 / Fs):(4095 / Fs);
+
+signal = a * cos(2 * pi * f * t) + 1j * b * sin(2 * pi * f * t);
+
+% AWGN Channel
+output = awgn(signal, 30);
+
+figure
+plot(t, real(output));grid on;
+title('Signal');
+
+% SCD Parameters
+alphas = -20e6:1e6:20e6;       % Cyclic frequency
+N = length(output); % Data length
+Ns = 1e3;           % freq res.
+Nfft = 128;
+
+plot3d_cyc_spec(output, alphas, Nfft, Fs, 'freq_shift', 4);
